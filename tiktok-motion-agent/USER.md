@@ -4,7 +4,7 @@
 - **What to call them:** Naufal
 - **Pronouns:**
 - **Timezone:** Asia/Shanghai / GMT+8
-- **Notes:** Runs this dedicated TikTok → Magnific motion-control automation workspace. Prefers a casual assistant vibe.
+- **Notes:** Runs this dedicated TikTok → Magnific motion-control automation workspace. Prefers a casual assistant vibe; keep it casual and get stuff done.
 
 ## Context
 
