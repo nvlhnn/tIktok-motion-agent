@@ -242,32 +242,17 @@ def supabase_upload(local_path: Path, object_path: str):
 
 
 def magnific_post(payload: dict):
+    project = require_env("SUPABASE_PROJECT_REF")
     key = require_env("MAGNIFIC_API_KEY")
-    headers = {
-        "x-magnific-api-key": key,
-        "Accept": "application/json",
-        "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36",
-    }
-    action = payload.get("action", "generate")
-    if action == "status":
-        task_id = payload.get("task_id")
-        if not task_id:
-            raise RuntimeError("task_id is required for Magnific status")
-        url = f"https://api.magnific.com/v1/ai/image-to-video/kling-v2-6/{urllib.parse.quote(str(task_id))}"
-        r = requests.get(url, headers=headers, timeout=120)
-    else:
-        url = "https://api.magnific.com/v1/ai/video/kling-v2-6-motion-control-std"
-        direct_payload = {k: v for k, v in payload.items() if k != "action"}
-        headers = {**headers, "Content-Type": "application/json"}
-        r = requests.post(url, json=direct_payload, headers=headers, timeout=120)
+    url = f"https://{project}.supabase.co/functions/v1/magnific-motion"
+    r = requests.post(url, json=payload, headers={"x-magnific-api-key": key, "Accept": "application/json"}, timeout=120)
     try:
         data = r.json()
     except Exception:
         data = {"raw": r.text}
     if not r.ok:
-        raise RuntimeError(f"Magnific API failed {r.status_code}: {data}")
+        raise RuntimeError(f"Magnific function failed {r.status_code}: {data}")
     return data
-
 
 def download_url(url: str, path: Path):
     with requests.get(url, stream=True, timeout=180, headers={"User-Agent": "Mozilla/5.0"}) as r:

@@ -1,0 +1,13 @@
+{
+  "recent_video_ids": [
+    "7618459741320236305"
+  ],
+  "jobs": [
+    {
+      "job_id": "20260517122819-682ae5",
+      "created_at": "2026-05-17T12:28:19+00:00",
+      "delete_after": "2026-05-24T12:28:19+00:00",
+      "supabase_prefix": "magnific/automation/20260517122819-682ae5/"
+    }
+  ]
+}
