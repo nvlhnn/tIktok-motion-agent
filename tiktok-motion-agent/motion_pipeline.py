@@ -43,17 +43,13 @@ COLUMNS = [
     "created_at",
     "job_id",
     "status",
+    "product_video_url",
+    "product_url",
+    "product_title",
+    "product_image_url",
     "input_image_url",
-    "source_tiktok_url",
-    "source_video_url",
-    "capture_tiktok_url",
-    "capture_video_url",
-    "motion_tiktok_url",
-    "motion_video_url",
-    "source_product_url",
-    "source_product_title",
-    "capture_url",
-    "generated_reference_url",
+    "motion_tiktok_video_url",
+    "motion_supabase_video_url",
     "magnific_task_id",
     "result_magnific_url",
     "result_supabase_url",
@@ -116,11 +112,11 @@ def get_sheet():
 def ensure_sheet_header(ws):
     existing = ws.row_values(1)
     if existing != COLUMNS:
-        if not existing:
-            ws.append_row(COLUMNS, value_input_option="RAW")
-        else:
-            # Keep existing content but make header usable.
-            ws.update("A1", [COLUMNS])
+        # Clear stale headers to the right when the schema shrinks/renames columns.
+        clear_width = max(len(existing), len(COLUMNS), 26)
+        values = COLUMNS + [""] * (clear_width - len(COLUMNS))
+        end_col = chr(ord("A") + clear_width - 1) if clear_width <= 26 else "Z"
+        ws.update(f"A1:{end_col}1", [values[:clear_width]])
 
 
 def append_sheet(row: dict):
@@ -285,6 +281,51 @@ def extract_product_from_html(tiktok_url: str):
         seo_url = f"https://shop-id.tokopedia.com/pdp/{product_id}"
     return seo_url, title
 
+
+
+
+def get_first_product_image(product_url: str):
+    """Return first product image URL from TikTok Shop/Tokopedia PDP metadata."""
+    if not product_url:
+        return ""
+    headers = {
+        "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1"
+    }
+    try:
+        text = requests.get(product_url, headers=headers, timeout=45).text
+    except Exception:
+        return ""
+    m = re.search(r'property="og:image"\s+content="([^"]+)"', text)
+    if m:
+        return urllib.parse.unquote(m.group(1).replace("&amp;", "&"))
+    urls = re.findall(r'https?://[^"\'<>\\]+', text)
+    for u in urls:
+        u = urllib.parse.unquote(u.replace("&amp;", "&"))
+        if any(host in u for host in ["p16-oec", "p19-oec", "ibyteimg"]) and any(ext in u for ext in ["webp", "jpeg", "jpg", "png"]):
+            return u
+    return ""
+
+
+def download_product_image(product_url: str, job_dir: Path):
+    image_url = get_first_product_image(product_url)
+    if not image_url:
+        raise RuntimeError(f"Could not extract first product image from product URL: {product_url}")
+    headers = {"User-Agent": "Mozilla/5.0"}
+    ext = ".webp"
+    if ".png" in image_url:
+        ext = ".png"
+    elif ".jpg" in image_url or ".jpeg" in image_url:
+        ext = ".jpg"
+    out = job_dir / f"product_reference{ext}"
+    with requests.get(image_url, headers=headers, stream=True, timeout=90) as r:
+        r.raise_for_status()
+        with out.open("wb") as f:
+            for chunk in r.iter_content(1024 * 128):
+                if chunk:
+                    f.write(chunk)
+    if out.stat().st_size < 5 * 1024:
+        raise RuntimeError("Downloaded product image is suspiciously small")
+    return out, image_url
 
 
 def capture_video_frames(video_path: Path, job_dir: Path, count: int = 5):
@@ -589,33 +630,28 @@ def prepare(image_path: str | None = None):
         capture_entry, picked_product_url, picked_product_title = pick_video_with_product(state)
         capture_video_id = capture_entry["id"]
         capture_tiktok_url = f"https://www.tiktok.com/@keranjang_tiktok08/video/{capture_video_id}"
-        row["capture_tiktok_url"] = capture_tiktok_url
+        row["product_video_url"] = capture_tiktok_url
+        row["product_url"] = picked_product_url
+        row["product_title"] = picked_product_title
+        if not row["product_url"]:
+            raise RuntimeError("Selected TikTok product video has no extractable affiliate/product URL")
 
         motion_entry = pick_different_motion_video(state, capture_video_id)
         motion_video_id = motion_entry["id"]
         motion_tiktok_url = f"https://www.tiktok.com/@keranjang_tiktok08/video/{motion_video_id}"
-        row["motion_tiktok_url"] = motion_tiktok_url
-        # Backward-compatible aliases: source_* means the Magnific motion source.
-        row["source_tiktok_url"] = motion_tiktok_url
-
-        capture_local_video, tikwm_data, product_url, product_title = download_tiktok_video(capture_video_id, capture_tiktok_url, job_dir)
-        row["source_product_url"] = product_url or picked_product_url
-        row["source_product_title"] = product_title or picked_product_title
-        if not row["source_product_url"]:
-            raise RuntimeError("Selected TikTok capture video has no extractable affiliate/product URL")
+        row["motion_tiktok_video_url"] = motion_tiktok_url
 
         motion_local_video, motion_tikwm_data, _, _ = download_tiktok_video(motion_video_id, motion_tiktok_url, job_dir)
 
-        capture_video_obj = f"magnific/automation/{job_id}/capture_source_{capture_video_id}.mp4"
         motion_video_obj = f"magnific/automation/{job_id}/motion_source_{motion_video_id}.mp4"
-        row["capture_video_url"] = supabase_upload(capture_local_video, capture_video_obj)
-        row["motion_video_url"] = supabase_upload(motion_local_video, motion_video_obj)
-        row["source_video_url"] = row["motion_video_url"]
+        row["motion_supabase_video_url"] = supabase_upload(motion_local_video, motion_video_obj)
 
-        frames = capture_video_frames(capture_local_video, job_dir)
-        best_frame, validation_note = validate_capture_with_vision(frames)
-        capture_obj = f"magnific/automation/{job_id}/validated_capture.jpg"
-        row["capture_url"] = supabase_upload(best_frame, capture_obj)
+        product_image_path, product_image_source_url = download_product_image(row["product_url"], job_dir)
+        product_image_obj = f"magnific/automation/{job_id}/product_reference{product_image_path.suffix.lower()}"
+        row["product_image_url"] = product_image_source_url
+        supabase_product_image_url = supabase_upload(product_image_path, product_image_obj)
+        validation_note = "product_image_from_pdp"
+        best_frame = product_image_path
         row["status"] = "NEEDS_REFERENCE_IMAGE"
 
         state.setdefault("jobs", []).append({
@@ -633,7 +669,8 @@ def prepare(image_path: str | None = None):
             "job_dir": str(job_dir),
             "master_path": str(src_image),
             "capture_path": str(best_frame),
-            "capture_local_video_path": str(capture_local_video),
+            "product_image_path": str(product_image_path),
+            "supabase_product_image_url": supabase_product_image_url,
             "motion_local_video_path": str(motion_local_video),
             "validation_note": validation_note,
         }
@@ -644,15 +681,13 @@ def prepare(image_path: str | None = None):
             "status": row["status"],
             "master_path": str(src_image),
             "capture_path": str(best_frame),
-            "capture_url": row["capture_url"],
-            "capture_tiktok_url": row["capture_tiktok_url"],
-            "capture_video_url": row["capture_video_url"],
-            "motion_tiktok_url": row["motion_tiktok_url"],
-            "motion_video_url": row["motion_video_url"],
-            "source_tiktok_url": row["source_tiktok_url"],
-            "source_video_url": row["source_video_url"],
-            "source_product_url": row["source_product_url"],
-            "source_product_title": row["source_product_title"],
+            "product_video_url": row["product_video_url"],
+            "product_url": row["product_url"],
+            "product_title": row["product_title"],
+            "product_image_url": row["product_image_url"],
+            "supabase_product_image_url": supabase_product_image_url,
+            "motion_tiktok_video_url": row["motion_tiktok_video_url"],
+            "motion_supabase_video_url": row["motion_supabase_video_url"],
             "validation_note": validation_note,
         }
         print(json.dumps(payload, indent=2, ensure_ascii=False))
@@ -685,13 +720,12 @@ def complete(job_id: str, generated_reference_path: str):
     capture_video_id = info.get("capture_video_id")
     try:
         gen_ref_obj = f"magnific/automation/{job_id}/generated_reference{ref_path.suffix.lower() or '.png'}"
-        row["generated_reference_url"] = supabase_upload(ref_path, gen_ref_obj)
-        row["input_image_url"] = row["generated_reference_url"]
+        row["input_image_url"] = supabase_upload(ref_path, gen_ref_obj)
 
         gen = magnific_post({
             "action": "generate",
             "image_url": row["input_image_url"],
-            "video_url": row.get("motion_video_url") or row["source_video_url"],
+            "video_url": row["motion_supabase_video_url"],
             "character_orientation": "video",
             "cfg_scale": 0.5,
             "prompt": DEFAULT_PROMPT,
