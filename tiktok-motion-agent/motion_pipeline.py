@@ -191,14 +191,40 @@ def yt_dlp_entries(limit=150):
     return entries
 
 
-def pick_video(state):
+def video_candidates(state):
     entries = yt_dlp_entries()
     if not entries:
         raise RuntimeError("Could not list TikTok profile videos")
     avoid_count = int(os.environ.get("RECENT_VIDEO_AVOID_COUNT", "10"))
     recent = set(state.get("recent_video_ids", [])[-avoid_count:])
     candidates = [e for e in entries if e.get("id") not in recent] or entries
-    return random.choice(candidates)
+    random.shuffle(candidates)
+    return candidates
+
+
+def pick_video(state):
+    candidates = video_candidates(state)
+    return candidates[0]
+
+
+def pick_video_with_product(state):
+    candidates = video_candidates(state)
+    max_checks = int(os.environ.get("PRODUCT_PICK_MAX_CHECKS", "15"))
+    fallback = candidates[0]
+    fallback_product = ("", "")
+    checked = 0
+    for entry in candidates:
+        if checked >= max_checks:
+            break
+        video_id = entry.get("id")
+        if not video_id:
+            continue
+        checked += 1
+        tiktok_url = f"https://www.tiktok.com/@keranjang_tiktok08/video/{video_id}"
+        product_url, product_title = extract_product_from_html(tiktok_url)
+        if product_url or product_title:
+            return entry, product_url, product_title
+    return fallback, fallback_product[0], fallback_product[1]
 
 
 def get_tikwm_data(tiktok_url: str):
@@ -389,14 +415,14 @@ def run(image_path: str):
 
     row = {"created_at": iso(created), "job_id": job_id, "status": "STARTED", "delete_after": delete_after}
     try:
-        entry = pick_video(state)
+        entry, picked_product_url, picked_product_title = pick_video_with_product(state)
         video_id = entry["id"]
         tiktok_url = f"https://www.tiktok.com/@keranjang_tiktok08/video/{video_id}"
         row["source_tiktok_url"] = tiktok_url
 
         local_video, tikwm_data, product_url, product_title = download_tiktok_video(video_id, tiktok_url, job_dir)
-        row["source_product_url"] = product_url
-        row["source_product_title"] = product_title
+        row["source_product_url"] = product_url or picked_product_url
+        row["source_product_title"] = product_title or picked_product_title
 
         image_ext = src_image.suffix.lower() or ".png"
         image_copy = job_dir / f"reference{image_ext}"
