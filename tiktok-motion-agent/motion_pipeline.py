@@ -46,6 +46,10 @@ COLUMNS = [
     "input_image_url",
     "source_tiktok_url",
     "source_video_url",
+    "capture_tiktok_url",
+    "capture_video_url",
+    "motion_tiktok_url",
+    "motion_video_url",
     "source_product_url",
     "source_product_title",
     "capture_url",
@@ -211,6 +215,13 @@ def video_candidates(state):
 
 def pick_video(state):
     candidates = video_candidates(state)
+    return candidates[0]
+
+
+def pick_different_motion_video(state, excluded_video_id: str):
+    candidates = [e for e in video_candidates(state) if e.get("id") != excluded_video_id]
+    if not candidates:
+        raise RuntimeError("Could not find a motion video different from the capture video")
     return candidates[0]
 
 
@@ -575,21 +586,33 @@ def prepare(image_path: str | None = None):
     src_image, job_id, delete_after, job_dir, row = create_job_context(image_path)
     state = state_load()
     try:
-        entry, picked_product_url, picked_product_title = pick_video_with_product(state)
-        video_id = entry["id"]
-        tiktok_url = f"https://www.tiktok.com/@keranjang_tiktok08/video/{video_id}"
-        row["source_tiktok_url"] = tiktok_url
+        capture_entry, picked_product_url, picked_product_title = pick_video_with_product(state)
+        capture_video_id = capture_entry["id"]
+        capture_tiktok_url = f"https://www.tiktok.com/@keranjang_tiktok08/video/{capture_video_id}"
+        row["capture_tiktok_url"] = capture_tiktok_url
 
-        local_video, tikwm_data, product_url, product_title = download_tiktok_video(video_id, tiktok_url, job_dir)
+        motion_entry = pick_different_motion_video(state, capture_video_id)
+        motion_video_id = motion_entry["id"]
+        motion_tiktok_url = f"https://www.tiktok.com/@keranjang_tiktok08/video/{motion_video_id}"
+        row["motion_tiktok_url"] = motion_tiktok_url
+        # Backward-compatible aliases: source_* means the Magnific motion source.
+        row["source_tiktok_url"] = motion_tiktok_url
+
+        capture_local_video, tikwm_data, product_url, product_title = download_tiktok_video(capture_video_id, capture_tiktok_url, job_dir)
         row["source_product_url"] = product_url or picked_product_url
         row["source_product_title"] = product_title or picked_product_title
         if not row["source_product_url"]:
-            raise RuntimeError("Selected TikTok video has no extractable affiliate/product URL")
+            raise RuntimeError("Selected TikTok capture video has no extractable affiliate/product URL")
 
-        video_obj = f"magnific/automation/{job_id}/source_{video_id}.mp4"
-        row["source_video_url"] = supabase_upload(local_video, video_obj)
+        motion_local_video, motion_tikwm_data, _, _ = download_tiktok_video(motion_video_id, motion_tiktok_url, job_dir)
 
-        frames = capture_video_frames(local_video, job_dir)
+        capture_video_obj = f"magnific/automation/{job_id}/capture_source_{capture_video_id}.mp4"
+        motion_video_obj = f"magnific/automation/{job_id}/motion_source_{motion_video_id}.mp4"
+        row["capture_video_url"] = supabase_upload(capture_local_video, capture_video_obj)
+        row["motion_video_url"] = supabase_upload(motion_local_video, motion_video_obj)
+        row["source_video_url"] = row["motion_video_url"]
+
+        frames = capture_video_frames(capture_local_video, job_dir)
         best_frame, validation_note = validate_capture_with_vision(frames)
         capture_obj = f"magnific/automation/{job_id}/validated_capture.jpg"
         row["capture_url"] = supabase_upload(best_frame, capture_obj)
@@ -604,11 +627,14 @@ def prepare(image_path: str | None = None):
         prepared = state.setdefault("prepared_jobs", {})
         prepared[job_id] = {
             "row": row,
-            "video_id": video_id,
+            "capture_video_id": capture_video_id,
+            "motion_video_id": motion_video_id,
+            "video_id": motion_video_id,
             "job_dir": str(job_dir),
             "master_path": str(src_image),
             "capture_path": str(best_frame),
-            "local_video_path": str(local_video),
+            "capture_local_video_path": str(capture_local_video),
+            "motion_local_video_path": str(motion_local_video),
             "validation_note": validation_note,
         }
         state_save(state)
@@ -619,6 +645,10 @@ def prepare(image_path: str | None = None):
             "master_path": str(src_image),
             "capture_path": str(best_frame),
             "capture_url": row["capture_url"],
+            "capture_tiktok_url": row["capture_tiktok_url"],
+            "capture_video_url": row["capture_video_url"],
+            "motion_tiktok_url": row["motion_tiktok_url"],
+            "motion_video_url": row["motion_video_url"],
             "source_tiktok_url": row["source_tiktok_url"],
             "source_video_url": row["source_video_url"],
             "source_product_url": row["source_product_url"],
@@ -651,7 +681,8 @@ def complete(job_id: str, generated_reference_path: str):
         raise RuntimeError(f"Prepared job not found: {job_id}")
     row = info.get("row", {})
     job_dir = Path(info["job_dir"])
-    video_id = info["video_id"]
+    motion_video_id = info.get("motion_video_id") or info.get("video_id")
+    capture_video_id = info.get("capture_video_id")
     try:
         gen_ref_obj = f"magnific/automation/{job_id}/generated_reference{ref_path.suffix.lower() or '.png'}"
         row["generated_reference_url"] = supabase_upload(ref_path, gen_ref_obj)
@@ -660,7 +691,7 @@ def complete(job_id: str, generated_reference_path: str):
         gen = magnific_post({
             "action": "generate",
             "image_url": row["input_image_url"],
-            "video_url": row["source_video_url"],
+            "video_url": row.get("motion_video_url") or row["source_video_url"],
             "character_orientation": "video",
             "cfg_scale": 0.5,
             "prompt": DEFAULT_PROMPT,
@@ -695,7 +726,9 @@ def complete(job_id: str, generated_reference_path: str):
                 raise RuntimeError(f"Magnific ended with {state_value}: {status}")
 
         recent = state.setdefault("recent_video_ids", [])
-        recent.append(video_id)
+        for used_id in [capture_video_id, motion_video_id]:
+            if used_id:
+                recent.append(used_id)
         state["recent_video_ids"] = recent[-100:]
         prepared.pop(job_id, None)
         state_save(state)
