@@ -395,10 +395,13 @@ def generate_reference_image(master_path: Path, outfit_capture_path: Path, job_d
     client = OpenAI()
     out_path = job_dir / "generated_reference.png"
     prompt = (
-        "Edit the first image (master model). Keep the same woman, face, cream hijab, pose, handbag, jeans, lighting, "
-        "and carved wooden door background. Change only the outfit/top to match the outfit worn in the second image, "
-        "including color, pattern, silhouette, sleeves, fabric texture, seams, and visible clothing details. "
-        "Do not copy any TikTok UI, text, icons, watermark, hands/face/background from the second image. "
+        "Edit the first image (master model). Preserve only the master's face/identity, pose, lighting, and carved wooden door background. "
+        "Replace the full styling to match the product/reference image: top, bottom, hijab color, and accessories. "
+        "Do not keep the cream hijab by default; change hijab color if it better matches the product styling. "
+        "Remove the original bag by default unless a similar accessory is clearly part of the product styling. "
+        "If the product/reference image shows a bottom, use that bottom; otherwise create a matching modest bottom. "
+        "Match color, pattern, silhouette, sleeves, fabric texture, seams, buttons, collar, and visible clothing details. "
+        "Do not copy marketplace UI, text, watermark, background, mannequin/body/face/hands from the product/reference image. "
         "Make it look like a natural realistic fashion photo."
     )
     with master_path.open("rb") as img1, outfit_capture_path.open("rb") as img2:
