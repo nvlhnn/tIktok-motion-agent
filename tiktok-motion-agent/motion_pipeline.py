@@ -128,9 +128,47 @@ def append_local_csv(row: dict):
         w.writerow({c: row.get(c, "") for c in COLUMNS})
 
 
+def upsert_local_csv(row: dict):
+    DATA_DIR.mkdir(parents=True, exist_ok=True)
+    rows = []
+    replaced = False
+    if RUNS_CSV.exists():
+        with RUNS_CSV.open("r", newline="") as f:
+            rows = list(csv.DictReader(f))
+    for existing in rows:
+        if existing.get("job_id") == row.get("job_id"):
+            existing.update({c: row.get(c, "") for c in COLUMNS})
+            replaced = True
+            break
+    if not replaced:
+        rows.append({c: row.get(c, "") for c in COLUMNS})
+    with RUNS_CSV.open("w", newline="") as f:
+        w = csv.DictWriter(f, fieldnames=COLUMNS)
+        w.writeheader()
+        w.writerows([{c: r.get(c, "") for c in COLUMNS} for r in rows])
+
+
+def upsert_sheet(row: dict):
+    ws = get_sheet()
+    ensure_sheet_header(ws)
+    values = [row.get(c, "") for c in COLUMNS]
+    job_id = row.get("job_id")
+    row_index = None
+    if job_id:
+        for idx, value in enumerate(ws.col_values(COLUMNS.index("job_id") + 1), start=1):
+            if idx > 1 and value == job_id:
+                row_index = idx
+                break
+    if row_index:
+        end_col = chr(ord("A") + len(COLUMNS) - 1)
+        ws.update(f"A{row_index}:{end_col}{row_index}", [values])
+    else:
+        ws.append_row(values, value_input_option="RAW")
+
+
 def log_row(row: dict):
-    append_local_csv(row)
-    append_sheet(row)
+    upsert_local_csv(row)
+    upsert_sheet(row)
 
 
 def yt_dlp_entries(limit=150):
@@ -381,6 +419,8 @@ def run(image_path: str):
         row["magnific_task_id"] = task_id or ""
         if not task_id:
             raise RuntimeError(f"No task_id from Magnific: {gen}")
+        row["status"] = "PROCESSING"
+        log_row(row)
 
         while True:
             time.sleep(180)
