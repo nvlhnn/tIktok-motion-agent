@@ -1118,13 +1118,50 @@ def dreamface_quota(auth: dict) -> dict:
     return data.get("data") or {}
 
 
+def dreamface_remaining_credits(auth: dict) -> dict:
+    """Return DreamFace credit balances from the newer credits endpoint.
+
+    Some accounts report zero from /rights/get_free_rights even when the web
+    app still has usable free/paid credits. Use this endpoint as the source of
+    truth for provider selection when available.
+    """
+    body = {
+        "user_id": auth["user_id"],
+        "account_id": auth["account_id"],
+        "time_zone": os.environ.get("DREAMFACE_TIME_ZONE", "Asia/Jakarta"),
+    }
+    data = dreamface_request(
+        "POST",
+        "/dw-server/credits/get_remaining_credits",
+        auth,
+        json_body=body,
+        referer="https://www.dreamfaceapp.com/home",
+    )
+    return data.get("data") or {}
+
+
+def dreamface_available_count(quota: dict) -> int:
+    if "paid_count" in quota or "free_count" in quota:
+        return int(quota.get("paid_count") or 0) + int(quota.get("free_count") or 0)
+    return int(quota.get("remain_count") or 0)
+
+
 def select_dreamface_auth() -> tuple[dict, dict]:
     exhausted = []
     for auth in dreamface_auths():
-        quota = dreamface_quota(auth)
-        remain = int(quota.get("remain_count") or 0)
+        quota_error = None
+        try:
+            quota = dreamface_remaining_credits(auth)
+            quota["quota_source"] = "credits/get_remaining_credits"
+        except Exception as e:
+            quota_error = str(e)
+            quota = dreamface_quota(auth)
+            quota["quota_source"] = "rights/get_free_rights"
+        remain = dreamface_available_count(quota)
         if remain > 0:
             return auth, quota
+        if quota_error:
+            quota["credits_error"] = quota_error
         exhausted.append({"label": auth.get("label"), "quota": quota})
     raise RuntimeError(json.dumps({
         "ok": False,
@@ -1543,7 +1580,12 @@ def complete(job_id: str, generated_reference_path: str, provider: str | None = 
         prepared.pop(job_id, None)
         state_save(state)
         log_row(row)
-        print(json.dumps(row, indent=2, ensure_ascii=False))
+        print(json.dumps({
+            "status": "done",
+            "job_id": job_id,
+            "provider": row.get("provider", ""),
+            "result_link": row.get("result_supabase_url", ""),
+        }, indent=2, ensure_ascii=False))
         return 0
     except TimeoutError as e:
         row["status"] = "TIMEOUT"
