@@ -1,0 +1,16 @@
+# Secrets
+.env
+*.env
+tiktok-motion-agent/.env
+
+# Python/cache
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Runtime artifacts
+tiktok-motion-agent/downloads/
+tiktok-motion-agent/logs/
+tiktok-motion-agent/data/tiktok_entries_cache.json
+tiktok-motion-agent/data/ayrshare_last_upload.json
