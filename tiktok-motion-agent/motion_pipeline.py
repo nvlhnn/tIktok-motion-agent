@@ -1008,7 +1008,7 @@ def dreamface_work_detail(auth: dict, work_id: str) -> dict:
 
 
 def max_dreamface_wait_seconds() -> int:
-    return int(os.environ.get("DREAMFACE_MAX_WAIT_SECONDS", "1800"))
+    return int(os.environ.get("DREAMFACE_MAX_WAIT_SECONDS", "3600"))
 
 
 def dreamface_poll_interval_seconds() -> int:
@@ -1298,7 +1298,7 @@ def complete(job_id: str, generated_reference_path: str, provider: str | None = 
                 if time.time() - started_at > max_dreamface_wait_seconds():
                     raise TimeoutError(f"DreamFace task timed out: {animate_id}")
                 time.sleep(min(dreamface_poll_interval_seconds(), max(1, max_dreamface_wait_seconds() - int(time.time() - started_at))))
-                item = None if work_id else dreamface_recent_creation(selected_auth, animate_id)
+                item = dreamface_recent_creation(selected_auth, animate_id)
                 if item:
                     row["provider_status"] = str(item.get("web_work_status", ""))
                     if item.get("animate_id") and item.get("animate_id") != animate_id and os.environ.get("DREAMFACE_RECENT_SIZE", "1") != "1":
