@@ -49,7 +49,8 @@ DEFAULT_PROMPT = (
     "If any source product is sleeveless, short, low-cut, open-collar, V-neck, cropped, sheer, tight, or revealing, keep the product unchanged and make the full outfit modest by layering separate clothing under or around it: matching long-sleeve inner shirt, high-neck turtleneck/dickey inner layer, neck-covering underscarf, leggings/full-length pants, long skirt, and/or outer cardigan/blazer. "
     "For button-up shirts, close the collar area visually with a high-neck inner layer or scarf so no skin is visible below the chin. "
     "The product must look like the same affiliated item; modest coverage should come from added inner/outer layers, not by modifying the product design. "
-    "Keep the motion natural, realistic, vertical social-video style, with stable identity and clean lighting."
+    "Keep the motion natural, realistic, vertical social-video style, with stable identity and clean lighting. "
+    "Keep the final video in TikTok vertical 9:16 composition matching the motion reference, but do not crop, cut off, zoom in, or remove any important body parts, head, hijab, clothing, product details, hands, or feet. Preserve full subject framing safely within the vertical frame."
 )
 
 COLUMNS = [
