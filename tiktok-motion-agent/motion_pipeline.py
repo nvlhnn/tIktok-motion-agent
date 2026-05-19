@@ -859,6 +859,89 @@ def is_magnific_quota_error(error: Exception) -> bool:
     return error.status_code == 429 or "limit" in text or "quota" in text or "free trial" in text
 
 
+def remove_magnific_auth_from_env(limited_auth: dict):
+    """Remove a quota-limited Magnific key from ROOT/.env for future runs.
+
+    Supports every auth-pool env shape accepted by magnific_auths(). The current
+    process keeps its already-loaded in-memory auth list; this persists the
+    removal so the next generation/retry will not reuse a dead key.
+    """
+    env_path = ROOT / ".env"
+    if not env_path.exists():
+        return
+    key = limited_auth.get("api_key")
+    label = limited_auth.get("label")
+    if not key:
+        return
+
+    changed = False
+    output = []
+    for line in env_path.read_text().splitlines():
+        if not line or line.lstrip().startswith("#") or "=" not in line:
+            output.append(line)
+            continue
+        name, value = line.split("=", 1)
+        name = name.strip()
+        raw = value.strip()
+        unquoted = raw[1:-1] if len(raw) >= 2 and raw[0] == raw[-1] and raw[0] in {"'", '"'} else raw
+
+        if name == "MAGNIFIC_AUTHS_JSON":
+            try:
+                parsed = json.loads(unquoted)
+                wrapper_key = None
+                if isinstance(parsed, dict):
+                    wrapper_key = "auths" if "auths" in parsed else "accounts" if "accounts" in parsed else None
+                    auths = parsed.get(wrapper_key) if wrapper_key else []
+                else:
+                    auths = parsed
+                if isinstance(auths, list):
+                    kept = [a for a in auths if not (isinstance(a, dict) and (a.get("api_key") == key or (label and a.get("label") == label)))]
+                    changed = changed or len(kept) != len(auths)
+                    if wrapper_key:
+                        parsed[wrapper_key] = kept
+                        output.append(f"{name}={json.dumps(parsed, separators=(',', ':'))}")
+                    else:
+                        output.append(f"{name}={json.dumps(kept, separators=(',', ':'))}")
+                    continue
+            except Exception:
+                pass
+
+        if name == "MAGNIFIC_API_KEYS_JSON":
+            try:
+                parsed = json.loads(unquoted)
+                if isinstance(parsed, list):
+                    kept = []
+                    for item in parsed:
+                        if isinstance(item, str) and item == key:
+                            changed = True
+                            continue
+                        if isinstance(item, dict) and (item.get("api_key") == key or (label and item.get("label") == label)):
+                            changed = True
+                            continue
+                        kept.append(item)
+                    output.append(f"{name}={json.dumps(kept, separators=(',', ':'))}")
+                    continue
+            except Exception:
+                pass
+
+        if name == "MAGNIFIC_API_KEYS":
+            keys = [k.strip() for k in raw.split(",") if k.strip()]
+            kept = [k for k in keys if k != key]
+            changed = changed or len(kept) != len(keys)
+            output.append(f"{name}={','.join(kept)}")
+            continue
+
+        if name == "MAGNIFIC_API_KEY" and raw == key:
+            changed = True
+            continue
+
+        output.append(line)
+
+    if changed:
+        env_path.write_text("\n".join(output).rstrip() + "\n")
+        print(f"Removed quota-limited Magnific auth from .env: {label or 'unlabeled'}", file=sys.stderr)
+
+
 def magnific_post(payload: dict, auth: dict | None = None) -> dict:
     auth = auth or magnific_auths()[0]
     api_key = auth["api_key"]
@@ -902,6 +985,7 @@ def magnific_generate_with_rotation(payload: dict, preferred_label: str | None =
         except Exception as e:
             if is_magnific_quota_error(e):
                 quota_errors.append({"label": auth.get("label"), "error": str(e)})
+                remove_magnific_auth_from_env(auth)
                 continue
             raise
     raise RuntimeError(json.dumps({
