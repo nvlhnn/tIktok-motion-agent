@@ -31,21 +31,23 @@ TIKTOK_LIST_CACHE_PATH = DATA_DIR / "tiktok_entries_cache.json"
 
 MODEST_TRYON_PROMPT = (
     "Create a realistic modest Muslim-friendly fashion try-on image. The person must remain hijab-friendly and fully modest. "
-    "Keep the hijab/head covering intact and cover the neck/chest area with fabric if needed. "
-    "ABSOLUTE REQUIREMENTS: no shorts, no bare legs, no exposed thighs, no bare shoulders, no bare upper arms, no cleavage, no exposed chest, no exposed waist or back, no transparent/sheer clothing, no tight body-revealing fit. "
+    "Keep the hijab/head covering intact. The hijab or an added inner scarf/underscarf MUST cover the entire neck, collarbone, upper chest, and any skin between chin and shirt. "
+    "ABSOLUTE REQUIREMENTS: zero visible neck skin, zero visible collarbone, zero visible upper chest, no open neckline, no V-neck/open collar gap, no cleavage, no exposed chest, no shorts, no bare legs, no exposed thighs, no bare shoulders, no bare upper arms, no exposed waist or back, no transparent/sheer clothing, no tight body-revealing fit. "
     "Do not alter the affiliated product itself: keep the product's original cut, sleeve length, neckline, silhouette, color, pattern, texture, and style as accurately as possible. "
-    "If the product reference is sleeveless, short, low-cut, cropped, sheer, tight, or revealing, keep that product unchanged and make the full outfit modest by layering separate clothing under or around it: matching long-sleeve inner shirt, high-neck inner layer, leggings/full-length pants, long skirt, and/or outer cardigan/blazer. "
+    "If the product reference is sleeveless, short, low-cut, open-collar, V-neck, cropped, sheer, tight, or revealing, keep that product unchanged and make the full outfit modest by layering separate clothing under or around it: matching long-sleeve inner shirt, high-neck turtleneck/dickey inner layer, neck-covering underscarf, leggings/full-length pants, long skirt, and/or outer cardigan/blazer. "
+    "For button-up shirts, close the collar area visually with a high-neck inner layer or scarf so no skin is visible below the chin. "
     "The product must look like the same affiliated item; modest coverage should come from added inner/outer layers, not by modifying the product design. "
-    "Final outfit should look natural for Indonesian Muslim women / hijab OOTD: long sleeves, covered chest, covered legs to ankles, loose/comfortable fit."
+    "Final outfit should look natural for Indonesian Muslim women / hijab OOTD: long sleeves, fully covered neck and chest, covered legs to ankles, loose/comfortable fit."
 )
 
 DEFAULT_PROMPT = (
     "Transfer the body movement and camera rhythm from the TikTok reference video to the person in the reference image. "
     "Preserve identity, pose style, and background as much as possible while enforcing modest Muslim-friendly styling. "
-    "Keep hijab/head covering intact and keep the outfit fully modest throughout all frames. "
-    "ABSOLUTE REQUIREMENTS: no shorts, no bare legs, no exposed thighs, no bare shoulders, no bare upper arms, no cleavage, no exposed chest, no exposed waist/back, no transparent/sheer clothing, no tight body-revealing fit. "
+    "Keep hijab/head covering intact and keep the outfit fully modest throughout all frames. The hijab/underscarf must cover the entire neck, collarbone, and upper chest in every frame. "
+    "ABSOLUTE REQUIREMENTS: zero visible neck skin, zero visible collarbone, zero visible upper chest, no open neckline, no V-neck/open collar gap, no cleavage, no exposed chest, no shorts, no bare legs, no exposed thighs, no bare shoulders, no bare upper arms, no exposed waist/back, no transparent/sheer clothing, no tight body-revealing fit. "
     "Do not alter the affiliated product itself: keep its original cut, sleeve length, neckline, silhouette, color, pattern, texture, and style as accurately as possible. "
-    "If any source product is sleeveless, short, low-cut, cropped, sheer, tight, or revealing, keep the product unchanged and make the full outfit modest by layering separate clothing under or around it: matching long-sleeve inner shirt, high-neck inner layer, leggings/full-length pants, long skirt, and/or outer cardigan/blazer. "
+    "If any source product is sleeveless, short, low-cut, open-collar, V-neck, cropped, sheer, tight, or revealing, keep the product unchanged and make the full outfit modest by layering separate clothing under or around it: matching long-sleeve inner shirt, high-neck turtleneck/dickey inner layer, neck-covering underscarf, leggings/full-length pants, long skirt, and/or outer cardigan/blazer. "
+    "For button-up shirts, close the collar area visually with a high-neck inner layer or scarf so no skin is visible below the chin. "
     "The product must look like the same affiliated item; modest coverage should come from added inner/outer layers, not by modifying the product design. "
     "Keep the motion natural, realistic, vertical social-video style, with stable identity and clean lighting."
 )
