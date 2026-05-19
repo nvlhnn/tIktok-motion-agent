@@ -33,7 +33,19 @@
     "7638169295234665745",
     "7636635593199373569",
     "7637743592487800065",
-    "7633400595742756112"
+    "7633400595742756112",
+    "7640014426376080641",
+    "7639328850555473169",
+    "7639667402283732240",
+    "7627453970226711809",
+    "7636741322648472833",
+    "7630376090539838736",
+    "7635154809066245377",
+    "7632637670820269313",
+    "7635250587063405840",
+    "7634079946700328208",
+    "7627721282095779073",
+    "7631818011103612176"
   ],
   "jobs": [
     {
@@ -179,6 +191,36 @@
       "created_at": "2026-05-19T05:22:36+00:00",
       "delete_after": "2026-05-26T05:22:36+00:00",
       "supabase_prefix": "magnific/automation/20260519052236-e64a64/"
+    },
+    {
+      "job_id": "20260519060704-475687",
+      "created_at": "2026-05-19T06:07:04+00:00",
+      "delete_after": "2026-05-26T06:07:04+00:00",
+      "supabase_prefix": "magnific/automation/20260519060704-475687/"
+    },
+    {
+      "job_id": "20260519065210-afae2a",
+      "created_at": "2026-05-19T06:52:10+00:00",
+      "delete_after": "2026-05-26T06:52:10+00:00",
+      "supabase_prefix": "magnific/automation/20260519065210-afae2a/"
+    },
+    {
+      "job_id": "20260519075530-c83d10",
+      "created_at": "2026-05-19T07:55:30+00:00",
+      "delete_after": "2026-05-26T07:55:30+00:00",
+      "supabase_prefix": "magnific/automation/20260519075530-c83d10/"
+    },
+    {
+      "job_id": "20260519091728-212561",
+      "created_at": "2026-05-19T09:17:28+00:00",
+      "delete_after": "2026-05-26T09:17:28+00:00",
+      "supabase_prefix": "magnific/automation/20260519091728-212561/"
+    },
+    {
+      "job_id": "20260519111014-f55989",
+      "created_at": "2026-05-19T11:10:14+00:00",
+      "delete_after": "2026-05-26T11:10:14+00:00",
+      "supabase_prefix": "magnific/automation/20260519111014-f55989/"
     }
   ],
   "prepared_jobs": {
@@ -193,7 +235,10 @@
         "product_title": "RAZTA TUNIK BORDIR LINEN RAMI ATASAN WANITA CASUAL",
         "motion_tiktok_video_url": "https://www.tiktok.com/@keranjang_tiktok08/video/7630749491703926032",
         "motion_supabase_video_url": "https://qcugxzxcklzllebgnbun.supabase.co/storage/v1/object/public/C%20storage/magnific/automation/20260517161947-a105ce/motion_source_7630749491703926032.mp4",
-        "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/c4880c28164b44a89eee61cc08143bbb~tplv-aphluv4xwc-crop-webp:960:960.webp?dr=15592&t=555f072d&ps=933b5bde&shp=8dbd94bf&shcp=e1be8f53&idc=my2&from=2378011839"
+        "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/c4880c28164b44a89eee61cc08143bbb~tplv-aphluv4xwc-crop-webp:960:960.webp?dr=15592&t=555f072d&ps=933b5bde&shp=8dbd94bf&shcp=e1be8f53&idc=my2&from=2378011839",
+        "provider_task_id": "",
+        "provider_work_id": "",
+        "provider_result_url": ""
       },
       "product_video_id": "7633400595742756112",
       "motion_video_id": "7630749491703926032",
@@ -218,7 +263,10 @@
         "motion_supabase_video_url": "https://qcugxzxcklzllebgnbun.supabase.co/storage/v1/object/public/C%20storage/magnific/automation/20260518174832-51ae8d/motion_source_7630749491703926032.mp4",
         "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/b416ca3b26ba4b3b98bab3aff60f91ae~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
         "input_image_url": "https://qcugxzxcklzllebgnbun.supabase.co/storage/v1/object/public/C%20storage/magnific/automation/20260518174832-51ae8d/generated_reference.png",
-        "error": "Magnific function failed 429: {'message': 'Hello! You have reached the limit of the free trial usage. You can upgrade to a paid plan here: https://www.magnific.com/developers/dashboard/billing'}"
+        "error": "Magnific function failed 429: {'message': 'Hello! You have reached the limit of the free trial usage. You can upgrade to a paid plan here: https://www.magnific.com/developers/dashboard/billing'}",
+        "provider_task_id": "",
+        "provider_work_id": "",
+        "provider_result_url": ""
       },
       "product_video_id": "7633783171003272464",
       "motion_video_id": "7630749491703926032",
@@ -245,7 +293,10 @@
         "motion_supabase_video_url": "https://qcugxzxcklzllebgnbun.supabase.co/storage/v1/object/public/C%20storage/magnific/automation/20260519030921-8ec615/motion_source_7628484308440747281.mp4",
         "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/4710681ea4b146d580cda34f692f2163~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
         "input_image_url": "https://qcugxzxcklzllebgnbun.supabase.co/storage/v1/object/public/C%20storage/magnific/automation/20260519030921-8ec615/generated_reference.png",
-        "error": "Magnific function failed 429: {'message': 'Hello! You have reached the limit of the free trial usage. You can upgrade to a paid plan here: https://www.magnific.com/developers/dashboard/billing'}"
+        "error": "Magnific function failed 429: {'message': 'Hello! You have reached the limit of the free trial usage. You can upgrade to a paid plan here: https://www.magnific.com/developers/dashboard/billing'}",
+        "provider_task_id": "",
+        "provider_work_id": "",
+        "provider_result_url": ""
       },
       "product_video_id": "7640716122790104321",
       "motion_video_id": "7628484308440747281",
@@ -272,7 +323,10 @@
         "motion_supabase_video_url": "https://qcugxzxcklzllebgnbun.supabase.co/storage/v1/object/public/C%20storage/magnific/automation/20260519034635-ea8e70/motion_source_7632977524179471633.mp4",
         "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-maliva-i-o3syd03w52-us/b1a37cb73e944a1f89a1aed95aceb049~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
         "input_image_url": "https://qcugxzxcklzllebgnbun.supabase.co/storage/v1/object/public/C%20storage/magnific/automation/20260519034635-ea8e70/generated_reference.png",
-        "error": "Magnific function failed 429: {'message': 'Hello! You have reached the limit of the free trial usage. You can upgrade to a paid plan here: https://www.magnific.com/developers/dashboard/billing'}"
+        "error": "Magnific function failed 429: {'message': 'Hello! You have reached the limit of the free trial usage. You can upgrade to a paid plan here: https://www.magnific.com/developers/dashboard/billing'}",
+        "provider_task_id": "",
+        "provider_work_id": "",
+        "provider_result_url": ""
       },
       "product_video_id": "7630700868681207057",
       "motion_video_id": "7632977524179471633",
@@ -284,39 +338,6 @@
       "motion_local_video_path": "/root/.openclaw/workspace/tiktok-motion-agent/downloads/20260519034635-ea8e70/tiktok_7632977524179471633.mp4",
       "modest_tryon_prompt": "Create a realistic modest Muslim-friendly fashion try-on image. The person must remain hijab-friendly and fully modest. Keep the hijab/head covering intact and cover the neck/chest area with fabric if needed. ABSOLUTE REQUIREMENTS: no shorts, no bare legs, no exposed thighs, no bare shoulders, no bare upper arms, no cleavage, no exposed chest, no exposed waist or back, no transparent/sheer clothing, no tight body-revealing fit. Do not alter the affiliated product itself: keep the product's original cut, sleeve length, neckline, silhouette, color, pattern, texture, and style as accurately as possible. If the product reference is sleeveless, short, low-cut, cropped, sheer, tight, or revealing, keep that product unchanged and make the full outfit modest by layering separate clothing under or around it: matching long-sleeve inner shirt, high-neck inner layer, leggings/full-length pants, long skirt, and/or outer cardigan/blazer. The product must look like the same affiliated item; modest coverage should come from added inner/outer layers, not by modifying the product design. Final outfit should look natural for Indonesian Muslim women / hijab OOTD: long sleeves, covered chest, covered legs to ankles, loose/comfortable fit.",
       "modest_tryon_prompt_path": "/root/.openclaw/workspace/tiktok-motion-agent/downloads/20260519034635-ea8e70/modest_tryon_prompt.txt",
-      "validation_note": "product_image_from_pdp"
-    },
-    "20260519052236-e64a64": {
-      "row": {
-        "created_at": "2026-05-19T05:22:36+00:00",
-        "job_id": "20260519052236-e64a64",
-        "status": "PROCESSING",
-        "delete_after": "2026-05-26T05:22:36+00:00",
-        "product_video_url": "https://www.tiktok.com/@keranjang_tiktok08/video/7640014426376080641",
-        "product_url": "https://shop-id.tokopedia.com/pdp/kalea-kemeja-blouse-batwing-wanita-bahan-rayon-twill-ukuran-l-xl/1733742965884617832?source=anchor",
-        "product_title": "Kalea Kemeja Blouse Atasan Batwing Wanita Panjang Kekinian Rayon twill",
-        "motion_tiktok_video_url": "https://www.tiktok.com/@keranjang_tiktok08/video/7639328850555473169",
-        "motion_supabase_video_url": "https://qcugxzxcklzllebgnbun.supabase.co/storage/v1/object/public/C%20storage/magnific/automation/20260519052236-e64a64/motion_source_7639328850555473169.mp4",
-        "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/196641f5753349ecb013a94c0feb5682~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
-        "error": "",
-        "video_provider": "dreamface",
-        "input_image_url": "https://qcugxzxcklzllebgnbun.supabase.co/storage/v1/object/public/C%20storage/magnific/automation/20260519052236-e64a64/generated_reference.png",
-        "provider_auth_label": "dreamface-1",
-        "provider_status": "0",
-        "dreamface_animate_id": "15156122-f58b-4960-963a-5592d850fcb1",
-        "provider_job_id": "15156122-f58b-4960-963a-5592d850fcb1",
-        "dreamface_work_id": "6a0bf44d9450686fe2eb5240"
-      },
-      "product_video_id": "7640014426376080641",
-      "motion_video_id": "7639328850555473169",
-      "video_id": "7639328850555473169",
-      "job_dir": "/root/.openclaw/workspace/tiktok-motion-agent/downloads/20260519052236-e64a64",
-      "master_path": "/root/.openclaw/workspace/tiktok-motion-agent/data/master.png",
-      "product_image_path": "/root/.openclaw/workspace/tiktok-motion-agent/downloads/20260519052236-e64a64/product_reference.jpg",
-      "supabase_product_image_url": "https://qcugxzxcklzllebgnbun.supabase.co/storage/v1/object/public/C%20storage/magnific/automation/20260519052236-e64a64/product_reference.jpg",
-      "motion_local_video_path": "/root/.openclaw/workspace/tiktok-motion-agent/downloads/20260519052236-e64a64/tiktok_7639328850555473169.mp4",
-      "modest_tryon_prompt": "Create a realistic modest Muslim-friendly fashion try-on image. The person must remain hijab-friendly and fully modest. Keep the hijab/head covering intact and cover the neck/chest area with fabric if needed. ABSOLUTE REQUIREMENTS: no shorts, no bare legs, no exposed thighs, no bare shoulders, no bare upper arms, no cleavage, no exposed chest, no exposed waist or back, no transparent/sheer clothing, no tight body-revealing fit. Do not alter the affiliated product itself: keep the product's original cut, sleeve length, neckline, silhouette, color, pattern, texture, and style as accurately as possible. If the product reference is sleeveless, short, low-cut, cropped, sheer, tight, or revealing, keep that product unchanged and make the full outfit modest by layering separate clothing under or around it: matching long-sleeve inner shirt, high-neck inner layer, leggings/full-length pants, long skirt, and/or outer cardigan/blazer. The product must look like the same affiliated item; modest coverage should come from added inner/outer layers, not by modifying the product design. Final outfit should look natural for Indonesian Muslim women / hijab OOTD: long sleeves, covered chest, covered legs to ankles, loose/comfortable fit.",
-      "modest_tryon_prompt_path": "/root/.openclaw/workspace/tiktok-motion-agent/downloads/20260519052236-e64a64/modest_tryon_prompt.txt",
       "validation_note": "product_image_from_pdp"
     }
   },
@@ -442,6 +463,36 @@
       "product_title": "Kalea Kemeja Blouse Atasan Batwing Wanita Panjang Kekinian Rayon twill",
       "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/196641f5753349ecb013a94c0feb5682~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
       "checked_at": "2026-05-19T05:22:36+00:00"
+    },
+    "7639667402283732240": {
+      "product_url": "https://shop-id.tokopedia.com/pdp/atasan-wanita-premium-stretchy-offwhite-one-size-fit-all/1732705971762725949?source=anchor",
+      "product_title": "IRIS TOP | Atasan Knit Wanita Korean Top Baju Knit Wanita Lengan Panjang Basic Long Sleeve",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-maliva-i-o3syd03w52-us/ed4ac4ffead74282a2a5247d3336e9bc~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-19T06:07:04+00:00"
+    },
+    "7636741322648472833": {
+      "product_url": "https://shop-id.tokopedia.com/pdp/blouse-wanita-peplum-anika-bahan-katun-square-desain-minimalis/1733344558687160229?source=anchor",
+      "product_title": "Floral Id - Blouse Wanita Peplum Anika Atasa Wanita Kemeja Premium Lengan Panjang Poplin Atasan Casual Oversize Kotak",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/644a521937c54a2d9ca9729e2da4f37e~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-19T06:52:11+00:00"
+    },
+    "7635154809066245377": {
+      "product_url": "https://shop-id.tokopedia.com/pdp/blus-wanita-katun-lace-kerah-renda-nyaman-modis/1732124156861318177?source=anchor",
+      "product_title": "Mybamus X Nabilabyaaa Biyaa Poplin Blouse Atasan Wanita Lengan Panjang Renda Collar",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/fbb42bf7aaba407982695a3e1f6f4a29~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-19T07:55:30+00:00"
+    },
+    "7635250587063405840": {
+      "product_url": "https://shop-id.tokopedia.com/pdp/elara-blouse-kemeja-motif-salur-lengan-panjang-nyaman-santai-viral-2025/1732854925877871837?source=anchor",
+      "product_title": "Elara Blouse Kemeja Motif Salur Bordir Kancing Baju Atasan Wanita Garis Panjang Muslim Santai Nyaman Simpel Basic Lengan Panjang Viral 2025 Shakila",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/3d0db90bc3c348f0876b4acf24518f53~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-19T09:18:07+00:00"
+    },
+    "7627721282095779073": {
+      "product_url": "https://shop-id.tokopedia.com/pdp/1734446244004922896?source=anchor",
+      "product_title": "TAMARA BLOUSE BORDIR RAYON TWILL",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/4526f496011c4f8589afd54e721c24b9~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-19T11:10:15+00:00"
     }
   }
 }

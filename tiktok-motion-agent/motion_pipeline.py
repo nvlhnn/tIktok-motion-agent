@@ -63,20 +63,16 @@ COLUMNS = [
     "input_image_url",
     "motion_tiktok_video_url",
     "motion_supabase_video_url",
-    "magnific_task_id",
-    "result_magnific_url",
+    "provider",
+    "provider_auth_label",
+    "provider_task_id",
+    "provider_work_id",
+    "provider_status",
+    "provider_result_url",
     "result_supabase_url",
     "delete_after",
     "error",
     "uploaded_at",
-    # Provider metadata. Appended after the existing sheet schema so old columns
-    # keep their positions.
-    "video_provider",
-    "provider_auth_label",
-    "provider_job_id",
-    "provider_status",
-    "dreamface_animate_id",
-    "dreamface_work_id",
 ]
 
 STATUS_VALUES = [
@@ -197,7 +193,7 @@ def sync_sheet_table_columns(ws):
         table_range["sheetId"] = ws.id
         table_range.setdefault("startRowIndex", 0)
         table_range.setdefault("startColumnIndex", 0)
-        table_range["endColumnIndex"] = max(table_range.get("endColumnIndex", 0), len(COLUMNS))
+        table_range["endColumnIndex"] = len(COLUMNS)
         table_range["endRowIndex"] = max(table_range.get("endRowIndex", 0), max(ws.row_count, 1000))
 
         old_by_name = {c.get("columnName"): c for c in table.get("columnProperties", [])}
@@ -334,7 +330,7 @@ def active_generation_from_state(state: dict, exclude_job_id: str | None = None)
                 "job_id": job_id,
                 "status": status,
                 "created_at": row.get("created_at", ""),
-                "provider": row.get("video_provider") or ("magnific" if row.get("magnific_task_id") else ""),
+                "provider": row.get("provider") or row.get("video_provider") or ("magnific" if row.get("magnific_task_id") else ""),
             }
 
     # Fallback for older state shapes / interrupted writes.
@@ -348,7 +344,7 @@ def active_generation_from_state(state: dict, exclude_job_id: str | None = None)
                 "job_id": job_id or "",
                 "status": status,
                 "created_at": job.get("created_at", ""),
-                "provider": job.get("video_provider", ""),
+                "provider": job.get("provider") or job.get("video_provider", ""),
             }
     return None
 
@@ -371,7 +367,7 @@ def active_generation_from_csv(exclude_job_id: str | None = None) -> dict | None
                 "job_id": job_id or "",
                 "status": status,
                 "created_at": row.get("created_at", ""),
-                "provider": row.get("video_provider") or ("magnific" if row.get("magnific_task_id") else ""),
+                "provider": row.get("provider") or row.get("video_provider") or ("magnific" if row.get("magnific_task_id") else ""),
             }
     return None
 
@@ -408,7 +404,26 @@ def validate_status(row: dict):
         print(f"warning: unknown status {status!r}; allowed={STATUS_VALUES}", file=sys.stderr)
 
 
+def normalize_provider_fields(row: dict):
+    """Map old vendor-specific columns to the provider-neutral schema."""
+    row = dict(row)
+    provider = row.get("provider") or row.get("video_provider") or ""
+    if not provider:
+        if row.get("dreamface_animate_id") or row.get("dreamface_work_id"):
+            provider = "dreamface"
+        elif row.get("magnific_task_id") or row.get("result_magnific_url"):
+            provider = "magnific"
+    if provider:
+        row["provider"] = provider
+
+    row["provider_task_id"] = row.get("provider_task_id") or row.get("provider_job_id") or row.get("dreamface_animate_id") or row.get("magnific_task_id") or ""
+    row["provider_work_id"] = row.get("provider_work_id") or row.get("dreamface_work_id") or ""
+    row["provider_result_url"] = row.get("provider_result_url") or row.get("result_magnific_url") or ""
+    return row
+
+
 def normalize_row(row: dict):
+    row = normalize_provider_fields(row)
     if row.get("status") == "UPLOADED" and not row.get("uploaded_at"):
         row = dict(row)
         row["uploaded_at"] = iso(now_utc())
@@ -1386,7 +1401,7 @@ def complete(job_id: str, generated_reference_path: str, provider: str | None = 
     info = prepared.get(job_id)
     if not info:
         raise RuntimeError(f"Prepared job not found: {job_id}")
-    row = info.get("row", {})
+    row = normalize_provider_fields(info.get("row", {}))
     job_dir = Path(info["job_dir"])
     motion_video_id = info.get("motion_video_id") or info.get("video_id")
     product_video_id = info.get("product_video_id") or info.get("capture_video_id")
@@ -1394,7 +1409,7 @@ def complete(job_id: str, generated_reference_path: str, provider: str | None = 
     try:
         row["status"] = "SUBMITTED"
         row["error"] = ""
-        row["video_provider"] = provider_name
+        row["provider"] = provider_name
         prepared[job_id] = {**info, "row": row}
         state_save(state)
         log_row(row)
@@ -1403,7 +1418,7 @@ def complete(job_id: str, generated_reference_path: str, provider: str | None = 
         row["input_image_url"] = row.get("input_image_url") or supabase_upload(ref_path, gen_ref_obj)
 
         if provider_name == "magnific":
-            task_id = row.get("magnific_task_id")
+            task_id = row.get("provider_task_id") or row.get("magnific_task_id")
             selected_auth = magnific_auth_by_label(row.get("provider_auth_label")) or magnific_auths()[0]
             if not task_id:
                 gen, selected_auth = magnific_generate_with_rotation({
@@ -1416,8 +1431,7 @@ def complete(job_id: str, generated_reference_path: str, provider: str | None = 
                 }, preferred_label=row.get("provider_auth_label") or None)
                 row["provider_auth_label"] = selected_auth.get("label", "")
                 task_id = (gen.get("data") or {}).get("task_id")
-                row["magnific_task_id"] = task_id or ""
-                row["provider_job_id"] = task_id or ""
+                row["provider_task_id"] = task_id or ""
                 if not task_id:
                     raise RuntimeError(f"No task_id from Magnific: {gen}")
             row["status"] = "PROCESSING"
@@ -1442,7 +1456,7 @@ def complete(job_id: str, generated_reference_path: str, provider: str | None = 
                     generated = d.get("generated") or []
                     if not generated:
                         raise RuntimeError(f"Completed but no generated URL: {status}")
-                    row["result_magnific_url"] = generated[0]
+                    row["provider_result_url"] = generated[0]
                     result_path = job_dir / f"result_{task_id}.mp4"
                     download_url(generated[0], result_path)
                     result_obj = f"magnific/automation/{job_id}/result_{task_id}.mp4"
@@ -1469,11 +1483,10 @@ def complete(job_id: str, generated_reference_path: str, provider: str | None = 
             if quota:
                 row["provider_status"] = f"quota {quota.get('remain_count')}/{quota.get('total_count')}"
 
-            animate_id = row.get("dreamface_animate_id")
+            animate_id = row.get("provider_task_id") or row.get("dreamface_animate_id")
             if not animate_id:
                 animate_id = dreamface_submit(selected_auth, row["input_image_url"], row["motion_supabase_video_url"])
-                row["dreamface_animate_id"] = animate_id
-                row["provider_job_id"] = animate_id
+                row["provider_task_id"] = animate_id
             row["status"] = "PROCESSING"
             row["provider_status"] = "PROCESSING"
             row["error"] = ""
@@ -1482,7 +1495,7 @@ def complete(job_id: str, generated_reference_path: str, provider: str | None = 
             log_row(row)
 
             started_at = time.time()
-            work_id = row.get("dreamface_work_id")
+            work_id = row.get("provider_work_id") or row.get("dreamface_work_id")
             while True:
                 if time.time() - started_at > max_dreamface_wait_seconds():
                     raise TimeoutError(f"DreamFace task timed out: {animate_id}")
@@ -1496,7 +1509,7 @@ def complete(job_id: str, generated_reference_path: str, provider: str | None = 
                         log_row(row)
                         continue
                     work_id = item.get("id") or work_id
-                    row["dreamface_work_id"] = work_id or ""
+                    row["provider_work_id"] = work_id or ""
                     prepared[job_id] = {**info, "row": row}
                     state_save(state)
                     log_row(row)
@@ -1514,6 +1527,7 @@ def complete(job_id: str, generated_reference_path: str, provider: str | None = 
                     prepared[job_id] = {**info, "row": row}
                     state_save(state)
                     continue
+                row["provider_result_url"] = work_url
                 result_path = job_dir / f"result_dreamface_{work_id}.mp4"
                 download_url(work_url, result_path)
                 result_obj = f"magnific/automation/{job_id}/result_dreamface_{work_id}.mp4"
