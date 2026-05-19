@@ -17,10 +17,9 @@ When Naufal says **go**, run the automation with minimal chat.
 3. Generate image with OpenClaw `image_generate` using quota-friendly settings:
 - refs: `master_path`, `product_image_path`
 - model: `openai/gpt-image-2`
-- aspectRatio: `9:16`
-- resolution: `2K`
+- size: `2160x3840`
 - quality: `medium`
-- do not pass a `size` value; use aspect ratio control so the image tool does not fall back to 2:3
+- do not use `aspectRatio` with OpenAI; OpenAI does not receive it directly. Use this supported 9:16 size instead.
 - prompt: `Preserve master face/identity, pose, lighting, and wooden-door background. Apply outfit style from product image only. Restyle top, bottom, hijab, and accessories to match; use product bottom if visible, otherwise modest matching bottom. Do not keep original jeans, cream hijab, or bag by default. No UI/text/watermark/product model/background. Realistic fit, true TikTok vertical 9:16 full-body framing, no crop/cut-off.`
 
 4. Complete:
