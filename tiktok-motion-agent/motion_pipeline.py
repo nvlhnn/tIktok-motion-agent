@@ -779,11 +779,89 @@ def magnific_function_url() -> str:
 
 def retryable_magnific_error(status_code: int, text: str) -> bool:
     lowered = text.lower()
-    return status_code in {403, 429, 500, 502, 503, 504} or "blocked" in lowered or "rate" in lowered
+    return status_code in {403, 500, 502, 503, 504} or "blocked" in lowered or "rate" in lowered
 
 
-def magnific_post(payload: dict) -> dict:
-    api_key = require_env("MAGNIFIC_API_KEY")
+class MagnificApiError(RuntimeError):
+    def __init__(self, status_code: int | None, data: dict, message: str):
+        super().__init__(message)
+        self.status_code = status_code
+        self.data = data
+
+
+def magnific_auths() -> list[dict]:
+    """Load Magnific auth pool from env.
+
+    Preferred env shape:
+      MAGNIFIC_AUTHS_JSON='[{"label":"magnific-1","api_key":"FPSX..."}]'
+
+    Also supported:
+      MAGNIFIC_API_KEYS_JSON='["FPSX...", {"label":"m2","api_key":"FPSX..."}]'
+      MAGNIFIC_API_KEYS='FPSX...,FPSX...'
+      MAGNIFIC_API_KEY='FPSX...'
+    """
+    auths: list[dict] = []
+    raw = os.environ.get("MAGNIFIC_AUTHS_JSON", "").strip()
+    if len(raw) >= 2 and raw[0] == raw[-1] and raw[0] in {"'", '"'}:
+        raw = raw[1:-1]
+    if raw:
+        parsed = json.loads(raw)
+        if isinstance(parsed, dict):
+            parsed = parsed.get("auths") or parsed.get("accounts") or []
+        if not isinstance(parsed, list):
+            raise RuntimeError("MAGNIFIC_AUTHS_JSON must be a JSON list or object with auths/accounts")
+        auths = [dict(a) for a in parsed]
+    else:
+        keys_raw = os.environ.get("MAGNIFIC_API_KEYS_JSON", "").strip()
+        if len(keys_raw) >= 2 and keys_raw[0] == keys_raw[-1] and keys_raw[0] in {"'", '"'}:
+            keys_raw = keys_raw[1:-1]
+        if keys_raw:
+            parsed = json.loads(keys_raw)
+            if not isinstance(parsed, list):
+                raise RuntimeError("MAGNIFIC_API_KEYS_JSON must be a JSON list")
+            for idx, item in enumerate(parsed, start=1):
+                if isinstance(item, str):
+                    auths.append({"label": f"magnific-{idx}", "api_key": item})
+                elif isinstance(item, dict):
+                    auths.append(dict(item))
+                else:
+                    raise RuntimeError("MAGNIFIC_API_KEYS_JSON entries must be strings or objects")
+        elif os.environ.get("MAGNIFIC_API_KEYS"):
+            for idx, key in enumerate([k.strip() for k in os.environ["MAGNIFIC_API_KEYS"].split(",") if k.strip()], start=1):
+                auths.append({"label": f"magnific-{idx}", "api_key": key})
+        elif os.environ.get("MAGNIFIC_API_KEY"):
+            auths.append({"label": os.environ.get("MAGNIFIC_AUTH_LABEL") or "magnific-1", "api_key": os.environ["MAGNIFIC_API_KEY"]})
+
+    cleaned = []
+    for idx, auth in enumerate(auths, start=1):
+        auth.setdefault("label", f"magnific-{idx}")
+        if not auth.get("api_key"):
+            raise RuntimeError(f"Magnific auth {auth.get('label')!r} missing api_key")
+        cleaned.append(auth)
+    if not cleaned:
+        raise RuntimeError("No Magnific auth configured. Set MAGNIFIC_AUTHS_JSON, MAGNIFIC_API_KEYS, or MAGNIFIC_API_KEY.")
+    return cleaned
+
+
+def magnific_auth_by_label(label: str | None) -> dict | None:
+    if not label:
+        return None
+    for auth in magnific_auths():
+        if auth.get("label") == label:
+            return auth
+    return None
+
+
+def is_magnific_quota_error(error: Exception) -> bool:
+    if not isinstance(error, MagnificApiError):
+        return False
+    text = json.dumps(error.data, ensure_ascii=False).lower()
+    return error.status_code == 429 or "limit" in text or "quota" in text or "free trial" in text
+
+
+def magnific_post(payload: dict, auth: dict | None = None) -> dict:
+    auth = auth or magnific_auths()[0]
+    api_key = auth["api_key"]
     max_retries = int(os.environ.get("MAGNIFIC_MAX_RETRIES", "5"))
     retry_delay = int(os.environ.get("MAGNIFIC_RETRY_DELAY_SECONDS", "30"))
     last_detail = None
@@ -805,8 +883,33 @@ def magnific_post(payload: dict) -> dict:
         if attempt < max_retries and retryable_magnific_error(r.status_code, text):
             time.sleep(retry_delay)
             continue
-        raise RuntimeError(last_detail)
-    raise RuntimeError(last_detail or "Magnific function failed")
+        raise MagnificApiError(r.status_code, data, last_detail)
+    raise MagnificApiError(None, {}, last_detail or "Magnific function failed")
+
+
+def magnific_generate_with_rotation(payload: dict, preferred_label: str | None = None) -> tuple[dict, dict]:
+    auths = magnific_auths()
+    if preferred_label:
+        preferred = magnific_auth_by_label(preferred_label)
+        if not preferred:
+            raise RuntimeError(f"Configured Magnific auth not found for label: {preferred_label}")
+        auths = [preferred]
+
+    quota_errors = []
+    for auth in auths:
+        try:
+            return magnific_post(payload, auth=auth), auth
+        except Exception as e:
+            if is_magnific_quota_error(e):
+                quota_errors.append({"label": auth.get("label"), "error": str(e)})
+                continue
+            raise
+    raise RuntimeError(json.dumps({
+        "ok": False,
+        "code": "MAGNIFIC_QUOTA_EXHAUSTED",
+        "message": "All configured Magnific API keys are quota-limited.",
+        "auths": quota_errors,
+    }, ensure_ascii=False))
 
 
 def max_magnific_wait_seconds() -> int:
@@ -1217,15 +1320,17 @@ def complete(job_id: str, generated_reference_path: str, provider: str | None = 
 
         if provider_name == "magnific":
             task_id = row.get("magnific_task_id")
+            selected_auth = magnific_auth_by_label(row.get("provider_auth_label")) or magnific_auths()[0]
             if not task_id:
-                gen = magnific_post({
+                gen, selected_auth = magnific_generate_with_rotation({
                     "action": "generate",
                     "image_url": row["input_image_url"],
                     "video_url": row["motion_supabase_video_url"],
                     "character_orientation": "video",
                     "cfg_scale": 0.5,
                     "prompt": DEFAULT_PROMPT,
-                })
+                }, preferred_label=row.get("provider_auth_label") or None)
+                row["provider_auth_label"] = selected_auth.get("label", "")
                 task_id = (gen.get("data") or {}).get("task_id")
                 row["magnific_task_id"] = task_id or ""
                 row["provider_job_id"] = task_id or ""
@@ -1243,7 +1348,7 @@ def complete(job_id: str, generated_reference_path: str, provider: str | None = 
                 check_magnific_timeout(magnific_started_at, task_id)
                 time.sleep(min(120, max(1, max_magnific_wait_seconds() - int(time.time() - magnific_started_at))))
                 check_magnific_timeout(magnific_started_at, task_id)
-                status = magnific_post({"action": "status", "task_id": task_id})
+                status = magnific_post({"action": "status", "task_id": task_id}, auth=selected_auth)
                 d = status.get("data") or status
                 state_value = d.get("status")
                 row["provider_status"] = state_value or ""
