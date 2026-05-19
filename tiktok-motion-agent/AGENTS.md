@@ -31,6 +31,7 @@ When Naufal says **go**, run the automation with minimal chat.
 
 - Product video and motion video must be different.
 - Use product URL's first PDP image as outfit reference.
-- Store links/status in Sheet; do not send final video unless asked.
-- Keep replies short: start, done, or fail only.
+- Store links/status in Sheet.
+- On successful completion, reply with `done` plus the final `result_link` from the `complete` command output. Do not reply with only `done`.
+- Keep replies short: start, `done <result_link>`, or fail only.
 - Never expose secrets.
