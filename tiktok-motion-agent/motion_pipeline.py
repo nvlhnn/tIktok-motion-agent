@@ -68,8 +68,6 @@ COLUMNS = [
     "provider",
     "provider_auth_label",
     "provider_task_id",
-    "provider_work_id",
-    "provider_status",
     "provider_result_url",
     "delete_after",
     "error",
@@ -164,11 +162,11 @@ def get_sheet():
 def ensure_sheet_header(ws):
     existing = ws.row_values(1)
     if existing != COLUMNS:
-        # Clear stale headers to the right when the schema shrinks/renames columns.
-        clear_width = max(len(existing), len(COLUMNS), 26)
-        values = COLUMNS + [""] * (clear_width - len(COLUMNS))
-        end_col = chr(ord("A") + clear_width - 1) if clear_width <= 26 else "Z"
-        ws.update(f"A1:{end_col}1", [values[:clear_width]])
+        end_col = chr(ord("A") + len(COLUMNS) - 1)
+        ws.update(f"A1:{end_col}1", [COLUMNS])
+        if len(COLUMNS) < 26:
+            clear_start = chr(ord("A") + len(COLUMNS))
+            ws.batch_clear([f"{clear_start}1:Z1"])
     sync_sheet_table_columns(ws)
     ensure_sheet_status_controls(ws)
 
