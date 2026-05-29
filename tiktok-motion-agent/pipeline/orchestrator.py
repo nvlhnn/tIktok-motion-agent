@@ -23,7 +23,7 @@ from .tiktok import (
 )
 from .downloads import download_product_image, download_url, download_tiktok_video
 from .validation import validate_generated_reference_image
-from .supabase import supabase_upload, supabase_rm_prefix
+from .supabase import supabase_upload, supabase_rm_prefix, supabase_rm_object
 from .providers import selected_video_provider
 from .providers.magnific import (
     magnific_auths, magnific_auth_by_label,
@@ -118,6 +118,43 @@ def cleanup_old(dry_run: bool = False):
     return {"removed_local": removed_local, "removed_supabase": removed_supabase}
 
 
+def cleanup_supabase_generation_sources(job_id: str, info: dict, row: dict) -> list[dict]:
+    """Delete source-only Supabase objects after the final video is saved.
+
+    Keep the final result video. Remove only the product reference image and
+    motion source video used as provider inputs, per Naufal's preference.
+    """
+    object_paths = []
+    for key in ["supabase_product_image_object", "motion_supabase_video_object"]:
+        value = (info.get(key) or "").strip()
+        if value:
+            object_paths.append(value)
+
+    # Backward-compatible inference for prepared jobs created before explicit
+    # object-path tracking was added.
+    if not any("/motion_source_" in p for p in object_paths):
+        motion_video_id = info.get("motion_video_id") or info.get("video_id")
+        if motion_video_id:
+            object_paths.append(f"magnific/automation/{job_id}/motion_source_{motion_video_id}.mp4")
+    if not any("/product_reference" in p for p in object_paths):
+        product_image_path = info.get("product_image_path") or ""
+        suffix = Path(product_image_path).suffix.lower() if product_image_path else ""
+        if suffix:
+            object_paths.append(f"magnific/automation/{job_id}/product_reference{suffix}")
+
+    deleted = []
+    for object_path in dict.fromkeys(object_paths):
+        try:
+            deleted.append(supabase_rm_object(object_path))
+        except Exception as e:
+            deleted.append({"object_path": object_path, "error": str(e)[:500]})
+
+    if deleted:
+        row["action_needed"] = "Deleted Supabase product reference and motion source after result generation"
+        row["motion_supabase_video_url"] = ""
+    return deleted
+
+
 def create_job_context(image_path: str | None = None):
     src_image = Path(image_path or require_env("MASTER_IMAGE_PATH")).expanduser().resolve()
     if not src_image.exists():
@@ -194,7 +231,9 @@ def prepare(image_path: str | None = None):
             "job_dir": str(job_dir),
             "master_path": str(src_image),
             "product_image_path": str(product_image_path),
+            "supabase_product_image_object": product_image_obj,
             "supabase_product_image_url": supabase_product_image_url,
+            "motion_supabase_video_object": motion_video_obj,
             "motion_local_video_path": str(motion_local_video),
             "modest_tryon_prompt": MODEST_TRYON_PROMPT,
             "modest_tryon_prompt_path": str(prompt_path),
@@ -382,6 +421,7 @@ def complete(job_id: str, generated_reference_path: str, provider: str | None = 
             if used_id:
                 recent.append(used_id)
         state["recent_video_ids"] = recent[-100:]
+        source_cleanup = cleanup_supabase_generation_sources(job_id, info, row)
         prepared.pop(job_id, None)
         state_save(state)
         log_row(row)
@@ -391,6 +431,7 @@ def complete(job_id: str, generated_reference_path: str, provider: str | None = 
             "provider": row.get("provider", ""),
             "result_link": row.get("result_supabase_url", ""),
             "caption": row.get("caption") or build_tiktok_caption(row.get("product_title", "")),
+            "source_cleanup": source_cleanup,
         }, indent=2, ensure_ascii=False))
         return 0
     except TimeoutError as e:

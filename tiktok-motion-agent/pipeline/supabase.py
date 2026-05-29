@@ -68,3 +68,29 @@ def supabase_rm_prefix(prefix: str, dry_run: bool = False):
         "npx", "supabase", "--experimental", "storage", "rm", "-r", target, "--linked",
     ], cwd="/root/.openclaw/workspace", env=env, check=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
     return {"target": target, "dry_run": False}
+
+
+def supabase_rm_object(object_path: str, dry_run: bool = False):
+    """Delete one Supabase Storage object from the configured public bucket."""
+    bucket = require_env("SUPABASE_PUBLIC_BUCKET")
+    token = require_env("SUPABASE_ACCESS_TOKEN")
+    object_path = object_path.strip("/")
+    if not object_path:
+        raise RuntimeError("Refusing to delete empty Supabase object path")
+    if not object_path.startswith("magnific/automation/"):
+        raise RuntimeError(f"Refusing to delete non-automation Supabase object: {object_path}")
+    target = f"ss:///{bucket}/{object_path}"
+    if dry_run:
+        return {"target": target, "dry_run": True}
+    env = os.environ.copy()
+    env["SUPABASE_ACCESS_TOKEN"] = token
+    try:
+        subprocess.run([
+            "npx", "supabase", "--experimental", "storage", "rm", target, "--linked",
+        ], cwd="/root/.openclaw/workspace", env=env, check=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+    except subprocess.CalledProcessError as e:
+        output = e.stdout or ""
+        if any(s in output.lower() for s in ["not found", "no such", "404"]):
+            return {"target": target, "dry_run": False, "already_missing": True}
+        raise RuntimeError(f"Supabase delete failed for {target}: {output.strip() or e}") from e
+    return {"target": target, "dry_run": False}
