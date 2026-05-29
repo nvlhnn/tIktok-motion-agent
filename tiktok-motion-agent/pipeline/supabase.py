@@ -65,7 +65,7 @@ def supabase_rm_prefix(prefix: str, dry_run: bool = False):
     env = os.environ.copy()
     env["SUPABASE_ACCESS_TOKEN"] = token
     subprocess.run([
-        "npx", "supabase", "--experimental", "storage", "rm", "-r", target, "--linked",
+        "npx", "supabase", "--experimental", "storage", "rm", "-r", target, "--linked", "--yes",
     ], cwd="/root/.openclaw/workspace", env=env, check=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
     return {"target": target, "dry_run": False}
 
@@ -86,7 +86,7 @@ def supabase_rm_object(object_path: str, dry_run: bool = False):
     env["SUPABASE_ACCESS_TOKEN"] = token
     try:
         subprocess.run([
-            "npx", "supabase", "--experimental", "storage", "rm", target, "--linked",
+            "npx", "supabase", "--experimental", "storage", "rm", target, "--linked", "--yes",
         ], cwd="/root/.openclaw/workspace", env=env, check=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
     except subprocess.CalledProcessError as e:
         output = e.stdout or ""
