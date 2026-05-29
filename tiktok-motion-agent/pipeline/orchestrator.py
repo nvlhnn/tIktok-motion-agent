@@ -92,20 +92,31 @@ def cleanup_old(dry_run: bool = False):
 
     # Remote Supabase cleanup. Jobs are recorded with a precise prefix like
     # magnific/automation/<job_id>/ so we only delete automation-owned assets.
+    # Only delete full Supabase job folders after the TikTok upload is complete;
+    # READY_TO_UPLOAD / REJECTED / READY_TO_AFFILIATE rows may still need the
+    # generated reference or final result for review/debug/manual action.
     state = state_load()
     jobs = state.get("jobs", [])
+    rows_by_job_id = {}
+    try:
+        from .storage import load_run_rows
+        rows_by_job_id = {r.get("job_id"): r for r in load_run_rows(prefer_sheet=False) if r.get("job_id")}
+    except Exception as e:
+        print(f"cleanup row-status lookup skipped: {e}", file=sys.stderr)
     kept_jobs = []
     now = now_utc()
     for job in jobs:
+        job_id = job.get("job_id") or ""
         delete_after = job.get("delete_after")
         prefix = job.get("supabase_prefix")
+        row_status = (rows_by_job_id.get(job_id, {}).get("status") or job.get("status") or "").strip().upper()
         expired = False
         if delete_after:
             try:
                 expired = dt.datetime.fromisoformat(delete_after).astimezone(dt.timezone.utc) <= now
             except Exception:
                 expired = False
-        if expired and prefix:
+        if expired and prefix and row_status == "UPLOADED":
             removed_supabase.append(supabase_rm_prefix(prefix, dry_run=dry_run))
             if dry_run:
                 kept_jobs.append(job)
