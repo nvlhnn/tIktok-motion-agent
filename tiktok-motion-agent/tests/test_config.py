@@ -56,6 +56,7 @@ def test_columns_has_required_fields():
     assert "status" in COLUMNS
     assert "created_at" in COLUMNS
     assert "caption" in COLUMNS
+    assert "input_image_validation" in COLUMNS
 
 
 def test_status_values_consistency():

@@ -71,6 +71,7 @@ COLUMNS = [
     "product_match_reason",
     "product_match_checked_at",
     "action_needed",
+    "input_image_validation",
 ]
 
 STATUS_VALUES = [
