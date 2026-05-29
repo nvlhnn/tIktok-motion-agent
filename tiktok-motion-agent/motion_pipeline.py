@@ -13,8 +13,10 @@ import sys
 import time
 import urllib.parse
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 import requests
+from PIL import Image, ImageStat
 
 try:
     import gspread
@@ -65,6 +67,7 @@ COLUMNS = [
     "motion_tiktok_video_url",
     "motion_supabase_video_url",
     "result_supabase_url",
+    "caption",
     "provider",
     "provider_auth_label",
     "provider_task_id",
@@ -72,6 +75,24 @@ COLUMNS = [
     "delete_after",
     "error",
     "uploaded_at",
+    "scheduled_at",
+    "buffer_post_id",
+    "buffer_status",
+    "buffer_error",
+    "external_link",
+    "buffer_channel_id",
+    "uploaded_via",
+    "upload_attempts",
+    "tiktok_views",
+    "tiktok_likes",
+    "tiktok_comments",
+    "tiktok_shares",
+    "stats_checked_at",
+    "product_match_status",
+    "product_match_score",
+    "product_match_reason",
+    "product_match_checked_at",
+    "action_needed",
 ]
 
 STATUS_VALUES = [
@@ -82,14 +103,18 @@ STATUS_VALUES = [
     "PROCESSING",
     "COMPLETED",
     "READY_TO_UPLOAD",
+    "UPLOADING",
+    "REJECTED",
     "UPLOADED",
+    "UPLOAD_FAILED",
+    "READY_TO_AFFILIATE",
     "AFFILIATED",
     "FAILED",
     "TIMEOUT",
 ]
 
 
-TERMINAL_STATUSES = {"COMPLETED", "READY_TO_UPLOAD", "UPLOADED", "AFFILIATED", "FAILED", "TIMEOUT"}
+TERMINAL_STATUSES = {"COMPLETED", "READY_TO_UPLOAD", "REJECTED", "UPLOADED", "UPLOAD_FAILED", "READY_TO_AFFILIATE", "AFFILIATED", "FAILED", "TIMEOUT"}
 ACTIVE_STATUSES = {"QUEUED", "SUBMITTED", "PROCESSING"}
 
 STATUS_COLORS = {
@@ -101,7 +126,11 @@ STATUS_COLORS = {
     "PROCESSING": {"backgroundColor": {"red": 0.65, "green": 0.92, "blue": 1.00}},       # cyan
     "COMPLETED": {"backgroundColor": {"red": 0.70, "green": 0.92, "blue": 0.70}},        # green
     "READY_TO_UPLOAD": {"backgroundColor": {"red": 0.58, "green": 1.00, "blue": 0.78}},  # mint
+    "UPLOADING": {"backgroundColor": {"red": 0.65, "green": 0.92, "blue": 1.00}},        # cyan
+    "REJECTED": {"backgroundColor": {"red": 1.00, "green": 0.60, "blue": 0.60}},         # red
     "UPLOADED": {"backgroundColor": {"red": 0.55, "green": 0.78, "blue": 1.00}},         # stronger blue
+    "UPLOAD_FAILED": {"backgroundColor": {"red": 1.00, "green": 0.62, "blue": 0.62}},    # red
+    "READY_TO_AFFILIATE": {"backgroundColor": {"red": 1.00, "green": 0.86, "blue": 0.45}}, # gold
     "AFFILIATED": {"backgroundColor": {"red": 0.84, "green": 0.67, "blue": 1.00}},       # purple
     "FAILED": {"backgroundColor": {"red": 1.00, "green": 0.62, "blue": 0.62}},           # red
     "TIMEOUT": {"backgroundColor": {"red": 1.00, "green": 0.73, "blue": 0.45}},          # orange
@@ -125,6 +154,27 @@ def now_utc():
 
 def iso(ts: dt.datetime):
     return ts.replace(microsecond=0).isoformat()
+
+
+ID_MONTHS = [
+    "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+    "Juli", "Agustus", "September", "Oktober", "November", "Desember",
+]
+
+
+def indonesia_pretty_datetime(ts: dt.datetime):
+    local = ts.astimezone(ZoneInfo("Asia/Jakarta"))
+    return f"{local.day} {ID_MONTHS[local.month - 1]} {local.year} {local:%H:%M} WIB"
+
+
+def sheet_col(index: int) -> str:
+    """Return a Google Sheets column label for a zero-based column index."""
+    index += 1
+    label = ""
+    while index:
+        index, rem = divmod(index - 1, 26)
+        label = chr(ord("A") + rem) + label
+    return label
 
 
 def safe_name(s: str):
@@ -159,16 +209,18 @@ def get_sheet():
     return gc.open_by_key(spreadsheet_id).sheet1
 
 
-def ensure_sheet_header(ws):
+def ensure_sheet_header(ws, apply_controls: bool = False):
     existing = ws.row_values(1)
-    if existing != COLUMNS:
-        end_col = chr(ord("A") + len(COLUMNS) - 1)
+    changed = existing != COLUMNS
+    if changed:
+        end_col = sheet_col(len(COLUMNS) - 1)
         ws.update(f"A1:{end_col}1", [COLUMNS])
         if len(COLUMNS) < 26:
-            clear_start = chr(ord("A") + len(COLUMNS))
+            clear_start = sheet_col(len(COLUMNS))
             ws.batch_clear([f"{clear_start}1:Z1"])
-    sync_sheet_table_columns(ws)
-    ensure_sheet_status_controls(ws)
+    if changed or apply_controls:
+        sync_sheet_table_columns(ws)
+        ensure_sheet_status_controls(ws)
 
 
 def sync_sheet_table_columns(ws):
@@ -235,7 +287,7 @@ def ensure_sheet_status_controls(ws):
     """
     from gspread.utils import ValidationConditionType
 
-    status_col = chr(ord("A") + COLUMNS.index("status"))
+    status_col = sheet_col(COLUMNS.index("status"))
     status_range = f"{status_col}2:{status_col}1000"
     try:
         ws.add_validation(
@@ -298,7 +350,7 @@ def apply_status_conditional_colors(ws):
 
 
 def apply_status_colors(ws):
-    status_col = chr(ord("A") + COLUMNS.index("status"))
+    status_col = sheet_col(COLUMNS.index("status"))
     values = ws.col_values(COLUMNS.index("status") + 1)
     formats = []
     for row_index, status in enumerate(values[1:], start=2):
@@ -423,10 +475,205 @@ def normalize_provider_fields(row: dict):
 
 def normalize_row(row: dict):
     row = normalize_provider_fields(row)
+    if row.get("product_title") and not row.get("caption"):
+        row = dict(row)
+        row["caption"] = build_tiktok_caption(row.get("product_title", ""))
     if row.get("status") == "UPLOADED" and not row.get("uploaded_at"):
         row = dict(row)
         row["uploaded_at"] = iso(now_utc())
     return row
+
+
+CAPTION_STOPWORDS = {
+    "ready", "stock", "import", "murah", "premium", "terbaru", "kekinian", "style", "gaya",
+    "wanita", "cewek", "perempuan", "baju", "atasan", "outfit", "fashion", "casual", "korea", "korean",
+    "by", "dan", "dengan", "untuk", "ukuran", "motif", "variasi", "model", "the", "a", "an",
+}
+
+
+CAPTION_TAG_MAP = {
+    "kemeja": ["#kemejawanita", "#atasanwanita", "#fashionwanita"],
+    "blouse": ["#blousewanita", "#atasanwanita", "#outfitinspiration"],
+    "blus": ["#blousewanita", "#atasanwanita", "#fashionwanita"],
+    "sweater": ["#sweaterwanita", "#atasanwanita", "#outfitkekinian"],
+    "rajut": ["#sweaterwanita", "#atasanwanita", "#ootd"],
+    "knit": ["#sweaterwanita", "#atasanwanita", "#outfitinspiration"],
+    "cardigan": ["#cardiganwanita", "#atasanwanita", "#outfitkekinian"],
+    "kardigan": ["#cardiganwanita", "#atasanwanita", "#outfitkekinian"],
+    "outer": ["#outerwanita", "#atasanwanita", "#ootd"],
+    "vest": ["#vestwanita", "#atasanwanita", "#outfitinspiration"],
+    "rompi": ["#rompiwanita", "#atasanwanita", "#ootd"],
+    "kaos": ["#atasanwanita", "#fashionwanita", "#ootd"],
+    "denim": ["#kemejawanita", "#atasanwanita", "#ootd"],
+    "jeans": ["#kemejawanita", "#atasanwanita", "#ootd"],
+    "crop": ["#atasanwanita", "#outfitkekinian"],
+    "babydoll": ["#blousewanita", "#atasanwanita", "#ootd"],
+    "bordir": ["#blousewanita", "#kemejawanita", "#atasanwanita"],
+    "pita": ["#blousewanita", "#atasanwanita", "#outfitinspiration"],
+    "ribbon": ["#blousewanita", "#atasanwanita", "#outfitinspiration"],
+    "peplum": ["#blousewanita", "#atasanwanita", "#outfitkekinian"],
+    "coquette": ["#blousewanita", "#atasanwanita", "#outfitinspiration"],
+}
+
+CAPTION_BASE_TAGS = [
+    "#atasanwanita",
+    "#blouse",
+    "#kemejawanita",
+    "#blousewanita",
+    "#outfitinspiration",
+    "#fashionwanita",
+    "#outfitkekinian",
+    "#ootd",
+]
+
+
+def clean_product_title(title: str) -> str:
+    title = re.sub(r"\[[^\]]+\]", " ", title or "")
+    title = re.sub(r"\([^)]*\)", " ", title)
+    title = re.sub(r"[^\w\s\-/&]", " ", title, flags=re.UNICODE)
+    title = re.sub(r"\s+", " ", title).strip()
+    return title
+
+
+def caption_keywords(title: str, limit: int = 2) -> list[str]:
+    title = clean_product_title(title)
+    words = re.findall(r"[A-Za-zÀ-ÿ0-9]+", title.lower())
+    picked = []
+    for word in words:
+        if len(word) < 4 or word in CAPTION_STOPWORDS or word == "ini":
+            continue
+        if word not in picked:
+            picked.append(word)
+        if len(picked) >= limit:
+            break
+    return picked
+
+
+def caption_tags(title: str) -> list[str]:
+    lower = clean_product_title(title).lower()
+    tags = []
+    for key, mapped in CAPTION_TAG_MAP.items():
+        if key in lower:
+            tags.extend(mapped)
+    # Competitor pattern: repetitive, broad modest-fashion discovery tags beat clever/random tags.
+    tags.extend(CAPTION_BASE_TAGS)
+    deduped = []
+    for tag in tags:
+        if tag not in deduped:
+            deduped.append(tag)
+    return deduped[:6]
+
+
+def build_tiktok_caption(product_title: str) -> str:
+    title = clean_product_title(product_title)
+    lower = title.lower()
+    kws = caption_keywords(title)
+    if "bordir" in lower:
+        text = "bordirnya manis bgt"
+    elif "denim" in lower or "jeans" in lower:
+        text = "denim gini cakep"
+    elif "rajut" in lower or "knit" in lower:
+        text = "rajutnya cakep bgt"
+    elif "pita" in lower or "ribbon" in lower:
+        text = "pitanya gemes bgt"
+    elif "outer" in lower or "cardigan" in lower or "kardigan" in lower:
+        text = "outer kepake terus"
+    elif "kemeja" in lower:
+        text = "kemejanya clean bgt"
+    elif "blouse" in lower or "blus" in lower:
+        text = "blouse simple cakep"
+    elif kws:
+        text = " ".join(kws[:2] + ["cakep"])
+    else:
+        text = "simple tapi cakep"
+    return f"{text.lower()} {' '.join(caption_tags(title))}".strip()
+
+
+def caption_for_job(job_id: str | None = None, title: str | None = None) -> dict:
+    if title:
+        return {"product_title": title, "caption": build_tiktok_caption(title)}
+    if not job_id:
+        raise RuntimeError("caption needs either job_id or --title")
+    state = state_load()
+    row = None
+    if job_id in (state.get("prepared_jobs") or {}):
+        row = (state["prepared_jobs"][job_id] or {}).get("row")
+    if row is None and RUNS_CSV.exists():
+        with RUNS_CSV.open("r", newline="") as f:
+            for existing in csv.DictReader(f):
+                if existing.get("job_id") == job_id:
+                    row = existing
+    if not row:
+        raise RuntimeError(f"Job not found: {job_id}")
+    caption = build_tiktok_caption(row.get("product_title", ""))
+    row = dict(row)
+    row["caption"] = caption
+    upsert_local_csv(row)
+    try:
+        upsert_sheet(row)
+    except Exception as e:
+        print(f"sheet caption update skipped: {e}", file=sys.stderr)
+    return {"job_id": job_id, "product_title": row.get("product_title", ""), "caption": caption}
+
+
+def set_caption_for_job(job_id: str, caption: str) -> dict:
+    caption = (caption or "").strip()
+    if not caption:
+        raise RuntimeError("Caption cannot be empty")
+    state = state_load()
+    row = None
+    if job_id in (state.get("prepared_jobs") or {}):
+        info = state["prepared_jobs"][job_id]
+        row = dict((info or {}).get("row") or {})
+        row["caption"] = caption
+        info["row"] = row
+        state["prepared_jobs"][job_id] = info
+        state_save(state)
+    if row is None and RUNS_CSV.exists():
+        with RUNS_CSV.open("r", newline="") as f:
+            for existing in csv.DictReader(f):
+                if existing.get("job_id") == job_id:
+                    row = dict(existing)
+                    row["caption"] = caption
+                    break
+    if row is None:
+        raise RuntimeError(f"Job not found: {job_id}")
+    upsert_local_csv(row)
+    try:
+        upsert_sheet(row)
+    except Exception as e:
+        print(f"sheet caption update skipped: {e}", file=sys.stderr)
+    return {"job_id": job_id, "product_title": row.get("product_title", ""), "caption": caption}
+
+
+def set_status_for_job(job_id: str, status: str, note: str = "") -> dict:
+    status = (status or "").strip().upper()
+    if status not in STATUS_VALUES:
+        raise RuntimeError(f"Invalid status {status!r}; allowed={STATUS_VALUES}")
+    state = state_load()
+    row = None
+    if job_id in (state.get("prepared_jobs") or {}):
+        info = state["prepared_jobs"][job_id]
+        row = dict((info or {}).get("row") or {})
+        row["status"] = status
+        if note:
+            row["error"] = note
+        info["row"] = row
+        state["prepared_jobs"][job_id] = info
+        state_save(state)
+    if row is None and RUNS_CSV.exists():
+        with RUNS_CSV.open("r", newline="") as f:
+            for existing in csv.DictReader(f):
+                if existing.get("job_id") == job_id:
+                    row = dict(existing)
+                    row["status"] = status
+                    if note:
+                        row["error"] = note
+                    break
+    if row is None:
+        raise RuntimeError(f"Job not found: {job_id}")
+    log_row(row)
+    return {"job_id": job_id, "status": status, "note": note, "result_link": row.get("result_supabase_url", ""), "caption": row.get("caption", "")}
 
 
 def append_sheet(row: dict):
@@ -485,7 +732,7 @@ def upsert_sheet(row: dict):
                 row_index = idx
                 break
     if row_index:
-        end_col = chr(ord("A") + len(COLUMNS) - 1)
+        end_col = sheet_col(len(COLUMNS) - 1)
         ws.update(f"A{row_index}:{end_col}{row_index}", [values])
     else:
         ws.append_row(values, value_input_option="RAW")
@@ -493,7 +740,7 @@ def upsert_sheet(row: dict):
     status = row.get("status")
     fmt = STATUS_COLORS.get(status)
     if fmt and row_index:
-        status_col = chr(ord("A") + COLUMNS.index("status"))
+        status_col = sheet_col(COLUMNS.index("status"))
         ws.format(f"{status_col}{row_index}", fmt)
 
 
@@ -505,11 +752,484 @@ def log_row(row: dict):
         print(f"sheet log skipped: {e}", file=sys.stderr)
 
 
-def yt_dlp_entries(limit=150):
-    cache_seconds = int(os.environ.get("TIKTOK_LIST_CACHE_SECONDS", "21600"))
-    if TIKTOK_LIST_CACHE_PATH.exists():
+def load_run_rows(prefer_sheet: bool = True) -> list[dict]:
+    if prefer_sheet:
         try:
-            cached = json.loads(TIKTOK_LIST_CACHE_PATH.read_text())
+            ws = get_sheet()
+            ensure_sheet_header(ws)
+            rows = ws.get_all_records(default_blank="")
+            return [normalize_row(dict(r)) for r in rows if dict(r).get("job_id")]
+        except Exception as e:
+            print(f"sheet read skipped, falling back to local csv: {e}", file=sys.stderr)
+    if not RUNS_CSV.exists():
+        return []
+    with RUNS_CSV.open("r", newline="") as f:
+        return [normalize_row(dict(r)) for r in csv.DictReader(f) if r.get("job_id")]
+
+
+def int_env(name: str, default: int) -> int:
+    raw = os.environ.get(name, "").strip()
+    if not raw:
+        return default
+    try:
+        return int(raw)
+    except ValueError:
+        raise RuntimeError(f"Invalid integer env {name}={raw!r}")
+
+
+def truthy_env(name: str, default: bool = False) -> bool:
+    raw = os.environ.get(name)
+    if raw is None:
+        return default
+    return raw.strip().lower() in {"1", "true", "yes", "y", "on"}
+
+
+def upload_slots() -> list[str]:
+    raw = os.environ.get("TIKTOK_UPLOAD_SLOTS", "08:00,12:30,16:30,20:30")
+    return [s.strip() for s in re.split(r"[,\n]", raw) if s.strip()]
+
+
+def upload_windows() -> list[str]:
+    """Optional randomized upload windows, e.g. 07:45-09:15,11:30-13:00."""
+    raw = os.environ.get("TIKTOK_UPLOAD_WINDOWS", "")
+    return [s.strip() for s in re.split(r"[,\n]", raw) if s.strip()]
+
+
+def parse_hhmm(value: str) -> tuple[int, int]:
+    try:
+        hour, minute = [int(x) for x in value.split(":", 1)]
+    except Exception:
+        raise RuntimeError(f"Invalid time {value!r}; expected HH:MM")
+    if not (0 <= hour <= 23 and 0 <= minute <= 59):
+        raise RuntimeError(f"Invalid time {value!r}; expected HH:MM")
+    return hour, minute
+
+
+def randomized_upload_window(now: dt.datetime | None = None) -> dict | None:
+    """Return today's active randomized window, if any.
+
+    The trigger minute is deterministic for a given local date + window + salt so
+    repeated cron checks during the day agree on the same random-looking time.
+    """
+    windows = upload_windows()
+    if not windows:
+        return None
+    tz = ZoneInfo(os.environ.get("TIKTOK_UPLOAD_TIMEZONE", "Asia/Jakarta"))
+    now = (now or now_utc()).astimezone(tz)
+    trigger_window = int_env("TIKTOK_UPLOAD_TRIGGER_WINDOW_MINUTES", 10)
+    salt = os.environ.get("TIKTOK_UPLOAD_RANDOM_SALT") or buffer_channel_id(test=False)
+    today = now.strftime("%Y-%m-%d")
+    for window in windows:
+        if "-" not in window:
+            raise RuntimeError(f"Invalid upload window {window!r}; expected HH:MM-HH:MM")
+        start_raw, end_raw = [x.strip() for x in window.split("-", 1)]
+        sh, sm = parse_hhmm(start_raw)
+        eh, em = parse_hhmm(end_raw)
+        start = now.replace(hour=sh, minute=sm, second=0, microsecond=0)
+        end = now.replace(hour=eh, minute=em, second=0, microsecond=0)
+        if end <= start:
+            raise RuntimeError(f"Invalid upload window {window!r}; end must be after start on same day")
+        span_minutes = max(0, int((end - start).total_seconds() // 60))
+        seed = f"{today}|{window}|{salt}"
+        offset = random.Random(seed).randint(0, span_minutes)
+        trigger = start + dt.timedelta(minutes=offset)
+        active_until = trigger + dt.timedelta(minutes=trigger_window)
+        if trigger <= now < active_until:
+            return {
+                "key": f"{today}:{window}",
+                "range": window,
+                "trigger_time": trigger.strftime("%Y-%m-%d %H:%M %Z"),
+                "active_until": active_until.strftime("%Y-%m-%d %H:%M %Z"),
+            }
+    return None
+
+
+def in_upload_slot(now: dt.datetime | None = None, window_minutes: int | None = None) -> bool:
+    if upload_windows():
+        return randomized_upload_window(now) is not None
+    tz = ZoneInfo(os.environ.get("TIKTOK_UPLOAD_TIMEZONE", "Asia/Jakarta"))
+    now = (now or now_utc()).astimezone(tz)
+    window = window_minutes if window_minutes is not None else int_env("TIKTOK_UPLOAD_SLOT_WINDOW_MINUTES", 20)
+    for slot in upload_slots():
+        try:
+            hour, minute = parse_hhmm(slot)
+        except Exception:
+            raise RuntimeError(f"Invalid upload slot {slot!r}; expected HH:MM")
+        slot_time = now.replace(hour=hour, minute=minute, second=0, microsecond=0)
+        if 0 <= (now - slot_time).total_seconds() <= window * 60:
+            return True
+    return False
+
+
+def upload_candidates(rows: list[dict]) -> list[dict]:
+    required_status = os.environ.get("TIKTOK_UPLOAD_REQUIRED_STATUS", "READY_TO_UPLOAD").strip().upper()
+    candidates = []
+    for row in rows:
+        if (row.get("status") or "").strip().upper() != required_status:
+            continue
+        if not (row.get("result_supabase_url") or "").strip():
+            continue
+        if not (row.get("caption") or "").strip():
+            continue
+        if (row.get("uploaded_at") or "").strip():
+            continue
+        candidates.append(row)
+    return candidates
+
+
+def validate_public_video_url(url: str):
+    try:
+        r = requests.head(url, allow_redirects=True, timeout=20)
+        if r.status_code >= 400 or not r.headers.get("content-type"):
+            r = requests.get(url, stream=True, allow_redirects=True, timeout=20)
+        if r.status_code >= 400:
+            raise RuntimeError(f"video url returned HTTP {r.status_code}")
+        ctype = (r.headers.get("content-type") or "").lower()
+        if ctype and "video" not in ctype and "octet-stream" not in ctype:
+            print(f"warning: video url content-type is {ctype!r}", file=sys.stderr)
+    except Exception as e:
+        raise RuntimeError(f"Could not validate video URL: {e}")
+
+
+def buffer_channel_id(test: bool = False) -> str:
+    if test:
+        return require_env("BUFFER_TEST_CHANNEL_ID")
+    return os.environ.get("BUFFER_DEFAULT_CHANNEL_ID") or "6a0c2d3d090476fb9936d831"
+
+
+def buffer_graphql(query: str, variables: dict | None = None, timeout: int = 90) -> dict:
+    api_key = require_env("BUFFER_API_KEY")
+    resp = requests.post(
+        "https://api.buffer.com",
+        headers={
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+            "User-Agent": "tiktok-motion-agent-upload-scheduler",
+        },
+        json={"query": query, "variables": variables or {}},
+        timeout=timeout,
+    )
+    try:
+        payload = resp.json()
+    except Exception:
+        payload = {"raw": resp.text[:2000]}
+    if resp.status_code >= 400:
+        raise RuntimeError(f"Buffer HTTP {resp.status_code}: {json.dumps(payload, ensure_ascii=False)[:1000]}")
+    if payload.get("errors"):
+        raise RuntimeError(f"Buffer GraphQL error: {json.dumps(payload['errors'], ensure_ascii=False)[:1000]}")
+    return payload
+
+
+def buffer_create_video_post(channel_id: str, video_url: str, caption: str) -> dict:
+    query = """
+mutation CreatePost {
+  createPost(input: {
+    text: %s
+    channelId: %s
+    schedulingType: automatic
+    mode: shareNow
+    assets: [{ video: { url: %s } }]
+  }) {
+    ... on PostActionSuccess {
+      post { id text status dueAt sentAt externalLink assets { id source mimeType } }
+    }
+    ... on MutationError { message }
+  }
+}
+""" % (json.dumps(caption), json.dumps(channel_id), json.dumps(video_url))
+    payload = buffer_graphql(query)
+    result = ((payload.get("data") or {}).get("createPost") or {})
+    if result.get("message"):
+        raise RuntimeError(result["message"])
+    post = result.get("post")
+    if not post:
+        raise RuntimeError(f"Unexpected Buffer response: {json.dumps(payload, ensure_ascii=False)[:1000]}")
+    return post
+
+
+def buffer_get_post(post_id: str) -> dict:
+    query = """
+query GetPost($id: PostId!) {
+  post(input: {id: $id}) {
+    id status createdAt updatedAt dueAt sentAt text externalLink channelId channelService
+    assets { id source mimeType }
+  }
+}
+"""
+    payload = buffer_graphql(query, {"id": post_id}, timeout=45)
+    post = ((payload.get("data") or {}).get("post") or {})
+    if not post:
+        raise RuntimeError(f"Unexpected Buffer post response: {json.dumps(payload, ensure_ascii=False)[:1000]}")
+    return post
+
+
+def buffer_wait_until_posted(post_id: str, timeout_seconds: int | None = None, interval_seconds: int | None = None) -> dict:
+    timeout_seconds = timeout_seconds if timeout_seconds is not None else int_env("BUFFER_POST_WAIT_TIMEOUT_SECONDS", 600)
+    interval_seconds = interval_seconds if interval_seconds is not None else int_env("BUFFER_POST_WAIT_INTERVAL_SECONDS", 15)
+    deadline = time.time() + max(0, timeout_seconds)
+    last_post = buffer_get_post(post_id)
+    while str(last_post.get("status", "")).lower() in {"sending", "pending", "scheduled", "processing"} and time.time() < deadline:
+        time.sleep(max(1, interval_seconds))
+        last_post = buffer_get_post(post_id)
+    return last_post
+
+
+def tiktok_public_stats(tiktok_url: str) -> dict:
+    ytdlp_python = Path(os.environ.get("YTDLP_PYTHON", "/root/.openclaw/workspace/.venv-ytdlp/bin/python"))
+    if not ytdlp_python.exists():
+        ytdlp_python = Path(sys.executable)
+    cmd = [str(ytdlp_python), "-m", "yt_dlp", "--dump-json", "--skip-download", tiktok_url]
+    proc = subprocess.run(cmd, text=True, capture_output=True, timeout=90)
+    if proc.returncode != 0:
+        raise RuntimeError((proc.stderr or proc.stdout or "yt-dlp stats failed").strip()[-1200:])
+    data = json.loads(proc.stdout)
+    return {
+        "view_count": data.get("view_count") or 0,
+        "like_count": data.get("like_count") or 0,
+        "comment_count": data.get("comment_count") or 0,
+        "repost_count": data.get("repost_count") or data.get("share_count") or 0,
+        "webpage_url": data.get("webpage_url") or tiktok_url,
+    }
+
+
+def parse_indonesia_pretty_datetime(value: str) -> dt.datetime | None:
+    value = (value or "").strip()
+    if not value:
+        return None
+    m = re.match(r"^(\d{1,2})\s+(\w+)\s+(\d{4})\s+(\d{1,2}):(\d{2})\s+WIB$", value)
+    if not m:
+        try:
+            parsed = dt.datetime.fromisoformat(value)
+            return parsed if parsed.tzinfo else parsed.replace(tzinfo=dt.timezone.utc)
+        except Exception:
+            return None
+    day, month_name, year, hour, minute = m.groups()
+    try:
+        month = ID_MONTHS.index(month_name) + 1
+    except ValueError:
+        return None
+    return dt.datetime(int(year), month, int(day), int(hour), int(minute), tzinfo=ZoneInfo("Asia/Jakarta"))
+
+
+def row_uploaded_age_days(row: dict) -> int | None:
+    uploaded = parse_indonesia_pretty_datetime(row.get("uploaded_at") or row.get("scheduled_at") or "")
+    if not uploaded:
+        return None
+    return int((now_utc() - uploaded.astimezone(dt.timezone.utc)).total_seconds() // 86400)
+
+
+def affiliate_monitor(update: bool = False, limit: int | None = None) -> dict:
+    # Use local CSV as source of truth for Buffer/TikTok external_link because
+    # older sheet rows may be missing newly-added upload/affiliate columns.
+    rows = load_run_rows(prefer_sheet=False)
+    threshold = int_env("AFFILIATE_REVIEW_MIN_VIEWS", 1000)
+    max_rows = limit if limit is not None else int_env("AFFILIATE_MONITOR_MAX_ROWS", 50)
+    max_age_days = int_env("AFFILIATE_MONITOR_MAX_AGE_DAYS", 30)
+    checked = []
+    skipped = []
+    expired = []
+    candidates = []
+    errors = []
+    review_closed = {"MATCH_STRONG", "MATCH_OK", "MISMATCH_RISK", "MISMATCH_BAD", "NOT_MATCH", "REJECTED"}
+    eligible = []
+    for r in rows:
+        status = (r.get("status") or "").upper()
+        if status not in {"UPLOADED", "READY_TO_AFFILIATE"}:
+            continue
+        if not (r.get("external_link") or "").strip():
+            continue
+        product_match_status = (r.get("product_match_status") or "").strip().upper()
+        if status == "READY_TO_AFFILIATE" or product_match_status in review_closed:
+            skipped.append({"job_id": r.get("job_id"), "reason": "affiliate_review_closed", "status": status, "product_match_status": product_match_status})
+            continue
+        age_days = row_uploaded_age_days(r)
+        known_views = int(float(r.get("tiktok_views") or 0)) if str(r.get("tiktok_views") or "").strip() else 0
+        if age_days is not None and age_days > max_age_days:
+            if known_views < threshold:
+                r.update({
+                    "product_match_status": "LOW_VIEWS_EXPIRED",
+                    "product_match_checked_at": indonesia_pretty_datetime(now_utc()),
+                    "action_needed": f"No affiliate: under {threshold} views after {max_age_days} days",
+                })
+                if update:
+                    log_row(r)
+                expired.append({"job_id": r.get("job_id"), "age_days": age_days, "views": known_views})
+            else:
+                skipped.append({"job_id": r.get("job_id"), "reason": "outside_affiliate_date_range", "age_days": age_days, "views": known_views})
+            continue
+        eligible.append(r)
+    for row in eligible[:max_rows]:
+        try:
+            stats = tiktok_public_stats(row["external_link"].strip())
+            now_pretty = indonesia_pretty_datetime(now_utc())
+            views = int(stats.get("view_count") or 0)
+            row.update({
+                "tiktok_views": str(views),
+                "tiktok_likes": str(stats.get("like_count") or 0),
+                "tiktok_comments": str(stats.get("comment_count") or 0),
+                "tiktok_shares": str(stats.get("repost_count") or 0),
+                "stats_checked_at": now_pretty,
+            })
+            if views >= threshold and not (row.get("product_match_status") or "").strip():
+                row.update({
+                    "product_match_status": "NEEDS_REVIEW",
+                    "action_needed": "Review product/video match. If VERY MATCH, set READY_TO_AFFILIATE.",
+                })
+                candidates.append({
+                    "job_id": row.get("job_id"),
+                    "views": views,
+                    "external_link": row.get("external_link"),
+                    "product_title": row.get("product_title"),
+                    "product_url": row.get("product_url"),
+                    "product_image_url": row.get("product_image_url"),
+                    "result_supabase_url": row.get("result_supabase_url"),
+                })
+            if update:
+                log_row(row)
+            age_days = row_uploaded_age_days(row)
+            if age_days is not None and age_days > max_age_days and views < threshold and not (row.get("product_match_status") or "").strip():
+                row.update({
+                    "product_match_status": "LOW_VIEWS_EXPIRED",
+                    "product_match_checked_at": indonesia_pretty_datetime(now_utc()),
+                    "action_needed": f"No affiliate: under {threshold} views after {max_age_days} days",
+                })
+                expired.append({"job_id": row.get("job_id"), "age_days": age_days, "views": views})
+                if update:
+                    log_row(row)
+            checked.append({"job_id": row.get("job_id"), "views": views, "status": row.get("status"), "product_match_status": row.get("product_match_status", ""), "age_days": age_days})
+        except Exception as e:
+            errors.append({"job_id": row.get("job_id"), "external_link": row.get("external_link"), "error": str(e)[:500]})
+    return {"threshold": threshold, "max_age_days": max_age_days, "update": update, "checked_count": len(checked), "expired_count": len(expired), "skipped_count": len(skipped), "candidates_needing_review": candidates, "expired_low_views": expired, "skipped": skipped, "checked": checked, "errors": errors}
+
+
+def set_affiliate_review(job_id: str, verdict: str, score: str = "", reason: str = "") -> dict:
+    verdict = (verdict or "").strip().upper()
+    score = str(score or "").strip()
+    reason = (reason or "").strip()
+    ready_verdicts = {"MATCH_STRONG", "VERY_MATCH", "READY_TO_AFFILIATE"}
+    risk_verdicts = {"MATCH_OK", "MISMATCH_RISK", "MISMATCH_BAD", "NOT_MATCH", "REJECTED"}
+    if verdict not in ready_verdicts | risk_verdicts:
+        raise RuntimeError(f"Invalid affiliate review verdict: {verdict}")
+    row = None
+    for existing in load_run_rows(prefer_sheet=False):
+        if existing.get("job_id") == job_id:
+            row = dict(existing)
+            break
+    if row is None:
+        raise RuntimeError(f"Job not found: {job_id}")
+    now_pretty = indonesia_pretty_datetime(now_utc())
+    row.update({
+        "product_match_status": "MATCH_STRONG" if verdict in ready_verdicts else verdict,
+        "product_match_score": score,
+        "product_match_reason": reason,
+        "product_match_checked_at": now_pretty,
+    })
+    if verdict in ready_verdicts:
+        row["status"] = "READY_TO_AFFILIATE"
+        row["action_needed"] = "Add affiliate product link to TikTok VT"
+    else:
+        # If a previously-ready row is later downgraded, remove it from the
+        # affiliate-ready queue. Use COMPLETED for non-affiliate/mismatch rows
+        # so they are no longer actionable for affiliate linking.
+        row["status"] = "COMPLETED"
+        row["action_needed"] = "Do not affiliate automatically; product/video match is not strong"
+    log_row(row)
+    return {"job_id": job_id, "status": row.get("status"), "product_match_status": row.get("product_match_status"), "action_needed": row.get("action_needed"), "external_link": row.get("external_link")}
+
+
+def upload_scheduler(dry_run: bool = True, live: bool = False, ignore_slot: bool = False, test_channel: bool = False) -> dict:
+    rows = load_run_rows(prefer_sheet=True)
+    candidates = upload_candidates(rows)
+    random.shuffle(candidates)
+    max_per_run = max(1, int_env("TIKTOK_UPLOAD_MAX_PER_RUN", 1))
+    picked = candidates[:max_per_run]
+    channel_id = buffer_channel_id(test=test_channel)
+    active_window = None if ignore_slot else randomized_upload_window()
+    state = state_load()
+    upload_state = state.setdefault("upload_scheduler", {})
+    attempted_windows = set(upload_state.setdefault("attempted_window_keys", []))
+    result = {
+        "dry_run": dry_run or not live,
+        "enabled": truthy_env("TIKTOK_UPLOAD_ENABLED", False),
+        "in_slot": in_upload_slot() if not ignore_slot else True,
+        "slots": upload_slots(),
+        "windows": upload_windows(),
+        "active_window": active_window,
+        "active_window_already_attempted": bool(active_window and active_window.get("key") in attempted_windows),
+        "channel_id": channel_id,
+        "candidate_count": len(candidates),
+        "picked": [{"job_id": r.get("job_id"), "caption": r.get("caption"), "result_supabase_url": r.get("result_supabase_url")} for r in picked],
+        "uploaded": [],
+    }
+    if dry_run or not live:
+        return result
+    if not truthy_env("TIKTOK_UPLOAD_ENABLED", False):
+        raise RuntimeError("Live upload refused: set TIKTOK_UPLOAD_ENABLED=true")
+    if not ignore_slot and not result["in_slot"]:
+        raise RuntimeError(f"Live upload refused: current time is outside upload windows {upload_windows() or upload_slots()}")
+    if active_window and active_window.get("key") in attempted_windows:
+        raise RuntimeError(f"Live upload refused: window already attempted today ({active_window['key']})")
+
+    for row in picked:
+        now_pretty = indonesia_pretty_datetime(now_utc())
+        attempts = int(row.get("upload_attempts") or 0) + 1
+        row.update({
+            "status": "UPLOADING",
+            "scheduled_at": now_pretty,
+            "buffer_channel_id": channel_id,
+            "uploaded_via": "buffer",
+            "upload_attempts": str(attempts),
+            "buffer_error": "",
+            "error": "",
+        })
+        log_row(row)
+        if active_window:
+            attempted_windows.add(active_window["key"])
+            upload_state["attempted_window_keys"] = sorted(attempted_windows)[-60:]
+            upload_state["last_attempted_window"] = active_window
+            state_save(state)
+        try:
+            video_url = row["result_supabase_url"].strip()
+            validate_public_video_url(video_url)
+            post = buffer_create_video_post(channel_id, video_url, row["caption"].strip())
+            if truthy_env("TIKTOK_UPLOAD_WAIT_FOR_BUFFER_SENT", True) and post.get("id"):
+                post = buffer_wait_until_posted(post["id"])
+            row.update({
+                "status": "UPLOADED",
+                "uploaded_at": indonesia_pretty_datetime(now_utc()),
+                "buffer_post_id": post.get("id", ""),
+                "buffer_status": post.get("status", ""),
+                "external_link": post.get("externalLink", ""),
+                "buffer_error": "",
+                "error": "",
+            })
+            log_row(row)
+            result["uploaded"].append({
+                "job_id": row.get("job_id"),
+                "buffer_post_id": row.get("buffer_post_id"),
+                "buffer_status": row.get("buffer_status"),
+                "external_link": row.get("external_link"),
+            })
+        except Exception as e:
+            msg = str(e)[:1000]
+            row.update({"status": "UPLOAD_FAILED", "buffer_error": msg, "error": msg})
+            log_row(row)
+            raise
+    return result
+
+
+def safe_cache_name(value: str) -> str:
+    return re.sub(r"[^A-Za-z0-9_.-]+", "_", value).strip("_") or "default"
+
+
+def yt_dlp_entries(limit=150, profile_url: str | None = None, cache_path: Path | None = None):
+    cache_seconds = int(os.environ.get("TIKTOK_LIST_CACHE_SECONDS", "21600"))
+    profile = profile_url or require_env("TIKTOK_PROFILE_URL")
+    cache_path = cache_path or TIKTOK_LIST_CACHE_PATH
+    if cache_path.exists():
+        try:
+            cached = json.loads(cache_path.read_text())
             age = time.time() - float(cached.get("fetched_at", 0))
             entries = cached.get("entries") or []
             if age < cache_seconds and entries:
@@ -517,7 +1237,6 @@ def yt_dlp_entries(limit=150):
         except Exception:
             pass
 
-    profile = require_env("TIKTOK_PROFILE_URL")
     yt = "/root/.openclaw/workspace/.venv-ytdlp/bin/yt-dlp"
     cmd = [yt, "--flat-playlist", "--dump-json", profile]
     p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True)
@@ -534,8 +1253,32 @@ def yt_dlp_entries(limit=150):
             p.kill()
             break
     DATA_DIR.mkdir(parents=True, exist_ok=True)
-    TIKTOK_LIST_CACHE_PATH.write_text(json.dumps({"fetched_at": time.time(), "entries": entries}, ensure_ascii=False) + "\n")
+    cache_path.parent.mkdir(parents=True, exist_ok=True)
+    cache_path.write_text(json.dumps({"profile_url": profile, "fetched_at": time.time(), "entries": entries}, ensure_ascii=False) + "\n")
     return entries
+
+
+def motion_profile_urls() -> list[str]:
+    raw = os.environ.get("TIKTOK_MOTION_PROFILE_URLS", "").strip()
+    if not raw:
+        return [require_env("TIKTOK_PROFILE_URL")]
+    return [u.strip() for u in re.split(r"[,\n]", raw) if u.strip()]
+
+
+def product_profile_urls() -> list[str]:
+    raw = os.environ.get("TIKTOK_PRODUCT_PROFILE_URLS", "").strip()
+    if not raw:
+        return [require_env("TIKTOK_PROFILE_URL")]
+    return [u.strip() for u in re.split(r"[,\n]", raw) if u.strip()]
+
+
+def tiktok_video_url(entry: dict, fallback_profile_url: str | None = None) -> str:
+    if entry.get("webpage_url"):
+        return entry["webpage_url"]
+    if entry.get("url") and str(entry["url"]).startswith("http"):
+        return entry["url"]
+    uploader_url = entry.get("uploader_url") or fallback_profile_url or require_env("TIKTOK_PROFILE_URL")
+    return f"{uploader_url.rstrip('/')}/video/{entry['id']}"
 
 
 def video_candidates(state):
@@ -549,20 +1292,105 @@ def video_candidates(state):
     return candidates
 
 
+def product_video_candidates(state):
+    avoid_count = int(os.environ.get("RECENT_VIDEO_AVOID_COUNT", "10"))
+    recent = set(state.get("recent_video_ids", [])[-avoid_count:])
+    candidates = []
+    for profile in product_profile_urls():
+        cache_path = DATA_DIR / f"tiktok_entries_cache_product_{safe_cache_name(profile)}.json"
+        for entry in yt_dlp_entries(profile_url=profile, cache_path=cache_path):
+            if entry.get("id") in recent:
+                continue
+            item = dict(entry)
+            item["_profile_url"] = profile
+            candidates.append(item)
+    if not candidates:
+        for profile in product_profile_urls():
+            cache_path = DATA_DIR / f"tiktok_entries_cache_product_{safe_cache_name(profile)}.json"
+            for entry in yt_dlp_entries(profile_url=profile, cache_path=cache_path):
+                item = dict(entry)
+                item["_profile_url"] = profile
+                candidates.append(item)
+    if not candidates:
+        raise RuntimeError("Could not list TikTok product profile videos")
+    random.shuffle(candidates)
+    return candidates
+
+
+def entry_duration_seconds(entry: dict) -> float | None:
+    for key in ["duration", "duration_string"]:
+        raw = entry.get(key)
+        if raw in (None, ""):
+            continue
+        try:
+            return float(str(raw).strip())
+        except Exception:
+            pass
+    return None
+
+
+def recent_motion_video_ids_from_runs(limit: int) -> set[str]:
+    if limit <= 0 or not RUNS_CSV.exists():
+        return set()
+    try:
+        with RUNS_CSV.open(newline="") as f:
+            rows = list(csv.DictReader(f))
+    except Exception:
+        return set()
+    ids = []
+    for row in rows:
+        url = row.get("motion_tiktok_video_url") or ""
+        m = re.search(r"/video/(\d+)", url)
+        if m:
+            ids.append(m.group(1))
+    return set(ids[-limit:])
+
+
+def motion_video_candidates(state):
+    avoid_count = int(os.environ.get("RECENT_VIDEO_AVOID_COUNT", "10"))
+    motion_avoid_count = int(os.environ.get("TIKTOK_MOTION_AVOID_COUNT", "120"))
+    min_duration = float(os.environ.get("TIKTOK_MOTION_MIN_DURATION_SECONDS", "10"))
+    recent = set(state.get("recent_video_ids", [])[-avoid_count:])
+    recent.update(recent_motion_video_ids_from_runs(motion_avoid_count))
+
+    def add_candidates(skip_recent: bool) -> list[dict]:
+        picked = []
+        for profile in motion_profile_urls():
+            cache_path = DATA_DIR / f"tiktok_entries_cache_motion_{safe_cache_name(profile)}.json"
+            for entry in yt_dlp_entries(profile_url=profile, cache_path=cache_path):
+                if skip_recent and entry.get("id") in recent:
+                    continue
+                duration = entry_duration_seconds(entry)
+                # yt-dlp flat playlist already gives duration for TikTok profiles, so
+                # reject short motion refs before doing the expensive video download.
+                if duration is not None and duration < min_duration:
+                    continue
+                item = dict(entry)
+                item["_profile_url"] = profile
+                picked.append(item)
+        return picked
+
+    candidates = add_candidates(skip_recent=True) or add_candidates(skip_recent=False)
+    if not candidates:
+        raise RuntimeError(f"Could not list TikTok motion profile videos >= {min_duration:g}s")
+    random.shuffle(candidates)
+    return candidates
+
+
 def pick_video(state):
     candidates = video_candidates(state)
     return candidates[0]
 
 
 def pick_different_motion_video(state, excluded_video_id: str):
-    candidates = [e for e in video_candidates(state) if e.get("id") != excluded_video_id]
+    candidates = [e for e in motion_video_candidates(state) if e.get("id") != excluded_video_id]
     if not candidates:
         raise RuntimeError("Could not find a motion video different from the capture video")
     return candidates[0]
 
 
 def pick_video_with_product(state):
-    candidates = video_candidates(state)
+    candidates = product_video_candidates(state)
     product_cache = state.setdefault("product_cache", {})
     max_checks = int(os.environ.get("PRODUCT_PICK_MAX_CHECKS", "30"))
     checked = 0
@@ -582,7 +1410,7 @@ def pick_video_with_product(state):
         else:
             # Re-parse older cache entries too: Tokopedia PDPs often show a captcha,
             # but the TikTok video HTML usually embeds the product card image.
-            tiktok_url = f"https://www.tiktok.com/@keranjang_tiktok08/video/{video_id}"
+            tiktok_url = tiktok_video_url(entry, entry.get("_profile_url"))
             product_url, product_title, product_image_url = extract_product_from_html(tiktok_url)
             product_cache[video_id] = {
                 "product_url": product_url,
@@ -639,8 +1467,10 @@ def extract_product_from_html(tiktok_url: str):
     m = re.search(r'"seo_url"\s*:\s*"(https?://[^"\\]+)', window)
     if m:
         seo_url = m.group(1).replace("\\/", "/")
-    if not seo_url and product_id:
-        seo_url = f"https://shop-id.tokopedia.com/pdp/{product_id}"
+    if product_id:
+        # TikTok affiliate/showcase accepts the TikTok product URL format, not
+        # the Tokopedia PDP/anchor URL that is embedded in some video cards.
+        seo_url = f"https://www.tiktok.com/view/product/{product_id}"
     return seo_url, title, image_url
 
 
@@ -715,24 +1545,54 @@ def download_product_image(product_url: str, job_dir: Path, fallback_image_url: 
     return out, image_url
 
 
+def download_tiktok_video_with_ytdlp(video_id: str, tiktok_url: str, job_dir: Path, reason: Exception | None = None):
+    """Fallback downloader when tikwm is temporarily down/flaky."""
+    out = job_dir / f"tiktok_{video_id}.mp4"
+    ytdlp_python = Path(os.environ.get("YTDLP_PYTHON", "/root/.openclaw/workspace/.venv-ytdlp/bin/python"))
+    if not ytdlp_python.exists():
+        ytdlp_python = Path(sys.executable)
+    cmd = [
+        str(ytdlp_python), "-m", "yt_dlp",
+        "--no-playlist",
+        "--force-overwrites",
+        "-f", "bv*+ba/best",
+        "-o", str(out),
+        tiktok_url,
+    ]
+    proc = subprocess.run(cmd, text=True, capture_output=True, timeout=240)
+    if proc.returncode != 0:
+        detail = (proc.stderr or proc.stdout or "").strip()[-1200:]
+        if reason:
+            raise RuntimeError(f"tikwm failed ({reason}); yt-dlp fallback also failed: {detail}")
+        raise RuntimeError(f"yt-dlp fallback failed: {detail}")
+    if not out.exists() or out.stat().st_size < 100 * 1024:
+        raise RuntimeError("Downloaded TikTok video is suspiciously small after yt-dlp fallback")
+    product_url, product_title, _ = extract_product_from_html(tiktok_url)
+    return out, {"fallback": "yt-dlp", "tikwm_error": str(reason or "")}, product_url, product_title
+
+
 def download_tiktok_video(video_id: str, tiktok_url: str, job_dir: Path):
-    """Download a TikTok video through tikwm and return local path + metadata.
+    """Download a TikTok video, preferring tikwm and falling back to yt-dlp.
 
     Product URL/title are parsed separately from TikTok HTML, because tikwm does
     not consistently expose affiliate anchors.
     """
-    data = get_tikwm_data(tiktok_url)
-    video_url = data.get("hdplay") or data.get("play") or data.get("wmplay")
-    if not video_url:
-        raise RuntimeError(f"No downloadable video URL from tikwm for {tiktok_url}")
-    if video_url.startswith("//"):
-        video_url = "https:" + video_url
-    out = job_dir / f"tiktok_{video_id}.mp4"
-    download_url(video_url, out)
-    if out.stat().st_size < 100 * 1024:
-        raise RuntimeError("Downloaded TikTok video is suspiciously small")
-    product_url, product_title, _ = extract_product_from_html(tiktok_url)
-    return out, data, product_url, product_title
+    try:
+        data = get_tikwm_data(tiktok_url)
+        video_url = data.get("hdplay") or data.get("play") or data.get("wmplay")
+        if not video_url:
+            raise RuntimeError(f"No downloadable video URL from tikwm for {tiktok_url}")
+        if video_url.startswith("//"):
+            video_url = "https:" + video_url
+        out = job_dir / f"tiktok_{video_id}.mp4"
+        download_url(video_url, out)
+        if out.stat().st_size < 100 * 1024:
+            raise RuntimeError("Downloaded TikTok video is suspiciously small")
+        product_url, product_title, _ = extract_product_from_html(tiktok_url)
+        return out, data, product_url, product_title
+    except Exception as e:
+        print(f"tikwm download failed, trying yt-dlp fallback: {e}", file=sys.stderr)
+        return download_tiktok_video_with_ytdlp(video_id, tiktok_url, job_dir, reason=e)
 
 
 def download_url(url: str, path: Path):
@@ -1119,12 +1979,7 @@ def dreamface_quota(auth: dict) -> dict:
 
 
 def dreamface_remaining_credits(auth: dict) -> dict:
-    """Return DreamFace credit balances from the newer credits endpoint.
-
-    Some accounts report zero from /rights/get_free_rights even when the web
-    app still has usable free/paid credits. Use this endpoint as the source of
-    truth for provider selection when available.
-    """
+    """Return DreamFace paid credit balances from the credits endpoint."""
     body = {
         "user_id": auth["user_id"],
         "account_id": auth["account_id"],
@@ -1140,28 +1995,47 @@ def dreamface_remaining_credits(auth: dict) -> dict:
     return data.get("data") or {}
 
 
+def dreamface_combined_quota(auth: dict) -> dict:
+    """Return quota using both DreamFace sources.
+
+    Base free quota comes from /dw-server/rights/get_free_rights remain_count.
+    Additional usable quota comes from /dw-server/credits/get_remaining_credits
+    free_count, per current DreamFace account behavior.
+    """
+    free = dreamface_quota(auth)
+    credits = dreamface_remaining_credits(auth)
+    free_count = int(free.get("remain_count") or 0)
+    credits_free_count = int(credits.get("free_count") or 0)
+    return {
+        "quota_source": "rights/get_free_rights + credits/get_remaining_credits",
+        "free_remain_count": free_count,
+        "free_total_count": free.get("total_count"),
+        "credits_free_count": credits_free_count,
+        "credits_paid_count": credits.get("paid_count"),
+        "credits_free_expires_time": credits.get("free_expires_time"),
+        "available_count": free_count + credits_free_count,
+        "free_quota": free,
+        "credits_quota": credits,
+    }
+
+
 def dreamface_available_count(quota: dict) -> int:
+    if "available_count" in quota:
+        return int(quota.get("available_count") or 0)
+    if "remain_count" in quota:
+        return int(quota.get("remain_count") or 0)
     if "paid_count" in quota or "free_count" in quota:
         return int(quota.get("paid_count") or 0) + int(quota.get("free_count") or 0)
-    return int(quota.get("remain_count") or 0)
+    return 0
 
 
 def select_dreamface_auth() -> tuple[dict, dict]:
     exhausted = []
     for auth in dreamface_auths():
-        quota_error = None
-        try:
-            quota = dreamface_remaining_credits(auth)
-            quota["quota_source"] = "credits/get_remaining_credits"
-        except Exception as e:
-            quota_error = str(e)
-            quota = dreamface_quota(auth)
-            quota["quota_source"] = "rights/get_free_rights"
+        quota = dreamface_combined_quota(auth)
         remain = dreamface_available_count(quota)
         if remain > 0:
             return auth, quota
-        if quota_error:
-            quota["credits_error"] = quota_error
         exhausted.append({"label": auth.get("label"), "quota": quota})
     raise RuntimeError(json.dumps({
         "ok": False,
@@ -1331,7 +2205,7 @@ def create_job_context(image_path: str | None = None):
     delete_after = iso(created + dt.timedelta(days=int(os.environ.get("RETENTION_DAYS", "7"))))
     job_dir = DOWNLOADS_DIR / job_id
     job_dir.mkdir(parents=True, exist_ok=True)
-    row = {"created_at": iso(created), "job_id": job_id, "status": "STARTED", "delete_after": delete_after}
+    row = {"created_at": indonesia_pretty_datetime(created), "job_id": job_id, "status": "STARTED", "delete_after": delete_after}
     return src_image, job_id, delete_after, job_dir, row
 
 
@@ -1354,16 +2228,17 @@ def prepare(image_path: str | None = None):
     try:
         product_entry, picked_product_url, picked_product_title, picked_product_image_url = pick_video_with_product(state)
         product_video_id = product_entry["id"]
-        product_tiktok_url = f"https://www.tiktok.com/@keranjang_tiktok08/video/{product_video_id}"
+        product_tiktok_url = tiktok_video_url(product_entry, product_entry.get("_profile_url"))
         row["product_video_url"] = product_tiktok_url
         row["product_url"] = picked_product_url
         row["product_title"] = picked_product_title
+        row["caption"] = build_tiktok_caption(picked_product_title)
         if not row["product_url"]:
             raise RuntimeError("Selected TikTok product video has no extractable affiliate/product URL")
 
         motion_entry = pick_different_motion_video(state, product_video_id)
         motion_video_id = motion_entry["id"]
-        motion_tiktok_url = f"https://www.tiktok.com/@keranjang_tiktok08/video/{motion_video_id}"
+        motion_tiktok_url = tiktok_video_url(motion_entry, motion_entry.get("_profile_url"))
         row["motion_tiktok_video_url"] = motion_tiktok_url
 
         motion_local_video, motion_tikwm_data, _, _ = download_tiktok_video(motion_video_id, motion_tiktok_url, job_dir)
@@ -1407,6 +2282,8 @@ def prepare(image_path: str | None = None):
         # Keep stdout intentionally tiny; details are already in state + Sheet.
         payload = {
             "job_id": job_id,
+            "product_title": row.get("product_title", ""),
+            "caption": row.get("caption", ""),
             "master_path": str(src_image),
             "product_image_path": str(product_image_path),
             "prompt_path": str(prompt_path),
@@ -1423,6 +2300,64 @@ def prepare(image_path: str | None = None):
             print(f"sheet/log failed too: {e2}", file=sys.stderr)
         print(json.dumps(row, indent=2, ensure_ascii=False), file=sys.stderr)
         return 1
+
+
+def validate_generated_reference_image(ref_path: Path) -> dict:
+    """Validate the generated try-on input image before video submission.
+
+    This is a hard, local gate for objective checks. The agent should still do a
+    visual/product/modesty review before calling complete.
+    """
+    ref_path = Path(ref_path).expanduser().resolve()
+    if not ref_path.exists():
+        raise RuntimeError(f"Generated reference image not found: {ref_path}")
+    if not ref_path.is_file():
+        raise RuntimeError(f"Generated reference path is not a file: {ref_path}")
+    if ref_path.stat().st_size <= 0:
+        raise RuntimeError(f"Generated reference image is empty: {ref_path}")
+
+    min_width = int_env("GENERATED_REFERENCE_MIN_WIDTH", 1080)
+    min_height = int_env("GENERATED_REFERENCE_MIN_HEIGHT", 1920)
+    allowed_formats = {x.strip().upper() for x in os.environ.get("GENERATED_REFERENCE_FORMATS", "JPEG,JPG,PNG,WEBP").split(",") if x.strip()}
+    max_size_mb = float(os.environ.get("GENERATED_REFERENCE_MAX_SIZE_MB", "25"))
+    max_size_bytes = int(max_size_mb * 1024 * 1024)
+    if ref_path.stat().st_size > max_size_bytes:
+        raise RuntimeError(f"Generated reference image too large: {ref_path.stat().st_size} bytes > {max_size_bytes} bytes")
+
+    try:
+        with Image.open(ref_path) as img:
+            img.verify()
+        with Image.open(ref_path) as img:
+            fmt = (img.format or "").upper()
+            width, height = img.size
+            mode = img.mode
+            stat_img = img.convert("RGB").resize((64, 64))
+            extrema = ImageStat.Stat(stat_img).extrema
+    except Exception as e:
+        raise RuntimeError(f"Generated reference image is unreadable/corrupt: {e}") from e
+
+    if fmt == "JPG":
+        fmt = "JPEG"
+    normalized_allowed = {"JPEG" if f == "JPG" else f for f in allowed_formats}
+    if normalized_allowed and fmt not in normalized_allowed:
+        raise RuntimeError(f"Generated reference format {fmt or 'unknown'} not allowed; allowed={sorted(normalized_allowed)}")
+    if width < min_width or height < min_height:
+        raise RuntimeError(f"Generated reference too small: {width}x{height}; minimum is {min_width}x{min_height}")
+    if width * 16 != height * 9:
+        raise RuntimeError(f"Generated reference must be exact 9:16, got {width}x{height}")
+    if all((hi - lo) < 3 for lo, hi in extrema):
+        raise RuntimeError("Generated reference appears blank/near-solid color")
+
+    return {
+        "ok": True,
+        "path": str(ref_path),
+        "format": fmt,
+        "mode": mode,
+        "width": width,
+        "height": height,
+        "aspect": "9:16",
+        "size_bytes": ref_path.stat().st_size,
+    }
 
 
 def complete(job_id: str, generated_reference_path: str, provider: str | None = None):
@@ -1443,9 +2378,12 @@ def complete(job_id: str, generated_reference_path: str, provider: str | None = 
     product_video_id = info.get("product_video_id") or info.get("capture_video_id")
     provider_name = selected_video_provider(provider)
     try:
+        reference_validation = validate_generated_reference_image(ref_path)
+        row["action_needed"] = "Generated reference validated before video submission"
         row["status"] = "SUBMITTED"
         row["error"] = ""
         row["provider"] = provider_name
+        row["input_image_validation"] = json.dumps(reference_validation, ensure_ascii=False)
         prepared[job_id] = {**info, "row": row}
         state_save(state)
         log_row(row)
@@ -1517,7 +2455,9 @@ def complete(job_id: str, generated_reference_path: str, provider: str | None = 
                 selected_auth, quota = select_dreamface_auth()
                 row["provider_auth_label"] = selected_auth.get("label", "")
             if quota:
-                row["provider_status"] = f"quota {quota.get('remain_count')}/{quota.get('total_count')}"
+                available = dreamface_available_count(quota)
+                free_total = quota.get("free_total_count") or quota.get("total_count") or "?"
+                row["provider_status"] = f"quota {available} available (rights {quota.get('free_remain_count', quota.get('remain_count', '?'))}/{free_total} + credits.free {quota.get('credits_free_count', 0)})"
 
             animate_id = row.get("provider_task_id") or row.get("dreamface_animate_id")
             if not animate_id:
@@ -1585,6 +2525,7 @@ def complete(job_id: str, generated_reference_path: str, provider: str | None = 
             "job_id": job_id,
             "provider": row.get("provider", ""),
             "result_link": row.get("result_supabase_url", ""),
+            "caption": row.get("caption") or build_tiktok_caption(row.get("product_title", "")),
         }, indent=2, ensure_ascii=False))
         return 0
     except TimeoutError as e:
@@ -1599,7 +2540,12 @@ def complete(job_id: str, generated_reference_path: str, provider: str | None = 
         print(json.dumps(row, indent=2, ensure_ascii=False), file=sys.stderr)
         return 1
     except Exception as e:
-        row["status"] = "FAILED"
+        message = str(e)
+        if "Generated reference" in message:
+            row["status"] = "NEEDS_REFERENCE_IMAGE"
+            row["action_needed"] = "Regenerate generated reference image before video submission"
+        else:
+            row["status"] = "FAILED"
         row["error"] = str(e)
         prepared[job_id] = {**info, "row": row}
         state_save(state)
@@ -1625,9 +2571,34 @@ def main():
     comp.add_argument("job_id")
     comp.add_argument("generated_reference_path")
     comp.add_argument("--provider", choices=["magnific", "magnefic", "dreamface", "dream_face", "dream-face"], help="Video provider. Defaults to VIDEO_PROVIDER env or magnific.")
+    valref = sub.add_parser("validate-reference", help="Validate generated try-on input image before video submission.")
+    valref.add_argument("generated_reference_path")
     cleanp = sub.add_parser("cleanup")
     cleanp.add_argument("--dry-run", action="store_true")
+    capp = sub.add_parser("caption", help="Generate/update TikTok caption from a job product title or explicit title.")
+    capp.add_argument("job_id", nargs="?", help="Job id to read product_title from runs/state.")
+    capp.add_argument("--title", help="Explicit product title to caption instead of a job id.")
+    setcapp = sub.add_parser("set-caption", help="Set an AI-generated TikTok caption for a job.")
+    setcapp.add_argument("job_id")
+    setcapp.add_argument("caption")
+    statp = sub.add_parser("set-status", help="Set job status after manual/AI review.")
+    statp.add_argument("job_id")
+    statp.add_argument("status", choices=STATUS_VALUES)
+    statp.add_argument("--note", default="")
+    affp = sub.add_parser("affiliate-monitor", help="Check uploaded TikTok stats and queue posts over AFFILIATE_REVIEW_MIN_VIEWS for product-match review.")
+    affp.add_argument("--update", action="store_true", help="Write stats/review queue fields back to CSV/Sheet.")
+    affp.add_argument("--limit", type=int, help="Maximum uploaded rows to check.")
+    affrp = sub.add_parser("set-affiliate-review", help="Record product/video match verdict and set READY_TO_AFFILIATE when strong.")
+    affrp.add_argument("job_id")
+    affrp.add_argument("verdict", help="MATCH_STRONG/VERY_MATCH or MISMATCH_RISK/MISMATCH_BAD/etc.")
+    affrp.add_argument("--score", default="")
+    affrp.add_argument("--reason", default="")
     sub.add_parser("format-sheet", help="Apply status dropdown enum and color marks to the Google Sheet.")
+    upp = sub.add_parser("upload-scheduler", help="Pick random READY_TO_UPLOAD rows and publish via Buffer/TikTok. Dry-run by default.")
+    upp.add_argument("--live", action="store_true", help="Actually upload. Also requires TIKTOK_UPLOAD_ENABLED=true.")
+    upp.add_argument("--dry-run", action="store_true", help="Only show what would upload. This is the default.")
+    upp.add_argument("--ignore-slot", action="store_true", help="Allow live upload outside configured slots.")
+    upp.add_argument("--test-channel", action="store_true", help="Use BUFFER_TEST_CHANNEL_ID instead of production channel.")
     args = ap.parse_args()
     load_env()
     if args.cmd == "run":
@@ -1636,13 +2607,27 @@ def main():
         raise SystemExit(prepare(args.image))
     if args.cmd == "complete":
         raise SystemExit(complete(args.job_id, args.generated_reference_path, provider=args.provider))
+    if args.cmd == "validate-reference":
+        print(json.dumps(validate_generated_reference_image(Path(args.generated_reference_path)), indent=2, ensure_ascii=False))
     if args.cmd == "cleanup":
         removed = cleanup_old(dry_run=args.dry_run)
         print(json.dumps(removed, indent=2))
+    if args.cmd == "caption":
+        print(json.dumps(caption_for_job(args.job_id, args.title), indent=2, ensure_ascii=False))
+    if args.cmd == "set-caption":
+        print(json.dumps(set_caption_for_job(args.job_id, args.caption), indent=2, ensure_ascii=False))
+    if args.cmd == "set-status":
+        print(json.dumps(set_status_for_job(args.job_id, args.status, args.note), indent=2, ensure_ascii=False))
+    if args.cmd == "affiliate-monitor":
+        print(json.dumps(affiliate_monitor(update=args.update, limit=args.limit), indent=2, ensure_ascii=False))
+    if args.cmd == "set-affiliate-review":
+        print(json.dumps(set_affiliate_review(args.job_id, args.verdict, args.score, args.reason), indent=2, ensure_ascii=False))
     if args.cmd == "format-sheet":
         ws = get_sheet()
-        ensure_sheet_header(ws)
+        ensure_sheet_header(ws, apply_controls=True)
         print(json.dumps({"status_values": STATUS_VALUES, "formatted": True}, indent=2))
+    if args.cmd == "upload-scheduler":
+        print(json.dumps(upload_scheduler(dry_run=(args.dry_run or not args.live), live=args.live, ignore_slot=args.ignore_slot, test_channel=args.test_channel), indent=2, ensure_ascii=False))
 
 
 if __name__ == "__main__":

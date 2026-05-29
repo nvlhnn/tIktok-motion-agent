@@ -1,263 +1,621 @@
 {
   "recent_video_ids": [
-    "7618459741320236305",
-    "7624021069627706640",
-    "7620077531525352720",
-    "7629261705716976897",
-    "7620797934262701313",
-    "7627721282095779073",
-    "7640716122790104321",
-    "7628852300920016129",
-    "7640408367281884433",
-    "7638118602922609936",
-    "7632977524179471633",
-    "7636995468005821697",
-    "7627489643549822224",
-    "7629945952438209808",
-    "7640844767798037761",
-    "7635250587063405840",
-    "7638529864462585105",
-    "7634464422949326096",
-    "7636355721474493697",
-    "7635975587244379408",
-    "7623268505277697281",
-    "7630749491703926032",
-    "7635523320158375169",
-    "7631212684918230288",
-    "7625553431033351425",
-    "7621125224783793425",
-    "7631446724212509953",
-    "7635938966667005201",
+    "7639972332710169873",
+    "7640347129256463634",
+    "7642933939572673813",
     "7634164100414672145",
-    "7627133639729450256",
-    "7638169295234665745",
-    "7636635593199373569",
-    "7637743592487800065",
-    "7633400595742756112",
-    "7640014426376080641",
-    "7639328850555473169",
-    "7639667402283732240",
-    "7627453970226711809",
-    "7636741322648472833",
-    "7630376090539838736",
+    "7639702826834513173",
+    "7643597033810464020",
+    "7631588545433488648",
+    "7625638336866045185",
+    "7640437258192948497",
+    "7638450488580640021",
+    "7643343301617274120",
+    "7640844624612855061",
+    "7641851315022220565",
+    "7642230269507800327",
+    "7629261705716976897",
+    "7643309970720673032",
+    "7642175103517592853",
     "7635154809066245377",
-    "7632637670820269313",
-    "7635250587063405840",
-    "7634079946700328208",
-    "7627721282095779073",
-    "7631818011103612176"
+    "7642671907610823956",
+    "7642159703430204692",
+    "7632222759661210887",
+    "7642581855543266568",
+    "7643602710339636488",
+    "7638448199136578823",
+    "7642110647358082325",
+    "7642716165554326804",
+    "7638080639471717650",
+    "7640820519436176656",
+    "7640439373179276564",
+    "7629862682023283975",
+    "7639733567324458261",
+    "7641963453715877127",
+    "7643035622952750357",
+    "7637678685604023559",
+    "7641592446039657744",
+    "7641095942178884865",
+    "7627365912831593745",
+    "7637158408205962503",
+    "7644063819605527825",
+    "7642713684506103057",
+    "7630700868681207057",
+    "7642206455214411028",
+    "7638576242207231249",
+    "7642868267232808210",
+    "7643065097979432212",
+    "7632501636111387912",
+    "7639690669325421842",
+    "7639377545770700053",
+    "7640326605172149524",
+    "7630814155536174352",
+    "7633400595742756112",
+    "7630054893247581458",
+    "7639651493087464724",
+    "7643243697533979912",
+    "7641805083012779284",
+    "7640762619917454593",
+    "7638896987202489621",
+    "7640121417324875028",
+    "7630749491703926032",
+    "7643464927222435089",
+    "7640461429459389717",
+    "7641773099356130581",
+    "7641878009946868993",
+    "7629191450223217921",
+    "7636683279059406081",
+    "7641853890421329159",
+    "7642954634792946952",
+    "7640670387856002322",
+    "7635104316281392392",
+    "7632905771092544769",
+    "7642622028679367953",
+    "7631248322543635730",
+    "7639279485719710993",
+    "7632324272559525136",
+    "7632977524179471633",
+    "7644809431594700050",
+    "7637062901743865096",
+    "7631448931255340306",
+    "7631446724212509953",
+    "7640046321071574290",
+    "7643691447723527440",
+    "7635523320158375169",
+    "7643772660358335761",
+    "7631024167931923730",
+    "7641132215664905490",
+    "7638636913968090388",
+    "7634827193213930753",
+    "7626995502717865224",
+    "7643602710339636488",
+    "7641805083012779284",
+    "7643718009667865874",
+    "7639663231765581076",
+    "7640326605172149524",
+    "7642168211508579592",
+    "7643401307054804241",
+    "7630430047278730504",
+    "7639651493087464724",
+    "7638819702348844308",
+    "7632222759661210887",
+    "7638797848414375189"
   ],
   "jobs": [
     {
-      "job_id": "20260517122819-682ae5",
-      "created_at": "2026-05-17T12:28:19+00:00",
-      "delete_after": "2026-05-24T12:28:19+00:00",
-      "supabase_prefix": "magnific/automation/20260517122819-682ae5/"
+      "job_id": "20260522122547-ceaa1c",
+      "created_at": "22 Mei 2026 19:25 WIB",
+      "delete_after": "2026-05-29T12:25:47+00:00",
+      "supabase_prefix": "magnific/automation/20260522122547-ceaa1c/"
     },
     {
-      "job_id": "20260517124019-337859",
-      "created_at": "2026-05-17T12:40:19+00:00",
-      "delete_after": "2026-05-24T12:40:19+00:00",
-      "supabase_prefix": "magnific/automation/20260517124019-337859/"
+      "job_id": "20260522142555-f3a230",
+      "created_at": "22 Mei 2026 21:25 WIB",
+      "delete_after": "2026-05-29T14:25:55+00:00",
+      "supabase_prefix": "magnific/automation/20260522142555-f3a230/"
     },
     {
-      "job_id": "20260517131122-5699f7",
-      "created_at": "2026-05-17T13:11:22+00:00",
-      "delete_after": "2026-05-24T13:11:22+00:00",
-      "supabase_prefix": "magnific/automation/20260517131122-5699f7/"
+      "job_id": "20260522162603-ad8f33",
+      "created_at": "22 Mei 2026 23:26 WIB",
+      "delete_after": "2026-05-29T16:26:03+00:00",
+      "supabase_prefix": "magnific/automation/20260522162603-ad8f33/"
     },
     {
-      "job_id": "20260517133751-ef0676",
-      "created_at": "2026-05-17T13:37:51+00:00",
-      "delete_after": "2026-05-24T13:37:51+00:00",
-      "supabase_prefix": "magnific/automation/20260517133751-ef0676/"
+      "job_id": "20260522182611-ceb6aa",
+      "created_at": "23 Mei 2026 01:26 WIB",
+      "delete_after": "2026-05-29T18:26:11+00:00",
+      "supabase_prefix": "magnific/automation/20260522182611-ceb6aa/"
     },
     {
-      "job_id": "20260517135359-840f9b",
-      "created_at": "2026-05-17T13:53:59+00:00",
-      "delete_after": "2026-05-24T13:53:59+00:00",
-      "supabase_prefix": "magnific/automation/20260517135359-840f9b/"
+      "job_id": "20260522202549-005a07",
+      "created_at": "23 Mei 2026 03:25 WIB",
+      "delete_after": "2026-05-29T20:25:49+00:00",
+      "supabase_prefix": "magnific/automation/20260522202549-005a07/"
     },
     {
-      "job_id": "20260517141125-ea85c0",
-      "created_at": "2026-05-17T14:11:25+00:00",
-      "delete_after": "2026-05-24T14:11:25+00:00",
-      "supabase_prefix": "magnific/automation/20260517141125-ea85c0/"
+      "job_id": "20260522222548-f695c2",
+      "created_at": "23 Mei 2026 05:25 WIB",
+      "delete_after": "2026-05-29T22:25:48+00:00",
+      "supabase_prefix": "magnific/automation/20260522222548-f695c2/"
     },
     {
-      "job_id": "20260517142946-5f1fd1",
-      "created_at": "2026-05-17T14:29:46+00:00",
-      "delete_after": "2026-05-24T14:29:46+00:00",
-      "supabase_prefix": "magnific/automation/20260517142946-5f1fd1/"
+      "job_id": "20260523002550-0909c2",
+      "created_at": "23 Mei 2026 07:25 WIB",
+      "delete_after": "2026-05-30T00:25:50+00:00",
+      "supabase_prefix": "magnific/automation/20260523002550-0909c2/"
     },
     {
-      "job_id": "20260517161947-a105ce",
-      "created_at": "2026-05-17T16:19:47+00:00",
-      "delete_after": "2026-05-24T16:19:47+00:00",
-      "supabase_prefix": "magnific/automation/20260517161947-a105ce/"
+      "job_id": "20260523022546-a7ac7b",
+      "created_at": "23 Mei 2026 09:25 WIB",
+      "delete_after": "2026-05-30T02:25:46+00:00",
+      "supabase_prefix": "magnific/automation/20260523022546-a7ac7b/"
     },
     {
-      "job_id": "20260518035829-95896f",
-      "created_at": "2026-05-18T03:58:29+00:00",
-      "delete_after": "2026-05-25T03:58:29+00:00",
-      "supabase_prefix": "magnific/automation/20260518035829-95896f/"
+      "job_id": "20260523042552-104183",
+      "created_at": "23 Mei 2026 11:25 WIB",
+      "delete_after": "2026-05-30T04:25:52+00:00",
+      "supabase_prefix": "magnific/automation/20260523042552-104183/"
     },
     {
-      "job_id": "20260518042449-06a953",
-      "created_at": "2026-05-18T04:24:49+00:00",
-      "delete_after": "2026-05-25T04:24:49+00:00",
-      "supabase_prefix": "magnific/automation/20260518042449-06a953/"
+      "job_id": "20260523062548-91a462",
+      "created_at": "23 Mei 2026 13:25 WIB",
+      "delete_after": "2026-05-30T06:25:48+00:00",
+      "supabase_prefix": "magnific/automation/20260523062548-91a462/"
     },
     {
-      "job_id": "20260518044635-6cb109",
-      "created_at": "2026-05-18T04:46:35+00:00",
-      "delete_after": "2026-05-25T04:46:35+00:00",
-      "supabase_prefix": "magnific/automation/20260518044635-6cb109/"
+      "job_id": "20260523155828-37c301",
+      "created_at": "23 Mei 2026 22:58 WIB",
+      "delete_after": "2026-05-30T15:58:28+00:00",
+      "supabase_prefix": "magnific/automation/20260523155828-37c301/"
     },
     {
-      "job_id": "20260518051302-a33d74",
-      "created_at": "2026-05-18T05:13:02+00:00",
-      "delete_after": "2026-05-25T05:13:02+00:00",
-      "supabase_prefix": "magnific/automation/20260518051302-a33d74/"
+      "job_id": "20260523160031-bb55eb",
+      "created_at": "23 Mei 2026 23:00 WIB",
+      "delete_after": "2026-05-30T16:00:31+00:00",
+      "supabase_prefix": "magnific/automation/20260523160031-bb55eb/"
     },
     {
-      "job_id": "20260518072031-afb0b5",
-      "created_at": "2026-05-18T07:20:31+00:00",
-      "delete_after": "2026-05-25T07:20:31+00:00",
-      "supabase_prefix": "magnific/automation/20260518072031-afb0b5/"
+      "job_id": "20260523160655-73ad2b",
+      "created_at": "23 Mei 2026 23:06 WIB",
+      "delete_after": "2026-05-30T16:06:55+00:00",
+      "supabase_prefix": "magnific/automation/20260523160655-73ad2b/"
     },
     {
-      "job_id": "20260518090509-93caaf",
-      "created_at": "2026-05-18T09:05:09+00:00",
-      "delete_after": "2026-05-25T09:05:09+00:00",
-      "supabase_prefix": "magnific/automation/20260518090509-93caaf/"
+      "job_id": "20260523182015-adde41",
+      "created_at": "24 Mei 2026 01:20 WIB",
+      "delete_after": "2026-05-30T18:20:15+00:00",
+      "supabase_prefix": "magnific/automation/20260523182015-adde41/"
     },
     {
-      "job_id": "20260518095934-f75dc4",
-      "created_at": "2026-05-18T09:59:34+00:00",
-      "delete_after": "2026-05-25T09:59:34+00:00",
-      "supabase_prefix": "magnific/automation/20260518095934-f75dc4/"
+      "job_id": "20260523201936-0049d6",
+      "created_at": "24 Mei 2026 03:19 WIB",
+      "delete_after": "2026-05-30T20:19:36+00:00",
+      "supabase_prefix": "magnific/automation/20260523201936-0049d6/"
     },
     {
-      "job_id": "20260518101724-465f5f",
-      "created_at": "2026-05-18T10:17:24+00:00",
-      "delete_after": "2026-05-25T10:17:24+00:00",
-      "supabase_prefix": "magnific/automation/20260518101724-465f5f/"
+      "job_id": "20260523221927-68ef95",
+      "created_at": "24 Mei 2026 05:19 WIB",
+      "delete_after": "2026-05-30T22:19:27+00:00",
+      "supabase_prefix": "magnific/automation/20260523221927-68ef95/"
     },
     {
-      "job_id": "20260518115647-7abda8",
-      "created_at": "2026-05-18T11:56:47+00:00",
-      "delete_after": "2026-05-25T11:56:47+00:00",
-      "supabase_prefix": "magnific/automation/20260518115647-7abda8/"
+      "job_id": "20260524001944-6e3c58",
+      "created_at": "24 Mei 2026 07:19 WIB",
+      "delete_after": "2026-05-31T00:19:44+00:00",
+      "supabase_prefix": "magnific/automation/20260524001944-6e3c58/"
     },
     {
-      "job_id": "20260518125049-a6ba7e",
-      "created_at": "2026-05-18T12:50:49+00:00",
-      "delete_after": "2026-05-25T12:50:49+00:00",
-      "supabase_prefix": "magnific/automation/20260518125049-a6ba7e/"
+      "job_id": "20260524033046-dd5cea",
+      "created_at": "24 Mei 2026 10:30 WIB",
+      "delete_after": "2026-05-31T03:30:46+00:00",
+      "supabase_prefix": "magnific/automation/20260524033046-dd5cea/"
     },
     {
-      "job_id": "20260518140214-5b308f",
-      "created_at": "2026-05-18T14:02:14+00:00",
-      "delete_after": "2026-05-25T14:02:14+00:00",
-      "supabase_prefix": "magnific/automation/20260518140214-5b308f/"
+      "job_id": "20260524042110-ec2c79",
+      "created_at": "24 Mei 2026 11:21 WIB",
+      "delete_after": "2026-05-31T04:21:10+00:00",
+      "supabase_prefix": "magnific/automation/20260524042110-ec2c79/"
     },
     {
-      "job_id": "20260518174832-51ae8d",
-      "created_at": "2026-05-18T17:48:32+00:00",
-      "delete_after": "2026-05-25T17:48:32+00:00",
-      "supabase_prefix": "magnific/automation/20260518174832-51ae8d/"
+      "job_id": "20260524061909-25d489",
+      "created_at": "24 Mei 2026 13:19 WIB",
+      "delete_after": "2026-05-31T06:19:09+00:00",
+      "supabase_prefix": "magnific/automation/20260524061909-25d489/"
     },
     {
-      "job_id": "20260519030921-8ec615",
-      "created_at": "2026-05-19T03:09:21+00:00",
-      "delete_after": "2026-05-26T03:09:21+00:00",
-      "supabase_prefix": "magnific/automation/20260519030921-8ec615/"
+      "job_id": "20260524081907-69e8ac",
+      "created_at": "24 Mei 2026 15:19 WIB",
+      "delete_after": "2026-05-31T08:19:07+00:00",
+      "supabase_prefix": "magnific/automation/20260524081907-69e8ac/"
     },
     {
-      "job_id": "20260519034635-ea8e70",
-      "created_at": "2026-05-19T03:46:35+00:00",
-      "delete_after": "2026-05-26T03:46:35+00:00",
-      "supabase_prefix": "magnific/automation/20260519034635-ea8e70/"
+      "job_id": "20260524102114-d4757b",
+      "created_at": "24 Mei 2026 17:21 WIB",
+      "delete_after": "2026-05-31T10:21:14+00:00",
+      "supabase_prefix": "magnific/automation/20260524102114-d4757b/"
     },
     {
-      "job_id": "20260519043252-74a195",
-      "created_at": "2026-05-19T04:32:52+00:00",
-      "delete_after": "2026-05-26T04:32:52+00:00",
-      "supabase_prefix": "magnific/automation/20260519043252-74a195/"
+      "job_id": "20260524122331-aaf092",
+      "created_at": "24 Mei 2026 19:23 WIB",
+      "delete_after": "2026-05-31T12:23:31+00:00",
+      "supabase_prefix": "magnific/automation/20260524122331-aaf092/"
     },
     {
-      "job_id": "20260519052236-e64a64",
-      "created_at": "2026-05-19T05:22:36+00:00",
-      "delete_after": "2026-05-26T05:22:36+00:00",
-      "supabase_prefix": "magnific/automation/20260519052236-e64a64/"
+      "job_id": "20260524141937-fd6c2b",
+      "created_at": "24 Mei 2026 21:19 WIB",
+      "delete_after": "2026-05-31T14:19:37+00:00",
+      "supabase_prefix": "magnific/automation/20260524141937-fd6c2b/"
     },
     {
-      "job_id": "20260519060704-475687",
-      "created_at": "2026-05-19T06:07:04+00:00",
-      "delete_after": "2026-05-26T06:07:04+00:00",
-      "supabase_prefix": "magnific/automation/20260519060704-475687/"
+      "job_id": "20260524161906-335c09",
+      "created_at": "24 Mei 2026 23:19 WIB",
+      "delete_after": "2026-05-31T16:19:06+00:00",
+      "supabase_prefix": "magnific/automation/20260524161906-335c09/"
     },
     {
-      "job_id": "20260519065210-afae2a",
-      "created_at": "2026-05-19T06:52:10+00:00",
-      "delete_after": "2026-05-26T06:52:10+00:00",
-      "supabase_prefix": "magnific/automation/20260519065210-afae2a/"
+      "job_id": "20260524181911-7ec525",
+      "created_at": "25 Mei 2026 01:19 WIB",
+      "delete_after": "2026-05-31T18:19:11+00:00",
+      "supabase_prefix": "magnific/automation/20260524181911-7ec525/"
     },
     {
-      "job_id": "20260519075530-c83d10",
-      "created_at": "2026-05-19T07:55:30+00:00",
-      "delete_after": "2026-05-26T07:55:30+00:00",
-      "supabase_prefix": "magnific/automation/20260519075530-c83d10/"
+      "job_id": "20260524201903-d6a3b8",
+      "created_at": "25 Mei 2026 03:19 WIB",
+      "delete_after": "2026-05-31T20:19:03+00:00",
+      "supabase_prefix": "magnific/automation/20260524201903-d6a3b8/"
     },
     {
-      "job_id": "20260519091728-212561",
-      "created_at": "2026-05-19T09:17:28+00:00",
-      "delete_after": "2026-05-26T09:17:28+00:00",
-      "supabase_prefix": "magnific/automation/20260519091728-212561/"
+      "job_id": "20260524221902-2c4277",
+      "created_at": "25 Mei 2026 05:19 WIB",
+      "delete_after": "2026-05-31T22:19:02+00:00",
+      "supabase_prefix": "magnific/automation/20260524221902-2c4277/"
     },
     {
-      "job_id": "20260519111014-f55989",
-      "created_at": "2026-05-19T11:10:14+00:00",
-      "delete_after": "2026-05-26T11:10:14+00:00",
-      "supabase_prefix": "magnific/automation/20260519111014-f55989/"
+      "job_id": "20260525001903-b1a973",
+      "created_at": "25 Mei 2026 07:19 WIB",
+      "delete_after": "2026-06-01T00:19:03+00:00",
+      "supabase_prefix": "magnific/automation/20260525001903-b1a973/"
+    },
+    {
+      "job_id": "20260525021910-b558f1",
+      "created_at": "25 Mei 2026 09:19 WIB",
+      "delete_after": "2026-06-01T02:19:10+00:00",
+      "supabase_prefix": "magnific/automation/20260525021910-b558f1/"
+    },
+    {
+      "job_id": "20260525041917-b195b1",
+      "created_at": "25 Mei 2026 11:19 WIB",
+      "delete_after": "2026-06-01T04:19:17+00:00",
+      "supabase_prefix": "magnific/automation/20260525041917-b195b1/"
+    },
+    {
+      "job_id": "20260525061949-1eca58",
+      "created_at": "25 Mei 2026 13:19 WIB",
+      "delete_after": "2026-06-01T06:19:49+00:00",
+      "supabase_prefix": "magnific/automation/20260525061949-1eca58/"
+    },
+    {
+      "job_id": "20260525081915-19cb37",
+      "created_at": "25 Mei 2026 15:19 WIB",
+      "delete_after": "2026-06-01T08:19:15+00:00",
+      "supabase_prefix": "magnific/automation/20260525081915-19cb37/"
+    },
+    {
+      "job_id": "20260525101916-a0d671",
+      "created_at": "25 Mei 2026 17:19 WIB",
+      "delete_after": "2026-06-01T10:19:16+00:00",
+      "supabase_prefix": "magnific/automation/20260525101916-a0d671/"
+    },
+    {
+      "job_id": "20260525122456-3c02e1",
+      "created_at": "25 Mei 2026 19:24 WIB",
+      "delete_after": "2026-06-01T12:24:56+00:00",
+      "supabase_prefix": "magnific/automation/20260525122456-3c02e1/"
+    },
+    {
+      "job_id": "20260525131807-b874a6",
+      "created_at": "25 Mei 2026 20:18 WIB",
+      "delete_after": "2026-06-01T13:18:07+00:00",
+      "supabase_prefix": "magnific/automation/20260525131807-b874a6/"
+    },
+    {
+      "job_id": "20260525150921-94d680",
+      "created_at": "25 Mei 2026 22:09 WIB",
+      "delete_after": "2026-06-01T15:09:21+00:00",
+      "supabase_prefix": "magnific/automation/20260525150921-94d680/"
+    },
+    {
+      "job_id": "20260525170916-43d771",
+      "created_at": "26 Mei 2026 00:09 WIB",
+      "delete_after": "2026-06-01T17:09:16+00:00",
+      "supabase_prefix": "magnific/automation/20260525170916-43d771/"
+    },
+    {
+      "job_id": "20260525190920-79a0c9",
+      "created_at": "26 Mei 2026 02:09 WIB",
+      "delete_after": "2026-06-01T19:09:20+00:00",
+      "supabase_prefix": "magnific/automation/20260525190920-79a0c9/"
+    },
+    {
+      "job_id": "20260525210915-bac1aa",
+      "created_at": "26 Mei 2026 04:09 WIB",
+      "delete_after": "2026-06-01T21:09:15+00:00",
+      "supabase_prefix": "magnific/automation/20260525210915-bac1aa/"
+    },
+    {
+      "job_id": "20260525230915-14b901",
+      "created_at": "26 Mei 2026 06:09 WIB",
+      "delete_after": "2026-06-01T23:09:15+00:00",
+      "supabase_prefix": "magnific/automation/20260525230915-14b901/"
+    },
+    {
+      "job_id": "20260526010913-eae1d7",
+      "created_at": "26 Mei 2026 08:09 WIB",
+      "delete_after": "2026-06-02T01:09:13+00:00",
+      "supabase_prefix": "magnific/automation/20260526010913-eae1d7/"
+    },
+    {
+      "job_id": "20260526030920-b55eda",
+      "created_at": "26 Mei 2026 10:09 WIB",
+      "delete_after": "2026-06-02T03:09:20+00:00",
+      "supabase_prefix": "magnific/automation/20260526030920-b55eda/"
+    },
+    {
+      "job_id": "20260526051310-c6215b",
+      "created_at": "26 Mei 2026 12:13 WIB",
+      "delete_after": "2026-06-02T05:13:10+00:00",
+      "supabase_prefix": "magnific/automation/20260526051310-c6215b/"
+    },
+    {
+      "job_id": "20260526071102-4f96dd",
+      "created_at": "26 Mei 2026 14:11 WIB",
+      "delete_after": "2026-06-02T07:11:02+00:00",
+      "supabase_prefix": "magnific/automation/20260526071102-4f96dd/"
+    },
+    {
+      "job_id": "20260526092838-e9a8b8",
+      "created_at": "26 Mei 2026 16:28 WIB",
+      "delete_after": "2026-06-02T09:28:38+00:00",
+      "supabase_prefix": "magnific/automation/20260526092838-e9a8b8/"
+    },
+    {
+      "job_id": "20260526111549-a69442",
+      "created_at": "26 Mei 2026 18:15 WIB",
+      "delete_after": "2026-06-02T11:15:49+00:00",
+      "supabase_prefix": "magnific/automation/20260526111549-a69442/"
+    },
+    {
+      "job_id": "20260526131550-42f121",
+      "created_at": "26 Mei 2026 20:15 WIB",
+      "delete_after": "2026-06-02T13:15:50+00:00",
+      "supabase_prefix": "magnific/automation/20260526131550-42f121/"
+    },
+    {
+      "job_id": "20260526151554-710482",
+      "created_at": "26 Mei 2026 22:15 WIB",
+      "delete_after": "2026-06-02T15:15:54+00:00",
+      "supabase_prefix": "magnific/automation/20260526151554-710482/"
+    },
+    {
+      "job_id": "20260526171546-2d4a7f",
+      "created_at": "27 Mei 2026 00:15 WIB",
+      "delete_after": "2026-06-02T17:15:46+00:00",
+      "supabase_prefix": "magnific/automation/20260526171546-2d4a7f/"
+    },
+    {
+      "job_id": "20260526191555-0a8635",
+      "created_at": "27 Mei 2026 02:15 WIB",
+      "delete_after": "2026-06-02T19:15:55+00:00",
+      "supabase_prefix": "magnific/automation/20260526191555-0a8635/"
+    },
+    {
+      "job_id": "20260526211550-15875c",
+      "created_at": "27 Mei 2026 04:15 WIB",
+      "delete_after": "2026-06-02T21:15:50+00:00",
+      "supabase_prefix": "magnific/automation/20260526211550-15875c/"
+    },
+    {
+      "job_id": "20260526231552-63b59c",
+      "created_at": "27 Mei 2026 06:15 WIB",
+      "delete_after": "2026-06-02T23:15:52+00:00",
+      "supabase_prefix": "magnific/automation/20260526231552-63b59c/"
+    },
+    {
+      "job_id": "20260527011613-eef9f2",
+      "created_at": "27 Mei 2026 08:16 WIB",
+      "delete_after": "2026-06-03T01:16:13+00:00",
+      "supabase_prefix": "magnific/automation/20260527011613-eef9f2/"
+    },
+    {
+      "job_id": "20260527034615-8a92a9",
+      "created_at": "27 Mei 2026 10:46 WIB",
+      "delete_after": "2026-06-03T03:46:15+00:00",
+      "supabase_prefix": "magnific/automation/20260527034615-8a92a9/"
+    },
+    {
+      "job_id": "20260527052527-147180",
+      "created_at": "27 Mei 2026 12:25 WIB",
+      "delete_after": "2026-06-03T05:25:27+00:00",
+      "supabase_prefix": "magnific/automation/20260527052527-147180/"
+    },
+    {
+      "job_id": "20260527074617-5f2f67",
+      "created_at": "27 Mei 2026 14:46 WIB",
+      "delete_after": "2026-06-03T07:46:17+00:00",
+      "supabase_prefix": "magnific/automation/20260527074617-5f2f67/"
+    },
+    {
+      "job_id": "20260527074834-67929d",
+      "created_at": "27 Mei 2026 14:48 WIB",
+      "delete_after": "2026-06-03T07:48:34+00:00",
+      "supabase_prefix": "magnific/automation/20260527074834-67929d/"
+    },
+    {
+      "job_id": "20260527092625-d3b056",
+      "created_at": "27 Mei 2026 16:26 WIB",
+      "delete_after": "2026-06-03T09:26:25+00:00",
+      "supabase_prefix": "magnific/automation/20260527092625-d3b056/"
+    },
+    {
+      "job_id": "20260527112745-0e3086",
+      "created_at": "27 Mei 2026 18:27 WIB",
+      "delete_after": "2026-06-03T11:27:45+00:00",
+      "supabase_prefix": "magnific/automation/20260527112745-0e3086/"
+    },
+    {
+      "job_id": "20260527132740-bcb8b6",
+      "created_at": "27 Mei 2026 20:27 WIB",
+      "delete_after": "2026-06-03T13:27:40+00:00",
+      "supabase_prefix": "magnific/automation/20260527132740-bcb8b6/"
+    },
+    {
+      "job_id": "20260527155950-08317b",
+      "created_at": "27 Mei 2026 22:59 WIB",
+      "delete_after": "2026-06-03T15:59:50+00:00",
+      "supabase_prefix": "magnific/automation/20260527155950-08317b/"
+    },
+    {
+      "job_id": "20260527172736-7d6c88",
+      "created_at": "28 Mei 2026 00:27 WIB",
+      "delete_after": "2026-06-03T17:27:36+00:00",
+      "supabase_prefix": "magnific/automation/20260527172736-7d6c88/"
+    },
+    {
+      "job_id": "20260527192719-c4aee8",
+      "created_at": "28 Mei 2026 02:27 WIB",
+      "delete_after": "2026-06-03T19:27:19+00:00",
+      "supabase_prefix": "magnific/automation/20260527192719-c4aee8/"
+    },
+    {
+      "job_id": "20260527212719-06cd7a",
+      "created_at": "28 Mei 2026 04:27 WIB",
+      "delete_after": "2026-06-03T21:27:19+00:00",
+      "supabase_prefix": "magnific/automation/20260527212719-06cd7a/"
+    },
+    {
+      "job_id": "20260527232735-21910e",
+      "created_at": "28 Mei 2026 06:27 WIB",
+      "delete_after": "2026-06-03T23:27:35+00:00",
+      "supabase_prefix": "magnific/automation/20260527232735-21910e/"
+    },
+    {
+      "job_id": "20260528012720-f8fbfc",
+      "created_at": "28 Mei 2026 08:27 WIB",
+      "delete_after": "2026-06-04T01:27:20+00:00",
+      "supabase_prefix": "magnific/automation/20260528012720-f8fbfc/"
+    },
+    {
+      "job_id": "20260528032725-8d4347",
+      "created_at": "28 Mei 2026 10:27 WIB",
+      "delete_after": "2026-06-04T03:27:25+00:00",
+      "supabase_prefix": "magnific/automation/20260528032725-8d4347/"
+    },
+    {
+      "job_id": "20260528052721-d59f61",
+      "created_at": "28 Mei 2026 12:27 WIB",
+      "delete_after": "2026-06-04T05:27:21+00:00",
+      "supabase_prefix": "magnific/automation/20260528052721-d59f61/"
+    },
+    {
+      "job_id": "20260528072933-cf9351",
+      "created_at": "28 Mei 2026 14:29 WIB",
+      "delete_after": "2026-06-04T07:29:33+00:00",
+      "supabase_prefix": "magnific/automation/20260528072933-cf9351/"
+    },
+    {
+      "job_id": "20260528092733-aaec28",
+      "created_at": "28 Mei 2026 16:27 WIB",
+      "delete_after": "2026-06-04T09:27:33+00:00",
+      "supabase_prefix": "magnific/automation/20260528092733-aaec28/"
+    },
+    {
+      "job_id": "20260528112742-075f11",
+      "created_at": "28 Mei 2026 18:27 WIB",
+      "delete_after": "2026-06-04T11:27:42+00:00",
+      "supabase_prefix": "magnific/automation/20260528112742-075f11/"
+    },
+    {
+      "job_id": "20260528132740-5e9799",
+      "created_at": "28 Mei 2026 20:27 WIB",
+      "delete_after": "2026-06-04T13:27:40+00:00",
+      "supabase_prefix": "magnific/automation/20260528132740-5e9799/"
+    },
+    {
+      "job_id": "20260528152934-408405",
+      "created_at": "28 Mei 2026 22:29 WIB",
+      "delete_after": "2026-06-04T15:29:34+00:00",
+      "supabase_prefix": "magnific/automation/20260528152934-408405/"
+    },
+    {
+      "job_id": "20260528172723-667334",
+      "created_at": "29 Mei 2026 00:27 WIB",
+      "delete_after": "2026-06-04T17:27:23+00:00",
+      "supabase_prefix": "magnific/automation/20260528172723-667334/"
+    },
+    {
+      "job_id": "20260528192733-ad0124",
+      "created_at": "29 Mei 2026 02:27 WIB",
+      "delete_after": "2026-06-04T19:27:33+00:00",
+      "supabase_prefix": "magnific/automation/20260528192733-ad0124/"
+    },
+    {
+      "job_id": "20260528212721-b95880",
+      "created_at": "29 Mei 2026 04:27 WIB",
+      "delete_after": "2026-06-04T21:27:21+00:00",
+      "supabase_prefix": "magnific/automation/20260528212721-b95880/"
+    },
+    {
+      "job_id": "20260528232722-84ce4e",
+      "created_at": "29 Mei 2026 06:27 WIB",
+      "delete_after": "2026-06-04T23:27:22+00:00",
+      "supabase_prefix": "magnific/automation/20260528232722-84ce4e/"
+    },
+    {
+      "job_id": "20260529012718-f0c39a",
+      "created_at": "29 Mei 2026 08:27 WIB",
+      "delete_after": "2026-06-05T01:27:18+00:00",
+      "supabase_prefix": "magnific/automation/20260529012718-f0c39a/"
+    },
+    {
+      "job_id": "20260529032732-4e878a",
+      "created_at": "29 Mei 2026 10:27 WIB",
+      "delete_after": "2026-06-05T03:27:32+00:00",
+      "supabase_prefix": "magnific/automation/20260529032732-4e878a/"
+    },
+    {
+      "job_id": "20260529052726-8fc912",
+      "created_at": "29 Mei 2026 12:27 WIB",
+      "delete_after": "2026-06-05T05:27:26+00:00",
+      "supabase_prefix": "magnific/automation/20260529052726-8fc912/"
+    },
+    {
+      "job_id": "20260529072728-16eb15",
+      "created_at": "29 Mei 2026 14:27 WIB",
+      "delete_after": "2026-06-05T07:27:28+00:00",
+      "supabase_prefix": "magnific/automation/20260529072728-16eb15/"
+    },
+    {
+      "job_id": "20260529101922-c4308f",
+      "created_at": "29 Mei 2026 17:19 WIB",
+      "delete_after": "2026-06-05T10:19:22+00:00",
+      "supabase_prefix": "magnific/automation/20260529101922-c4308f/"
+    },
+    {
+      "job_id": "20260529122219-a8ad08",
+      "created_at": "29 Mei 2026 19:22 WIB",
+      "delete_after": "2026-06-05T12:22:19+00:00",
+      "supabase_prefix": "magnific/automation/20260529122219-a8ad08/"
     }
   ],
   "prepared_jobs": {
-    "20260517161947-a105ce": {
-      "row": {
-        "created_at": "2026-05-17T16:19:47+00:00",
-        "job_id": "20260517161947-a105ce",
-        "status": "NEEDS_REFERENCE_IMAGE",
-        "delete_after": "2026-05-24T16:19:47+00:00",
-        "product_video_url": "https://www.tiktok.com/@keranjang_tiktok08/video/7633400595742756112",
-        "product_url": "https://shop-id.tokopedia.com/pdp/1733143460716119568?source=anchor",
-        "product_title": "RAZTA TUNIK BORDIR LINEN RAMI ATASAN WANITA CASUAL",
-        "motion_tiktok_video_url": "https://www.tiktok.com/@keranjang_tiktok08/video/7630749491703926032",
-        "motion_supabase_video_url": "https://qcugxzxcklzllebgnbun.supabase.co/storage/v1/object/public/C%20storage/magnific/automation/20260517161947-a105ce/motion_source_7630749491703926032.mp4",
-        "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/c4880c28164b44a89eee61cc08143bbb~tplv-aphluv4xwc-crop-webp:960:960.webp?dr=15592&t=555f072d&ps=933b5bde&shp=8dbd94bf&shcp=e1be8f53&idc=my2&from=2378011839",
-        "provider_task_id": "",
-        "provider_work_id": "",
-        "provider_result_url": ""
-      },
-      "product_video_id": "7633400595742756112",
-      "motion_video_id": "7630749491703926032",
-      "video_id": "7630749491703926032",
-      "job_dir": "/root/.openclaw/workspace/tiktok-motion-agent/downloads/20260517161947-a105ce",
-      "master_path": "/root/.openclaw/workspace/tiktok-motion-agent/data/master.png",
-      "product_image_path": "/root/.openclaw/workspace/tiktok-motion-agent/downloads/20260517161947-a105ce/product_reference.webp",
-      "supabase_product_image_url": "https://qcugxzxcklzllebgnbun.supabase.co/storage/v1/object/public/C%20storage/magnific/automation/20260517161947-a105ce/product_reference.webp",
-      "motion_local_video_path": "/root/.openclaw/workspace/tiktok-motion-agent/downloads/20260517161947-a105ce/tiktok_7630749491703926032.mp4",
-      "validation_note": "product_image_from_pdp"
-    },
     "20260518174832-51ae8d": {
       "row": {
-        "created_at": "2026-05-18T17:48:32+00:00",
+        "created_at": "19 Mei 2026 00:48 WIB",
         "job_id": "20260518174832-51ae8d",
         "status": "FAILED",
         "delete_after": "2026-05-25T17:48:32+00:00",
         "product_video_url": "https://www.tiktok.com/@keranjang_tiktok08/video/7633783171003272464",
-        "product_url": "https://shop-id.tokopedia.com/pdp/rupa-way-baju-wanita-oversize-linen-nyaman-trendy/1734096943606302215?source=anchor",
+        "product_url": "https://www.tiktok.com/view/product/1734096943606302215",
         "product_title": "RUPA - Loly Rufle Shirt - Kemeja Oversize Linen Atasan Wanita Model Terbaru",
         "motion_tiktok_video_url": "https://www.tiktok.com/@keranjang_tiktok08/video/7630749491703926032",
         "motion_supabase_video_url": "https://qcugxzxcklzllebgnbun.supabase.co/storage/v1/object/public/C%20storage/magnific/automation/20260518174832-51ae8d/motion_source_7630749491703926032.mp4",
@@ -266,7 +624,8 @@
         "error": "Magnific function failed 429: {'message': 'Hello! You have reached the limit of the free trial usage. You can upgrade to a paid plan here: https://www.magnific.com/developers/dashboard/billing'}",
         "provider_task_id": "",
         "provider_work_id": "",
-        "provider_result_url": ""
+        "provider_result_url": "",
+        "caption": "Kemeja oversize linen dengan ruffle yang santai tapi tetap statement #kemejawanita #linenstyle #ruffleshirt #ootdhijab #outfitinspiration #ootd #fyp"
       },
       "product_video_id": "7633783171003272464",
       "motion_video_id": "7630749491703926032",
@@ -282,12 +641,12 @@
     },
     "20260519030921-8ec615": {
       "row": {
-        "created_at": "2026-05-19T03:09:21+00:00",
+        "created_at": "19 Mei 2026 10:09 WIB",
         "job_id": "20260519030921-8ec615",
         "status": "FAILED",
         "delete_after": "2026-05-26T03:09:21+00:00",
         "product_video_url": "https://www.tiktok.com/@keranjang_tiktok08/video/7640716122790104321",
-        "product_url": "https://shop-id.tokopedia.com/pdp/blouse-jumbo-atasan-wanita-yessa-unique-kancing-busui-model-kekinian/1730825979557283143?source=anchor",
+        "product_url": "https://www.tiktok.com/view/product/1730825979557283143",
         "product_title": "Shakila Blouse Jumbo Terbaru Atasan Wanita Model Terbaru Blouse Korean Style Bahan Premium Pololinen Kancing Aktif Busui Friendly Ukuran XL XXL Kancing Busui Simple Baju Panjang",
         "motion_tiktok_video_url": "https://www.tiktok.com/@keranjang_tiktok08/video/7628484308440747281",
         "motion_supabase_video_url": "https://qcugxzxcklzllebgnbun.supabase.co/storage/v1/object/public/C%20storage/magnific/automation/20260519030921-8ec615/motion_source_7628484308440747281.mp4",
@@ -296,7 +655,8 @@
         "error": "Magnific function failed 429: {'message': 'Hello! You have reached the limit of the free trial usage. You can upgrade to a paid plan here: https://www.magnific.com/developers/dashboard/billing'}",
         "provider_task_id": "",
         "provider_work_id": "",
-        "provider_result_url": ""
+        "provider_result_url": "",
+        "caption": "Blouse jumbo pololinen busui friendly yang nyaman buat aktivitas harian #blousewanita #blousehijab #atasanwanita #ootdhijab #outfitinspiration #ootd #fyp"
       },
       "product_video_id": "7640716122790104321",
       "motion_video_id": "7628484308440747281",
@@ -312,12 +672,12 @@
     },
     "20260519034635-ea8e70": {
       "row": {
-        "created_at": "2026-05-19T03:46:35+00:00",
+        "created_at": "19 Mei 2026 10:46 WIB",
         "job_id": "20260519034635-ea8e70",
         "status": "FAILED",
         "delete_after": "2026-05-26T03:46:35+00:00",
         "product_video_url": "https://www.tiktok.com/@keranjang_tiktok08/video/7630700868681207057",
-        "product_url": "https://shop-id.tokopedia.com/pdp/kemeja-wanita-fadfad-lengan-panjang-retro-2024-atasan-stylish/1730136176409478914?source=anchor",
+        "product_url": "https://www.tiktok.com/view/product/1730136176409478914",
         "product_title": "FADFAD Atasan Kemeja dengan motif garis berlengan panjang gaya kasual untuk wanita",
         "motion_tiktok_video_url": "https://www.tiktok.com/@keranjang_tiktok08/video/7632977524179471633",
         "motion_supabase_video_url": "https://qcugxzxcklzllebgnbun.supabase.co/storage/v1/object/public/C%20storage/magnific/automation/20260519034635-ea8e70/motion_source_7632977524179471633.mp4",
@@ -326,7 +686,8 @@
         "error": "Magnific function failed 429: {'message': 'Hello! You have reached the limit of the free trial usage. You can upgrade to a paid plan here: https://www.magnific.com/developers/dashboard/billing'}",
         "provider_task_id": "",
         "provider_work_id": "",
-        "provider_result_url": ""
+        "provider_result_url": "",
+        "caption": "Kemeja garis lengan panjang yang clean buat look casual hijab #kemejawanita #kemejahijab #stripedshirt #ootdhijab #outfitinspiration #ootd #fyp"
       },
       "product_video_id": "7630700868681207057",
       "motion_video_id": "7632977524179471633",
@@ -339,79 +700,465 @@
       "modest_tryon_prompt": "Create a realistic modest Muslim-friendly fashion try-on image. The person must remain hijab-friendly and fully modest. Keep the hijab/head covering intact and cover the neck/chest area with fabric if needed. ABSOLUTE REQUIREMENTS: no shorts, no bare legs, no exposed thighs, no bare shoulders, no bare upper arms, no cleavage, no exposed chest, no exposed waist or back, no transparent/sheer clothing, no tight body-revealing fit. Do not alter the affiliated product itself: keep the product's original cut, sleeve length, neckline, silhouette, color, pattern, texture, and style as accurately as possible. If the product reference is sleeveless, short, low-cut, cropped, sheer, tight, or revealing, keep that product unchanged and make the full outfit modest by layering separate clothing under or around it: matching long-sleeve inner shirt, high-neck inner layer, leggings/full-length pants, long skirt, and/or outer cardigan/blazer. The product must look like the same affiliated item; modest coverage should come from added inner/outer layers, not by modifying the product design. Final outfit should look natural for Indonesian Muslim women / hijab OOTD: long sleeves, covered chest, covered legs to ankles, loose/comfortable fit.",
       "modest_tryon_prompt_path": "/root/.openclaw/workspace/tiktok-motion-agent/downloads/20260519034635-ea8e70/modest_tryon_prompt.txt",
       "validation_note": "product_image_from_pdp"
+    },
+    "20260521202601-d6803c": {
+      "row": {
+        "created_at": "22 Mei 2026 03:26 WIB",
+        "job_id": "20260521202601-d6803c",
+        "status": "REJECTED",
+        "delete_after": "2026-05-28T20:26:01+00:00",
+        "product_video_url": "https://www.tiktok.com/@keranjang_tiktok08/video/7641209564670577937",
+        "product_url": "https://www.tiktok.com/view/product/1733302923177395856",
+        "product_title": "caomei Cardigan Simple | Atasan Wanita Koreanlook Cute",
+        "caption": "cardigan cute buat ngampus #cardiganwanita #outerwanita #ootdhijab #koreanlook #casualoutfit",
+        "motion_tiktok_video_url": "https://www.tiktok.com/@sukamelisa/video/7635482949458087176",
+        "motion_supabase_video_url": "https://qcugxzxcklzllebgnbun.supabase.co/storage/v1/object/public/C%20storage/magnific/automation/20260521202601-d6803c/motion_source_7635482949458087176.mp4",
+        "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/0dc1b8e2ff2e402cbc7d5a5c46bffbeb~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+        "error": "image generation auth failed"
+      },
+      "product_video_id": "7641209564670577937",
+      "motion_video_id": "7635482949458087176",
+      "video_id": "7635482949458087176",
+      "job_dir": "/root/.openclaw/workspace/tiktok-motion-agent/downloads/20260521202601-d6803c",
+      "master_path": "/root/.openclaw/workspace/tiktok-motion-agent/data/master.png",
+      "product_image_path": "/root/.openclaw/workspace/tiktok-motion-agent/downloads/20260521202601-d6803c/product_reference.jpg",
+      "supabase_product_image_url": "https://qcugxzxcklzllebgnbun.supabase.co/storage/v1/object/public/C%20storage/magnific/automation/20260521202601-d6803c/product_reference.jpg",
+      "motion_local_video_path": "/root/.openclaw/workspace/tiktok-motion-agent/downloads/20260521202601-d6803c/tiktok_7635482949458087176.mp4",
+      "modest_tryon_prompt": "Create a realistic modest Muslim-friendly fashion try-on image. The person must remain hijab-friendly and fully modest. Keep the hijab/head covering intact. The hijab or an added inner scarf/underscarf MUST cover the entire neck, collarbone, upper chest, and any skin between chin and shirt. ABSOLUTE REQUIREMENTS: zero visible neck skin, zero visible collarbone, zero visible upper chest, no open neckline, no V-neck/open collar gap, no cleavage, no exposed chest, no shorts, no bare legs, no exposed thighs, no bare shoulders, no bare upper arms, no exposed waist or back, no transparent/sheer clothing, no tight body-revealing fit. Do not alter the affiliated product itself: keep the product's original cut, sleeve length, neckline, silhouette, color, pattern, texture, and style as accurately as possible. If the product reference is sleeveless, short, low-cut, open-collar, V-neck, cropped, sheer, tight, or revealing, keep that product unchanged and make the full outfit modest by layering separate clothing under or around it: matching long-sleeve inner shirt, high-neck turtleneck/dickey inner layer, neck-covering underscarf, leggings/full-length pants, long skirt, and/or outer cardigan/blazer. For button-up shirts, close the collar area visually with a high-neck inner layer or scarf so no skin is visible below the chin. The product must look like the same affiliated item; modest coverage should come from added inner/outer layers, not by modifying the product design. Final outfit should look natural for Indonesian Muslim women / hijab OOTD: long sleeves, fully covered neck and chest, covered legs to ankles, loose/comfortable fit.",
+      "modest_tryon_prompt_path": "/root/.openclaw/workspace/tiktok-motion-agent/downloads/20260521202601-d6803c/modest_tryon_prompt.txt",
+      "validation_note": "product_image_from_pdp"
+    },
+    "20260522002607-6af003": {
+      "row": {
+        "created_at": "22 Mei 2026 07:26 WIB",
+        "job_id": "20260522002607-6af003",
+        "status": "REJECTED",
+        "delete_after": "2026-05-29T00:26:07+00:00",
+        "product_video_url": "https://www.tiktok.com/@keranjang_tiktok08/video/7642304891561577744",
+        "product_url": "https://www.tiktok.com/view/product/1732422056334951512",
+        "product_title": "Alice Cardy by Dippew | cardigan atasan wanita rib",
+        "caption": "cardy rib cakep #cardiganwanita #outerhijab #ootdwanita #atasanwanita #casualhijab",
+        "motion_tiktok_video_url": "https://www.tiktok.com/@keranjang_tiktok08/video/7623034397452733697",
+        "motion_supabase_video_url": "https://qcugxzxcklzllebgnbun.supabase.co/storage/v1/object/public/C%20storage/magnific/automation/20260522002607-6af003/motion_source_7623034397452733697.mp4",
+        "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/65c9bf12dea94a84a7addfa99ef0bfe4~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+        "error": "image generation auth failed"
+      },
+      "product_video_id": "7642304891561577744",
+      "motion_video_id": "7623034397452733697",
+      "video_id": "7623034397452733697",
+      "job_dir": "/root/.openclaw/workspace/tiktok-motion-agent/downloads/20260522002607-6af003",
+      "master_path": "/root/.openclaw/workspace/tiktok-motion-agent/data/master.png",
+      "product_image_path": "/root/.openclaw/workspace/tiktok-motion-agent/downloads/20260522002607-6af003/product_reference.jpg",
+      "supabase_product_image_url": "https://qcugxzxcklzllebgnbun.supabase.co/storage/v1/object/public/C%20storage/magnific/automation/20260522002607-6af003/product_reference.jpg",
+      "motion_local_video_path": "/root/.openclaw/workspace/tiktok-motion-agent/downloads/20260522002607-6af003/tiktok_7623034397452733697.mp4",
+      "modest_tryon_prompt": "Create a realistic modest Muslim-friendly fashion try-on image. The person must remain hijab-friendly and fully modest. Keep the hijab/head covering intact. The hijab or an added inner scarf/underscarf MUST cover the entire neck, collarbone, upper chest, and any skin between chin and shirt. ABSOLUTE REQUIREMENTS: zero visible neck skin, zero visible collarbone, zero visible upper chest, no open neckline, no V-neck/open collar gap, no cleavage, no exposed chest, no shorts, no bare legs, no exposed thighs, no bare shoulders, no bare upper arms, no exposed waist or back, no transparent/sheer clothing, no tight body-revealing fit. Do not alter the affiliated product itself: keep the product's original cut, sleeve length, neckline, silhouette, color, pattern, texture, and style as accurately as possible. If the product reference is sleeveless, short, low-cut, open-collar, V-neck, cropped, sheer, tight, or revealing, keep that product unchanged and make the full outfit modest by layering separate clothing under or around it: matching long-sleeve inner shirt, high-neck turtleneck/dickey inner layer, neck-covering underscarf, leggings/full-length pants, long skirt, and/or outer cardigan/blazer. For button-up shirts, close the collar area visually with a high-neck inner layer or scarf so no skin is visible below the chin. The product must look like the same affiliated item; modest coverage should come from added inner/outer layers, not by modifying the product design. Final outfit should look natural for Indonesian Muslim women / hijab OOTD: long sleeves, fully covered neck and chest, covered legs to ankles, loose/comfortable fit.",
+      "modest_tryon_prompt_path": "/root/.openclaw/workspace/tiktok-motion-agent/downloads/20260522002607-6af003/modest_tryon_prompt.txt",
+      "validation_note": "product_image_from_pdp"
+    },
+    "20260522022656-35ebf2": {
+      "row": {
+        "created_at": "22 Mei 2026 09:26 WIB",
+        "job_id": "20260522022656-35ebf2",
+        "status": "FAILED",
+        "delete_after": "2026-05-29T02:26:56+00:00",
+        "product_video_url": "https://www.tiktok.com/@keranjang_tiktok08/video/7639610156199726337",
+        "product_url": "https://www.tiktok.com/view/product/1731650279006438567",
+        "product_title": "[ READY STOK ] SINAR - SUZY BALLOON KNIT TOP BLOUSE BUSUI FRIENDLY Baju Atasan Wanita Balon Knit Tebal Kancing Bunga Tangan Panjang  Cewek Dewasa Casual Knitwear",
+        "caption": "rajut balon busui cakep #blousewanita #atasanrajut #ootdhijab #busuifriendly",
+        "motion_tiktok_video_url": "https://www.tiktok.com/@keranjang_tiktok08/video/7638901955653307649",
+        "motion_supabase_video_url": "https://qcugxzxcklzllebgnbun.supabase.co/storage/v1/object/public/C%20storage/magnific/automation/20260522022656-35ebf2/motion_source_7638901955653307649.mp4",
+        "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/2cfc1bf8ef4d47338ed6d3f86684f9fc~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+        "error": "image generation auth token invalidated"
+      },
+      "product_video_id": "7639610156199726337",
+      "motion_video_id": "7638901955653307649",
+      "video_id": "7638901955653307649",
+      "job_dir": "/root/.openclaw/workspace/tiktok-motion-agent/downloads/20260522022656-35ebf2",
+      "master_path": "/root/.openclaw/workspace/tiktok-motion-agent/data/master.png",
+      "product_image_path": "/root/.openclaw/workspace/tiktok-motion-agent/downloads/20260522022656-35ebf2/product_reference.jpg",
+      "supabase_product_image_url": "https://qcugxzxcklzllebgnbun.supabase.co/storage/v1/object/public/C%20storage/magnific/automation/20260522022656-35ebf2/product_reference.jpg",
+      "motion_local_video_path": "/root/.openclaw/workspace/tiktok-motion-agent/downloads/20260522022656-35ebf2/tiktok_7638901955653307649.mp4",
+      "modest_tryon_prompt": "Create a realistic modest Muslim-friendly fashion try-on image. The person must remain hijab-friendly and fully modest. Keep the hijab/head covering intact. The hijab or an added inner scarf/underscarf MUST cover the entire neck, collarbone, upper chest, and any skin between chin and shirt. ABSOLUTE REQUIREMENTS: zero visible neck skin, zero visible collarbone, zero visible upper chest, no open neckline, no V-neck/open collar gap, no cleavage, no exposed chest, no shorts, no bare legs, no exposed thighs, no bare shoulders, no bare upper arms, no exposed waist or back, no transparent/sheer clothing, no tight body-revealing fit. Do not alter the affiliated product itself: keep the product's original cut, sleeve length, neckline, silhouette, color, pattern, texture, and style as accurately as possible. If the product reference is sleeveless, short, low-cut, open-collar, V-neck, cropped, sheer, tight, or revealing, keep that product unchanged and make the full outfit modest by layering separate clothing under or around it: matching long-sleeve inner shirt, high-neck turtleneck/dickey inner layer, neck-covering underscarf, leggings/full-length pants, long skirt, and/or outer cardigan/blazer. For button-up shirts, close the collar area visually with a high-neck inner layer or scarf so no skin is visible below the chin. The product must look like the same affiliated item; modest coverage should come from added inner/outer layers, not by modifying the product design. Final outfit should look natural for Indonesian Muslim women / hijab OOTD: long sleeves, fully covered neck and chest, covered legs to ankles, loose/comfortable fit.",
+      "modest_tryon_prompt_path": "/root/.openclaw/workspace/tiktok-motion-agent/downloads/20260522022656-35ebf2/modest_tryon_prompt.txt",
+      "validation_note": "product_image_from_pdp"
+    },
+    "20260522042720-f8a0ae": {
+      "row": {
+        "created_at": "22 Mei 2026 11:27 WIB",
+        "job_id": "20260522042720-f8a0ae",
+        "status": "REJECTED",
+        "delete_after": "2026-05-29T04:27:20+00:00",
+        "product_video_url": "https://www.tiktok.com/@keranjang_tiktok08/video/7635975587244379408",
+        "product_url": "https://www.tiktok.com/view/product/1729704744278656013",
+        "product_title": "SANJU BLOUSE -HALINKA Shirt Kemeja Kancing Kantor Formal Korean Style Baju Atasan Basic Katun Linen Premium Nyaman Elegan",
+        "caption": "blouse kantor cakep #blousewanita #kemejahijab #ootdkantor #atasanlinen",
+        "motion_tiktok_video_url": "https://www.tiktok.com/@keranjang_tiktok08/video/7632598898267196688",
+        "motion_supabase_video_url": "https://qcugxzxcklzllebgnbun.supabase.co/storage/v1/object/public/C%20storage/magnific/automation/20260522042720-f8a0ae/motion_source_7632598898267196688.mp4",
+        "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/b8cbfbedea4a4dc484581276231b85db~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+        "error": "image generation auth failed"
+      },
+      "product_video_id": "7635975587244379408",
+      "motion_video_id": "7632598898267196688",
+      "video_id": "7632598898267196688",
+      "job_dir": "/root/.openclaw/workspace/tiktok-motion-agent/downloads/20260522042720-f8a0ae",
+      "master_path": "/root/.openclaw/workspace/tiktok-motion-agent/data/master.png",
+      "product_image_path": "/root/.openclaw/workspace/tiktok-motion-agent/downloads/20260522042720-f8a0ae/product_reference.jpg",
+      "supabase_product_image_url": "https://qcugxzxcklzllebgnbun.supabase.co/storage/v1/object/public/C%20storage/magnific/automation/20260522042720-f8a0ae/product_reference.jpg",
+      "motion_local_video_path": "/root/.openclaw/workspace/tiktok-motion-agent/downloads/20260522042720-f8a0ae/tiktok_7632598898267196688.mp4",
+      "modest_tryon_prompt": "Create a realistic modest Muslim-friendly fashion try-on image. The person must remain hijab-friendly and fully modest. Keep the hijab/head covering intact. The hijab or an added inner scarf/underscarf MUST cover the entire neck, collarbone, upper chest, and any skin between chin and shirt. ABSOLUTE REQUIREMENTS: zero visible neck skin, zero visible collarbone, zero visible upper chest, no open neckline, no V-neck/open collar gap, no cleavage, no exposed chest, no shorts, no bare legs, no exposed thighs, no bare shoulders, no bare upper arms, no exposed waist or back, no transparent/sheer clothing, no tight body-revealing fit. Do not alter the affiliated product itself: keep the product's original cut, sleeve length, neckline, silhouette, color, pattern, texture, and style as accurately as possible. If the product reference is sleeveless, short, low-cut, open-collar, V-neck, cropped, sheer, tight, or revealing, keep that product unchanged and make the full outfit modest by layering separate clothing under or around it: matching long-sleeve inner shirt, high-neck turtleneck/dickey inner layer, neck-covering underscarf, leggings/full-length pants, long skirt, and/or outer cardigan/blazer. For button-up shirts, close the collar area visually with a high-neck inner layer or scarf so no skin is visible below the chin. The product must look like the same affiliated item; modest coverage should come from added inner/outer layers, not by modifying the product design. Final outfit should look natural for Indonesian Muslim women / hijab OOTD: long sleeves, fully covered neck and chest, covered legs to ankles, loose/comfortable fit.",
+      "modest_tryon_prompt_path": "/root/.openclaw/workspace/tiktok-motion-agent/downloads/20260522042720-f8a0ae/modest_tryon_prompt.txt",
+      "validation_note": "product_image_from_pdp"
+    },
+    "20260522162603-ad8f33": {
+      "row": {
+        "created_at": "22 Mei 2026 23:26 WIB",
+        "job_id": "20260522162603-ad8f33",
+        "status": "REJECTED",
+        "delete_after": "2026-05-29T16:26:03+00:00",
+        "product_video_url": "https://www.tiktok.com/@keranjang_tiktok08/video/7633333513575550225",
+        "product_url": "https://www.tiktok.com/view/product/1732114031493350809",
+        "product_title": "Nola Blouse List Putih Belah Samping Bahan SnowRib Orimoza Nola Blouse Original",
+        "caption": "nola blouse clean bgt #blousehijab #atasanwanita #ootdwanita #orimoza #fashionmuslimah",
+        "motion_tiktok_video_url": "https://www.tiktok.com/@keranjang_tiktok08/video/7625251562922855681",
+        "motion_supabase_video_url": "https://qcugxzxcklzllebgnbun.supabase.co/storage/v1/object/public/C%20storage/magnific/automation/20260522162603-ad8f33/motion_source_7625251562922855681.mp4",
+        "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/4bcd087b64414a9ea3179b5ff80e8e41~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+        "error": "image generation auth failed"
+      },
+      "product_video_id": "7633333513575550225",
+      "motion_video_id": "7625251562922855681",
+      "video_id": "7625251562922855681",
+      "job_dir": "/root/.openclaw/workspace/tiktok-motion-agent/downloads/20260522162603-ad8f33",
+      "master_path": "/root/.openclaw/workspace/tiktok-motion-agent/data/master.png",
+      "product_image_path": "/root/.openclaw/workspace/tiktok-motion-agent/downloads/20260522162603-ad8f33/product_reference.jpg",
+      "supabase_product_image_url": "https://qcugxzxcklzllebgnbun.supabase.co/storage/v1/object/public/C%20storage/magnific/automation/20260522162603-ad8f33/product_reference.jpg",
+      "motion_local_video_path": "/root/.openclaw/workspace/tiktok-motion-agent/downloads/20260522162603-ad8f33/tiktok_7625251562922855681.mp4",
+      "modest_tryon_prompt": "Create a realistic modest Muslim-friendly fashion try-on image. The person must remain hijab-friendly and fully modest. Keep the hijab/head covering intact. The hijab or an added inner scarf/underscarf MUST cover the entire neck, collarbone, upper chest, and any skin between chin and shirt. ABSOLUTE REQUIREMENTS: zero visible neck skin, zero visible collarbone, zero visible upper chest, no open neckline, no V-neck/open collar gap, no cleavage, no exposed chest, no shorts, no bare legs, no exposed thighs, no bare shoulders, no bare upper arms, no exposed waist or back, no transparent/sheer clothing, no tight body-revealing fit. Do not alter the affiliated product itself: keep the product's original cut, sleeve length, neckline, silhouette, color, pattern, texture, and style as accurately as possible. If the product reference is sleeveless, short, low-cut, open-collar, V-neck, cropped, sheer, tight, or revealing, keep that product unchanged and make the full outfit modest by layering separate clothing under or around it: matching long-sleeve inner shirt, high-neck turtleneck/dickey inner layer, neck-covering underscarf, leggings/full-length pants, long skirt, and/or outer cardigan/blazer. For button-up shirts, close the collar area visually with a high-neck inner layer or scarf so no skin is visible below the chin. The product must look like the same affiliated item; modest coverage should come from added inner/outer layers, not by modifying the product design. Final outfit should look natural for Indonesian Muslim women / hijab OOTD: long sleeves, fully covered neck and chest, covered legs to ankles, loose/comfortable fit.",
+      "modest_tryon_prompt_path": "/root/.openclaw/workspace/tiktok-motion-agent/downloads/20260522162603-ad8f33/modest_tryon_prompt.txt",
+      "validation_note": "product_image_from_pdp"
+    },
+    "20260522222548-f695c2": {
+      "row": {
+        "created_at": "23 Mei 2026 05:25 WIB",
+        "job_id": "20260522222548-f695c2",
+        "status": "REJECTED",
+        "delete_after": "2026-05-29T22:25:48+00:00",
+        "product_video_url": "https://www.tiktok.com/@sukamelisa/video/7639259873183567111",
+        "product_url": "https://www.tiktok.com/view/product/1733605444551870361",
+        "product_title": "Byroo - Denimwave Shirt Wanita",
+        "caption": "denimnya cakep bgt #kemejadenim #ootdwanita #stylehijab #casualfit #fyp",
+        "motion_tiktok_video_url": "https://www.tiktok.com/@sukamelisa/video/7630312200481033490",
+        "motion_supabase_video_url": "https://qcugxzxcklzllebgnbun.supabase.co/storage/v1/object/public/C%20storage/magnific/automation/20260522222548-f695c2/motion_source_7630312200481033490.mp4",
+        "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/311cbf21288e4ecebcc15b1c72c06727~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+        "provider_task_id": "231bcb7d-9242-4d85-8830-93fd31c59ac4",
+        "provider_work_id": "6a10d8af9450686fe2f220f6",
+        "provider_result_url": "",
+        "error": "video generation stalled: no result after extended wait",
+        "provider": "dreamface",
+        "input_image_url": "https://qcugxzxcklzllebgnbun.supabase.co/storage/v1/object/public/C%20storage/magnific/automation/20260522222548-f695c2/generated_reference.jpg",
+        "provider_auth_label": "dreamface-1",
+        "provider_status": "-1"
+      },
+      "product_video_id": "7639259873183567111",
+      "motion_video_id": "7630312200481033490",
+      "video_id": "7630312200481033490",
+      "job_dir": "/root/.openclaw/workspace/tiktok-motion-agent/downloads/20260522222548-f695c2",
+      "master_path": "/root/.openclaw/workspace/tiktok-motion-agent/data/master.png",
+      "product_image_path": "/root/.openclaw/workspace/tiktok-motion-agent/downloads/20260522222548-f695c2/product_reference.jpg",
+      "supabase_product_image_url": "https://qcugxzxcklzllebgnbun.supabase.co/storage/v1/object/public/C%20storage/magnific/automation/20260522222548-f695c2/product_reference.jpg",
+      "motion_local_video_path": "/root/.openclaw/workspace/tiktok-motion-agent/downloads/20260522222548-f695c2/tiktok_7630312200481033490.mp4",
+      "modest_tryon_prompt": "Create a realistic modest Muslim-friendly fashion try-on image. The person must remain hijab-friendly and fully modest. Keep the hijab/head covering intact. The hijab or an added inner scarf/underscarf MUST cover the entire neck, collarbone, upper chest, and any skin between chin and shirt. ABSOLUTE REQUIREMENTS: zero visible neck skin, zero visible collarbone, zero visible upper chest, no open neckline, no V-neck/open collar gap, no cleavage, no exposed chest, no shorts, no bare legs, no exposed thighs, no bare shoulders, no bare upper arms, no exposed waist or back, no transparent/sheer clothing, no tight body-revealing fit. Do not alter the affiliated product itself: keep the product's original cut, sleeve length, neckline, silhouette, color, pattern, texture, and style as accurately as possible. If the product reference is sleeveless, short, low-cut, open-collar, V-neck, cropped, sheer, tight, or revealing, keep that product unchanged and make the full outfit modest by layering separate clothing under or around it: matching long-sleeve inner shirt, high-neck turtleneck/dickey inner layer, neck-covering underscarf, leggings/full-length pants, long skirt, and/or outer cardigan/blazer. For button-up shirts, close the collar area visually with a high-neck inner layer or scarf so no skin is visible below the chin. The product must look like the same affiliated item; modest coverage should come from added inner/outer layers, not by modifying the product design. Final outfit should look natural for Indonesian Muslim women / hijab OOTD: long sleeves, fully covered neck and chest, covered legs to ankles, loose/comfortable fit.",
+      "modest_tryon_prompt_path": "/root/.openclaw/workspace/tiktok-motion-agent/downloads/20260522222548-f695c2/modest_tryon_prompt.txt",
+      "validation_note": "product_image_from_pdp"
+    },
+    "20260525101916-a0d671": {
+      "row": {
+        "created_at": "25 Mei 2026 17:19 WIB",
+        "job_id": "20260525101916-a0d671",
+        "status": "NEEDS_REFERENCE_IMAGE",
+        "delete_after": "2026-06-01T10:19:16+00:00",
+        "product_video_url": "https://www.tiktok.com/@keranjang_tiktok08/video/7630749491703926032",
+        "product_url": "https://www.tiktok.com/view/product/1733463939708978748",
+        "product_title": "Seemooi - Blouse Wanita Smock Pinggang Atasan Lengan Panjang Casual Elegan Motif Salur Kecil",
+        "caption": "blouse simple cakep #blousewanita #atasanwanita #outfitinspiration #blouse #kemejawanita #fashionwanita",
+        "motion_tiktok_video_url": "https://www.tiktok.com/@riskifatmaa/video/7640775684977134869",
+        "motion_supabase_video_url": "https://qcugxzxcklzllebgnbun.supabase.co/storage/v1/object/public/C%20storage/magnific/automation/20260525101916-a0d671/motion_source_7640775684977134869.mp4",
+        "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/60644409e74a457ca1842bd6bd44aece~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732"
+      },
+      "product_video_id": "7630749491703926032",
+      "motion_video_id": "7640775684977134869",
+      "video_id": "7640775684977134869",
+      "job_dir": "/root/.openclaw/workspace/tiktok-motion-agent/downloads/20260525101916-a0d671",
+      "master_path": "/root/.openclaw/workspace/tiktok-motion-agent/data/master.png",
+      "product_image_path": "/root/.openclaw/workspace/tiktok-motion-agent/downloads/20260525101916-a0d671/product_reference.jpg",
+      "supabase_product_image_url": "https://qcugxzxcklzllebgnbun.supabase.co/storage/v1/object/public/C%20storage/magnific/automation/20260525101916-a0d671/product_reference.jpg",
+      "motion_local_video_path": "/root/.openclaw/workspace/tiktok-motion-agent/downloads/20260525101916-a0d671/tiktok_7640775684977134869.mp4",
+      "modest_tryon_prompt": "Create a realistic modest Muslim-friendly fashion try-on image. The person must remain hijab-friendly and fully modest. Keep the hijab/head covering intact. The hijab or an added inner scarf/underscarf MUST cover the entire neck, collarbone, upper chest, and any skin between chin and shirt. ABSOLUTE REQUIREMENTS: zero visible neck skin, zero visible collarbone, zero visible upper chest, no open neckline, no V-neck/open collar gap, no cleavage, no exposed chest, no shorts, no bare legs, no exposed thighs, no bare shoulders, no bare upper arms, no exposed waist or back, no transparent/sheer clothing, no tight body-revealing fit. Do not alter the affiliated product itself: keep the product's original cut, sleeve length, neckline, silhouette, color, pattern, texture, and style as accurately as possible. If the product reference is sleeveless, short, low-cut, open-collar, V-neck, cropped, sheer, tight, or revealing, keep that product unchanged and make the full outfit modest by layering separate clothing under or around it: matching long-sleeve inner shirt, high-neck turtleneck/dickey inner layer, neck-covering underscarf, leggings/full-length pants, long skirt, and/or outer cardigan/blazer. For button-up shirts, close the collar area visually with a high-neck inner layer or scarf so no skin is visible below the chin. The product must look like the same affiliated item; modest coverage should come from added inner/outer layers, not by modifying the product design. Final outfit should look natural for Indonesian Muslim women / hijab OOTD: long sleeves, fully covered neck and chest, covered legs to ankles, loose/comfortable fit.",
+      "modest_tryon_prompt_path": "/root/.openclaw/workspace/tiktok-motion-agent/downloads/20260525101916-a0d671/modest_tryon_prompt.txt",
+      "validation_note": "product_image_from_pdp"
+    },
+    "20260527074617-5f2f67": {
+      "row": {
+        "created_at": "27 Mei 2026 14:46 WIB",
+        "job_id": "20260527074617-5f2f67",
+        "status": "NEEDS_REFERENCE_IMAGE",
+        "delete_after": "2026-06-03T07:46:17+00:00",
+        "product_video_url": "https://www.tiktok.com/@sukamelisa/video/7643718009667865874",
+        "product_url": "https://www.tiktok.com/view/product/1729626181861083368",
+        "product_title": "25OCLOCK - Black Shirt Lengan Panjang V-Neck / Kemeja Hitam Trumpet Sleeve",
+        "caption": "kemejanya clean bgt #kemejawanita #atasanwanita #fashionwanita #blouse #blousewanita #outfitinspiration",
+        "motion_tiktok_video_url": "https://www.tiktok.com/@keranjang_tiktok08/video/7643365162421914896",
+        "motion_supabase_video_url": "https://qcugxzxcklzllebgnbun.supabase.co/storage/v1/object/public/C%20storage/magnific/automation/20260527074617-5f2f67/motion_source_7643365162421914896.mp4",
+        "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/f26c7353f52348bfab3fc5fe4a047882~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732"
+      },
+      "product_video_id": "7643718009667865874",
+      "motion_video_id": "7643365162421914896",
+      "video_id": "7643365162421914896",
+      "job_dir": "/root/.openclaw/workspace/tiktok-motion-agent/downloads/20260527074617-5f2f67",
+      "master_path": "/root/.openclaw/workspace/tiktok-motion-agent/data/master.png",
+      "product_image_path": "/root/.openclaw/workspace/tiktok-motion-agent/downloads/20260527074617-5f2f67/product_reference.jpg",
+      "supabase_product_image_url": "https://qcugxzxcklzllebgnbun.supabase.co/storage/v1/object/public/C%20storage/magnific/automation/20260527074617-5f2f67/product_reference.jpg",
+      "motion_local_video_path": "/root/.openclaw/workspace/tiktok-motion-agent/downloads/20260527074617-5f2f67/tiktok_7643365162421914896.mp4",
+      "modest_tryon_prompt": "Create a realistic modest Muslim-friendly fashion try-on image. The person must remain hijab-friendly and fully modest. Keep the hijab/head covering intact. The hijab or an added inner scarf/underscarf MUST cover the entire neck, collarbone, upper chest, and any skin between chin and shirt. ABSOLUTE REQUIREMENTS: zero visible neck skin, zero visible collarbone, zero visible upper chest, no open neckline, no V-neck/open collar gap, no cleavage, no exposed chest, no shorts, no bare legs, no exposed thighs, no bare shoulders, no bare upper arms, no exposed waist or back, no transparent/sheer clothing, no tight body-revealing fit. Do not alter the affiliated product itself: keep the product's original cut, sleeve length, neckline, silhouette, color, pattern, texture, and style as accurately as possible. If the product reference is sleeveless, short, low-cut, open-collar, V-neck, cropped, sheer, tight, or revealing, keep that product unchanged and make the full outfit modest by layering separate clothing under or around it: matching long-sleeve inner shirt, high-neck turtleneck/dickey inner layer, neck-covering underscarf, leggings/full-length pants, long skirt, and/or outer cardigan/blazer. For button-up shirts, close the collar area visually with a high-neck inner layer or scarf so no skin is visible below the chin. The product must look like the same affiliated item; modest coverage should come from added inner/outer layers, not by modifying the product design. Final outfit should look natural for Indonesian Muslim women / hijab OOTD: long sleeves, fully covered neck and chest, covered legs to ankles, loose/comfortable fit.",
+      "modest_tryon_prompt_path": "/root/.openclaw/workspace/tiktok-motion-agent/downloads/20260527074617-5f2f67/modest_tryon_prompt.txt",
+      "validation_note": "product_image_from_pdp"
+    },
+    "20260527112745-0e3086": {
+      "row": {
+        "created_at": "27 Mei 2026 18:27 WIB",
+        "job_id": "20260527112745-0e3086",
+        "status": "REJECTED",
+        "delete_after": "2026-06-03T11:27:45+00:00",
+        "product_video_url": "https://www.tiktok.com/@keranjang_tiktok08/video/7625251562922855681",
+        "product_url": "https://www.tiktok.com/view/product/1732329534354523410",
+        "product_title": "Laura Kemeja Stripe Motif Garis Modern Ukuran XL XXL XXXL Kancing Aktif Desain Rapi Stylish",
+        "caption": "stripe rapi buat ngantor #kemejastripe #kemejawanita #ootdhijab #bigsize #fashionwanita",
+        "motion_tiktok_video_url": "https://www.tiktok.com/@keranjang_tiktok08/video/7629598602167471377",
+        "motion_supabase_video_url": "https://qcugxzxcklzllebgnbun.supabase.co/storage/v1/object/public/C%20storage/magnific/automation/20260527112745-0e3086/motion_source_7629598602167471377.mp4",
+        "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/55ab6a8d4e004debbea581710c5b76eb~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+        "error": "image generation quota limit"
+      },
+      "product_video_id": "7625251562922855681",
+      "motion_video_id": "7629598602167471377",
+      "video_id": "7629598602167471377",
+      "job_dir": "/root/.openclaw/workspace/tiktok-motion-agent/downloads/20260527112745-0e3086",
+      "master_path": "/root/.openclaw/workspace/tiktok-motion-agent/data/master.png",
+      "product_image_path": "/root/.openclaw/workspace/tiktok-motion-agent/downloads/20260527112745-0e3086/product_reference.jpg",
+      "supabase_product_image_url": "https://qcugxzxcklzllebgnbun.supabase.co/storage/v1/object/public/C%20storage/magnific/automation/20260527112745-0e3086/product_reference.jpg",
+      "motion_local_video_path": "/root/.openclaw/workspace/tiktok-motion-agent/downloads/20260527112745-0e3086/tiktok_7629598602167471377.mp4",
+      "modest_tryon_prompt": "Create a realistic modest Muslim-friendly fashion try-on image. The person must remain hijab-friendly and fully modest. Keep the hijab/head covering intact. The hijab or an added inner scarf/underscarf MUST cover the entire neck, collarbone, upper chest, and any skin between chin and shirt. ABSOLUTE REQUIREMENTS: zero visible neck skin, zero visible collarbone, zero visible upper chest, no open neckline, no V-neck/open collar gap, no cleavage, no exposed chest, no shorts, no bare legs, no exposed thighs, no bare shoulders, no bare upper arms, no exposed waist or back, no transparent/sheer clothing, no tight body-revealing fit. Do not alter the affiliated product itself: keep the product's original cut, sleeve length, neckline, silhouette, color, pattern, texture, and style as accurately as possible. If the product reference is sleeveless, short, low-cut, open-collar, V-neck, cropped, sheer, tight, or revealing, keep that product unchanged and make the full outfit modest by layering separate clothing under or around it: matching long-sleeve inner shirt, high-neck turtleneck/dickey inner layer, neck-covering underscarf, leggings/full-length pants, long skirt, and/or outer cardigan/blazer. For button-up shirts, close the collar area visually with a high-neck inner layer or scarf so no skin is visible below the chin. The product must look like the same affiliated item; modest coverage should come from added inner/outer layers, not by modifying the product design. Final outfit should look natural for Indonesian Muslim women / hijab OOTD: long sleeves, fully covered neck and chest, covered legs to ankles, loose/comfortable fit.",
+      "modest_tryon_prompt_path": "/root/.openclaw/workspace/tiktok-motion-agent/downloads/20260527112745-0e3086/modest_tryon_prompt.txt",
+      "validation_note": "product_image_from_pdp"
+    },
+    "20260527155950-08317b": {
+      "row": {
+        "created_at": "27 Mei 2026 22:59 WIB",
+        "job_id": "20260527155950-08317b",
+        "status": "FAILED",
+        "delete_after": "2026-06-03T15:59:50+00:00",
+        "product_video_url": "https://www.tiktok.com/@riskifatmaa/video/7638836479325719829",
+        "product_url": "https://www.tiktok.com/view/product/1734364082822677772",
+        "product_title": "Aeera Blouse Denim Wanita Atasan Kemeja Wispie Jeans Formal Lengan Panjang Peplum",
+        "caption": "denim peplum cakep bgt #blousedenim #kemejawanita #hijabootd #atasanwanita #ootd",
+        "motion_tiktok_video_url": "https://www.tiktok.com/@keranjang_tiktok08/video/7635885580257103120",
+        "motion_supabase_video_url": "https://qcugxzxcklzllebgnbun.supabase.co/storage/v1/object/public/C%20storage/magnific/automation/20260527155950-08317b/motion_source_7635885580257103120.mp4",
+        "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/66b1f583de0c4848a6dcf03244e51839~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+        "error": "image generation quota reached"
+      },
+      "product_video_id": "7638836479325719829",
+      "motion_video_id": "7635885580257103120",
+      "video_id": "7635885580257103120",
+      "job_dir": "/root/.openclaw/workspace/tiktok-motion-agent/downloads/20260527155950-08317b",
+      "master_path": "/root/.openclaw/workspace/tiktok-motion-agent/data/master.png",
+      "product_image_path": "/root/.openclaw/workspace/tiktok-motion-agent/downloads/20260527155950-08317b/product_reference.jpg",
+      "supabase_product_image_url": "https://qcugxzxcklzllebgnbun.supabase.co/storage/v1/object/public/C%20storage/magnific/automation/20260527155950-08317b/product_reference.jpg",
+      "motion_local_video_path": "/root/.openclaw/workspace/tiktok-motion-agent/downloads/20260527155950-08317b/tiktok_7635885580257103120.mp4",
+      "modest_tryon_prompt": "Create a realistic modest Muslim-friendly fashion try-on image. The person must remain hijab-friendly and fully modest. Keep the hijab/head covering intact. The hijab or an added inner scarf/underscarf MUST cover the entire neck, collarbone, upper chest, and any skin between chin and shirt. ABSOLUTE REQUIREMENTS: zero visible neck skin, zero visible collarbone, zero visible upper chest, no open neckline, no V-neck/open collar gap, no cleavage, no exposed chest, no shorts, no bare legs, no exposed thighs, no bare shoulders, no bare upper arms, no exposed waist or back, no transparent/sheer clothing, no tight body-revealing fit. Do not alter the affiliated product itself: keep the product's original cut, sleeve length, neckline, silhouette, color, pattern, texture, and style as accurately as possible. If the product reference is sleeveless, short, low-cut, open-collar, V-neck, cropped, sheer, tight, or revealing, keep that product unchanged and make the full outfit modest by layering separate clothing under or around it: matching long-sleeve inner shirt, high-neck turtleneck/dickey inner layer, neck-covering underscarf, leggings/full-length pants, long skirt, and/or outer cardigan/blazer. For button-up shirts, close the collar area visually with a high-neck inner layer or scarf so no skin is visible below the chin. The product must look like the same affiliated item; modest coverage should come from added inner/outer layers, not by modifying the product design. Final outfit should look natural for Indonesian Muslim women / hijab OOTD: long sleeves, fully covered neck and chest, covered legs to ankles, loose/comfortable fit.",
+      "modest_tryon_prompt_path": "/root/.openclaw/workspace/tiktok-motion-agent/downloads/20260527155950-08317b/modest_tryon_prompt.txt",
+      "validation_note": "product_image_from_pdp"
+    },
+    "20260527212719-06cd7a": {
+      "row": {
+        "created_at": "28 Mei 2026 04:27 WIB",
+        "job_id": "20260527212719-06cd7a",
+        "status": "REJECTED",
+        "delete_after": "2026-06-03T21:27:19+00:00",
+        "product_video_url": "https://www.tiktok.com/@keranjang_tiktok08/video/7640113592607476993",
+        "product_url": "https://www.tiktok.com/view/product/1735207284407305678",
+        "product_title": "UNLOCK OUTFITS Tiara Soft Denim Atasan Kerah Ruffle Blouse Original Premium",
+        "caption": "ruffle denim manis bgt #blousewanita #atasanwanita #ootd #hijabstyle #denim",
+        "motion_tiktok_video_url": "https://www.tiktok.com/@keranjang_tiktok08/video/7640716122790104321",
+        "motion_supabase_video_url": "https://qcugxzxcklzllebgnbun.supabase.co/storage/v1/object/public/C%20storage/magnific/automation/20260527212719-06cd7a/motion_source_7640716122790104321.mp4",
+        "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/6488a999292d4a14ad5f52851ba70ff9~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+        "error": "image generation quota limit"
+      },
+      "product_video_id": "7640113592607476993",
+      "motion_video_id": "7640716122790104321",
+      "video_id": "7640716122790104321",
+      "job_dir": "/root/.openclaw/workspace/tiktok-motion-agent/downloads/20260527212719-06cd7a",
+      "master_path": "/root/.openclaw/workspace/tiktok-motion-agent/data/master.png",
+      "product_image_path": "/root/.openclaw/workspace/tiktok-motion-agent/downloads/20260527212719-06cd7a/product_reference.jpg",
+      "supabase_product_image_url": "https://qcugxzxcklzllebgnbun.supabase.co/storage/v1/object/public/C%20storage/magnific/automation/20260527212719-06cd7a/product_reference.jpg",
+      "motion_local_video_path": "/root/.openclaw/workspace/tiktok-motion-agent/downloads/20260527212719-06cd7a/tiktok_7640716122790104321.mp4",
+      "modest_tryon_prompt": "Create a realistic modest Muslim-friendly fashion try-on image. The person must remain hijab-friendly and fully modest. Keep the hijab/head covering intact. The hijab or an added inner scarf/underscarf MUST cover the entire neck, collarbone, upper chest, and any skin between chin and shirt. ABSOLUTE REQUIREMENTS: zero visible neck skin, zero visible collarbone, zero visible upper chest, no open neckline, no V-neck/open collar gap, no cleavage, no exposed chest, no shorts, no bare legs, no exposed thighs, no bare shoulders, no bare upper arms, no exposed waist or back, no transparent/sheer clothing, no tight body-revealing fit. Do not alter the affiliated product itself: keep the product's original cut, sleeve length, neckline, silhouette, color, pattern, texture, and style as accurately as possible. If the product reference is sleeveless, short, low-cut, open-collar, V-neck, cropped, sheer, tight, or revealing, keep that product unchanged and make the full outfit modest by layering separate clothing under or around it: matching long-sleeve inner shirt, high-neck turtleneck/dickey inner layer, neck-covering underscarf, leggings/full-length pants, long skirt, and/or outer cardigan/blazer. For button-up shirts, close the collar area visually with a high-neck inner layer or scarf so no skin is visible below the chin. The product must look like the same affiliated item; modest coverage should come from added inner/outer layers, not by modifying the product design. Final outfit should look natural for Indonesian Muslim women / hijab OOTD: long sleeves, fully covered neck and chest, covered legs to ankles, loose/comfortable fit.",
+      "modest_tryon_prompt_path": "/root/.openclaw/workspace/tiktok-motion-agent/downloads/20260527212719-06cd7a/modest_tryon_prompt.txt",
+      "validation_note": "product_image_from_pdp"
+    },
+    "20260528032725-8d4347": {
+      "row": {
+        "created_at": "28 Mei 2026 10:27 WIB",
+        "job_id": "20260528032725-8d4347",
+        "status": "REJECTED",
+        "delete_after": "2026-06-04T03:27:25+00:00",
+        "product_video_url": "https://www.tiktok.com/@keranjang_tiktok08/video/7634023104854920449",
+        "product_url": "https://www.tiktok.com/view/product/1735129014974186694",
+        "product_title": "PRAYA.CLO - Valerie Blouse Wanita Polo Linen Kancing Miring",
+        "caption": "valerie blouse rapi bgt #blousewanita #ootdhijab #atasanwanita #linenblouse #tiktokshop",
+        "motion_tiktok_video_url": "https://www.tiktok.com/@keranjang_tiktok08/video/7634464422949326096",
+        "motion_supabase_video_url": "https://qcugxzxcklzllebgnbun.supabase.co/storage/v1/object/public/C%20storage/magnific/automation/20260528032725-8d4347/motion_source_7634464422949326096.mp4",
+        "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/45bad1297cc7457d99cd7bde5cbc77c5~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+        "error": "image generation quota reached"
+      },
+      "product_video_id": "7634023104854920449",
+      "motion_video_id": "7634464422949326096",
+      "video_id": "7634464422949326096",
+      "job_dir": "/root/.openclaw/workspace/tiktok-motion-agent/downloads/20260528032725-8d4347",
+      "master_path": "/root/.openclaw/workspace/tiktok-motion-agent/data/master.png",
+      "product_image_path": "/root/.openclaw/workspace/tiktok-motion-agent/downloads/20260528032725-8d4347/product_reference.jpg",
+      "supabase_product_image_url": "https://qcugxzxcklzllebgnbun.supabase.co/storage/v1/object/public/C%20storage/magnific/automation/20260528032725-8d4347/product_reference.jpg",
+      "motion_local_video_path": "/root/.openclaw/workspace/tiktok-motion-agent/downloads/20260528032725-8d4347/tiktok_7634464422949326096.mp4",
+      "modest_tryon_prompt": "Create a realistic modest Muslim-friendly fashion try-on image. The person must remain hijab-friendly and fully modest. Keep the hijab/head covering intact. The hijab or an added inner scarf/underscarf MUST cover the entire neck, collarbone, upper chest, and any skin between chin and shirt. ABSOLUTE REQUIREMENTS: zero visible neck skin, zero visible collarbone, zero visible upper chest, no open neckline, no V-neck/open collar gap, no cleavage, no exposed chest, no shorts, no bare legs, no exposed thighs, no bare shoulders, no bare upper arms, no exposed waist or back, no transparent/sheer clothing, no tight body-revealing fit. Do not alter the affiliated product itself: keep the product's original cut, sleeve length, neckline, silhouette, color, pattern, texture, and style as accurately as possible. If the product reference is sleeveless, short, low-cut, open-collar, V-neck, cropped, sheer, tight, or revealing, keep that product unchanged and make the full outfit modest by layering separate clothing under or around it: matching long-sleeve inner shirt, high-neck turtleneck/dickey inner layer, neck-covering underscarf, leggings/full-length pants, long skirt, and/or outer cardigan/blazer. For button-up shirts, close the collar area visually with a high-neck inner layer or scarf so no skin is visible below the chin. The product must look like the same affiliated item; modest coverage should come from added inner/outer layers, not by modifying the product design. Final outfit should look natural for Indonesian Muslim women / hijab OOTD: long sleeves, fully covered neck and chest, covered legs to ankles, loose/comfortable fit.",
+      "modest_tryon_prompt_path": "/root/.openclaw/workspace/tiktok-motion-agent/downloads/20260528032725-8d4347/modest_tryon_prompt.txt",
+      "validation_note": "product_image_from_pdp"
+    },
+    "20260528172723-667334": {
+      "row": {
+        "created_at": "29 Mei 2026 00:27 WIB",
+        "job_id": "20260528172723-667334",
+        "status": "REJECTED",
+        "delete_after": "2026-06-04T17:27:23+00:00",
+        "product_video_url": "https://www.tiktok.com/@keranjang_tiktok08/video/7631866087692455185",
+        "product_url": "https://www.tiktok.com/view/product/1734538324189415141",
+        "product_title": "[ready stock]CHICMORE Atasan Kemeja lengan panjang gaya Korea kasual model baru untuk wanita",
+        "caption": "kemeja korea cakep bgt #atasanwanita #kemejawanita #ootdhijab #fashionwanita",
+        "motion_tiktok_video_url": "https://www.tiktok.com/@keranjang_tiktok08/video/7642656468981845265",
+        "motion_supabase_video_url": "https://qcugxzxcklzllebgnbun.supabase.co/storage/v1/object/public/C%20storage/magnific/automation/20260528172723-667334/motion_source_7642656468981845265.mp4",
+        "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-maliva-i-o3syd03w52-us/466e8c228ac5487ba60aeb1b53dfe0b7~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+        "error": "image generation quota reached"
+      },
+      "product_video_id": "7631866087692455185",
+      "motion_video_id": "7642656468981845265",
+      "video_id": "7642656468981845265",
+      "job_dir": "/root/.openclaw/workspace/tiktok-motion-agent/downloads/20260528172723-667334",
+      "master_path": "/root/.openclaw/workspace/tiktok-motion-agent/data/master.png",
+      "product_image_path": "/root/.openclaw/workspace/tiktok-motion-agent/downloads/20260528172723-667334/product_reference.jpg",
+      "supabase_product_image_url": "https://qcugxzxcklzllebgnbun.supabase.co/storage/v1/object/public/C%20storage/magnific/automation/20260528172723-667334/product_reference.jpg",
+      "motion_local_video_path": "/root/.openclaw/workspace/tiktok-motion-agent/downloads/20260528172723-667334/tiktok_7642656468981845265.mp4",
+      "modest_tryon_prompt": "Create a realistic modest Muslim-friendly fashion try-on image. The person must remain hijab-friendly and fully modest. Keep the hijab/head covering intact. The hijab or an added inner scarf/underscarf MUST cover the entire neck, collarbone, upper chest, and any skin between chin and shirt. ABSOLUTE REQUIREMENTS: zero visible neck skin, zero visible collarbone, zero visible upper chest, no open neckline, no V-neck/open collar gap, no cleavage, no exposed chest, no shorts, no bare legs, no exposed thighs, no bare shoulders, no bare upper arms, no exposed waist or back, no transparent/sheer clothing, no tight body-revealing fit. Do not alter the affiliated product itself: keep the product's original cut, sleeve length, neckline, silhouette, color, pattern, texture, and style as accurately as possible. If the product reference is sleeveless, short, low-cut, open-collar, V-neck, cropped, sheer, tight, or revealing, keep that product unchanged and make the full outfit modest by layering separate clothing under or around it: matching long-sleeve inner shirt, high-neck turtleneck/dickey inner layer, neck-covering underscarf, leggings/full-length pants, long skirt, and/or outer cardigan/blazer. For button-up shirts, close the collar area visually with a high-neck inner layer or scarf so no skin is visible below the chin. The product must look like the same affiliated item; modest coverage should come from added inner/outer layers, not by modifying the product design. Final outfit should look natural for Indonesian Muslim women / hijab OOTD: long sleeves, fully covered neck and chest, covered legs to ankles, loose/comfortable fit.",
+      "modest_tryon_prompt_path": "/root/.openclaw/workspace/tiktok-motion-agent/downloads/20260528172723-667334/modest_tryon_prompt.txt",
+      "validation_note": "product_image_from_pdp"
+    },
+    "20260528232722-84ce4e": {
+      "row": {
+        "created_at": "29 Mei 2026 06:27 WIB",
+        "job_id": "20260528232722-84ce4e",
+        "status": "REJECTED",
+        "delete_after": "2026-06-04T23:27:22+00:00",
+        "product_video_url": "https://www.tiktok.com/@riskifatmaa/video/7641805083012779284",
+        "product_url": "https://www.tiktok.com/view/product/1730261636039149455",
+        "product_title": "Minimal Marina Blouse Beige Mix",
+        "caption": "beige nya kalem bgt #blousewanita #ootdhijab #atasanwanita #fashionwanita",
+        "motion_tiktok_video_url": "https://www.tiktok.com/@riskifatmaa/video/7639236940734270741",
+        "motion_supabase_video_url": "https://qcugxzxcklzllebgnbun.supabase.co/storage/v1/object/public/C%20storage/magnific/automation/20260528232722-84ce4e/motion_source_7639236940734270741.mp4",
+        "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/cabf1d1f8531411381904b5d1e2a2aa2~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+        "error": "image generation quota reached"
+      },
+      "product_video_id": "7641805083012779284",
+      "motion_video_id": "7639236940734270741",
+      "video_id": "7639236940734270741",
+      "job_dir": "/root/.openclaw/workspace/tiktok-motion-agent/downloads/20260528232722-84ce4e",
+      "master_path": "/root/.openclaw/workspace/tiktok-motion-agent/data/master.png",
+      "product_image_path": "/root/.openclaw/workspace/tiktok-motion-agent/downloads/20260528232722-84ce4e/product_reference.jpg",
+      "supabase_product_image_url": "https://qcugxzxcklzllebgnbun.supabase.co/storage/v1/object/public/C%20storage/magnific/automation/20260528232722-84ce4e/product_reference.jpg",
+      "motion_local_video_path": "/root/.openclaw/workspace/tiktok-motion-agent/downloads/20260528232722-84ce4e/tiktok_7639236940734270741.mp4",
+      "modest_tryon_prompt": "Create a realistic modest Muslim-friendly fashion try-on image. The person must remain hijab-friendly and fully modest. Keep the hijab/head covering intact. The hijab or an added inner scarf/underscarf MUST cover the entire neck, collarbone, upper chest, and any skin between chin and shirt. ABSOLUTE REQUIREMENTS: zero visible neck skin, zero visible collarbone, zero visible upper chest, no open neckline, no V-neck/open collar gap, no cleavage, no exposed chest, no shorts, no bare legs, no exposed thighs, no bare shoulders, no bare upper arms, no exposed waist or back, no transparent/sheer clothing, no tight body-revealing fit. Do not alter the affiliated product itself: keep the product's original cut, sleeve length, neckline, silhouette, color, pattern, texture, and style as accurately as possible. If the product reference is sleeveless, short, low-cut, open-collar, V-neck, cropped, sheer, tight, or revealing, keep that product unchanged and make the full outfit modest by layering separate clothing under or around it: matching long-sleeve inner shirt, high-neck turtleneck/dickey inner layer, neck-covering underscarf, leggings/full-length pants, long skirt, and/or outer cardigan/blazer. For button-up shirts, close the collar area visually with a high-neck inner layer or scarf so no skin is visible below the chin. The product must look like the same affiliated item; modest coverage should come from added inner/outer layers, not by modifying the product design. Final outfit should look natural for Indonesian Muslim women / hijab OOTD: long sleeves, fully covered neck and chest, covered legs to ankles, loose/comfortable fit.",
+      "modest_tryon_prompt_path": "/root/.openclaw/workspace/tiktok-motion-agent/downloads/20260528232722-84ce4e/modest_tryon_prompt.txt",
+      "validation_note": "product_image_from_pdp"
     }
   },
   "product_cache": {
     "7632275557618650385": {
       "product_url": "",
       "product_title": "",
-      "checked_at": "2026-05-17T16:20:29+00:00"
+      "product_image_url": "",
+      "checked_at": "2026-05-23T06:25:49+00:00"
     },
     "7633400595742756112": {
-      "product_url": "https://shop-id.tokopedia.com/pdp/1733143460716119568?source=anchor",
+      "product_url": "https://www.tiktok.com/view/product/1733143460716119568",
       "product_title": "RAZTA TUNIK BORDIR LINEN RAMI ATASAN WANITA CASUAL",
-      "checked_at": "2026-05-17T16:20:29+00:00"
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/c4880c28164b44a89eee61cc08143bbb~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-26T23:15:53+00:00"
     },
     "7623343810541636865": {
-      "product_url": "https://shop-id.tokopedia.com/pdp/kemeja-rayya-bordir-seona-ukuran-xl-5l-bahan-katun-miracle/1733864634557236512?source=anchor",
+      "product_url": "https://www.tiktok.com/view/product/1733864634557236512",
       "product_title": "(Pre Order) Seona Kemeja Rayya Bordir Size XL XXL XXXL 5L LD 110 120 130 140 Atasan Wanita  Oversize Formal Blouse Kerja Kuliah  Casual  Remaja Basic",
       "checked_at": "2026-05-18T03:52:22+00:00"
     },
     "7633641988197289232": {
-      "product_url": "https://shop-id.tokopedia.com/pdp/sweater-rajut-tebal-bunga-peony-untuk-wanita-tren-baru/1732310589472212951?source=anchor",
-      "product_title": "(Mary Jane) Peony Flower Sweater Rajut Tebal Wanita Terbaru Trendy Grosir Pakaian Outwear Bandung",
-      "checked_at": "2026-05-18T03:53:55+00:00"
+      "product_url": "https://www.tiktok.com/view/product/1732310589472212951",
+      "product_title": "(Mary Jane) Peony Flower  Semi  Crop  Sweater Rajut Tebal Wanita Terbaru Trendy Grosir Pakaian Outwear Bandung",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/9d22e15e746d4f5bbdd3a72a577d19d1~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-28T07:28:23+00:00"
     },
     "7632977524179471633": {
-      "product_url": "https://shop-id.tokopedia.com/pdp/atasan-wanita-poppy-boxy-long-sleeve-kemeja-katun-oversized-nyaman-dan-adem-tersedia-berbagai-warna/1732734609043195412?source=anchor",
+      "product_url": "https://www.tiktok.com/view/product/1732734609043195412",
       "product_title": "Poppy Atasan Wanita Model Boxy Long Sleeve Shirt Kemeja Katun Polos Oversized",
       "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/601a03f9a80e475abfe88b1947020d05~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
       "checked_at": "2026-05-18T03:58:30+00:00"
     },
     "7627489643549822224": {
-      "product_url": "https://shop-id.tokopedia.com/pdp/blouse-bordir-katun-poplin-wanita-casual-dengan-detail-ukuran/1733200086215263760?source=anchor",
+      "product_url": "https://www.tiktok.com/view/product/1733200086215263760",
       "product_title": "GISEL BLOUSE BORDIR BUNGA KATUN POPLIN ATASAN WANITA CASUAL",
       "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/e1530f8151094f24bed95247bf5b9c8a~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
       "checked_at": "2026-05-18T04:24:50+00:00"
     },
     "7640844767798037761": {
-      "product_url": "https://shop-id.tokopedia.com/pdp/1733406021529732886?source=anchor",
+      "product_url": "https://www.tiktok.com/view/product/1733406021529732886",
       "product_title": "Chai Top - Babydoll Knit Lengan Panjang | Atasan Slim Fit Flare Elegan | Blouse Korean Style Wanita SOMA",
       "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-maliva-i-o3syd03w52-us/69faeb00fbab4bf19ca0d49b997f11c1~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
       "checked_at": "2026-05-18T04:46:36+00:00"
     },
     "7638529864462585105": {
-      "product_url": "https://shop-id.tokopedia.com/pdp/hana-fashion-atasan-wanita-fit-dengan-tali-renda-rajutan-model-korea/1731662991165851251?source=anchor",
+      "product_url": "https://www.tiktok.com/view/product/1731662991165851251",
       "product_title": "Hana Fashion - Dona Top/Atasan Fit Wanita Ribbon/Top Rajut Pita/Korean Style - TS722-2",
       "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-maliva-i-o3syd03w52-us/ebe0be9f569a427381550fe7997b750f~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
       "checked_at": "2026-05-18T05:13:03+00:00"
     },
     "7636355721474493697": {
-      "product_url": "https://shop-id.tokopedia.com/pdp/praya-clo-valerie-blouse-wanita-polo-linen-kancing-miring/1735129014974186694?source=anchor",
+      "product_url": "https://www.tiktok.com/view/product/1735129014974186694",
       "product_title": "PRAYA.CLO - Valerie Blouse Wanita Polo Linen Kancing Miring",
       "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/45bad1297cc7457d99cd7bde5cbc77c5~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
       "checked_at": "2026-05-18T07:20:32+00:00"
     },
     "7623268505277697281": {
-      "product_url": "https://shop-id.tokopedia.com/pdp/blus-wanita-elegan-bahan-rayon-twill-bordir-bunga/1732731946299918098?source=anchor",
+      "product_url": "https://www.tiktok.com/view/product/1732731946299918098",
       "product_title": "Kyren Blouse Bordir Bunga Lengan Panjang Bahan Rayon Twill",
       "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/f4c4023bd0264771aa7803043a485403~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
       "checked_at": "2026-05-18T09:05:10+00:00"
     },
     "7635523320158375169": {
-      "product_url": "https://shop-id.tokopedia.com/pdp/efeme-amora-vest-inner-peplum-top-kasual-gaya-korea-katun/1732859607764665399?source=anchor",
+      "product_url": "https://www.tiktok.com/view/product/1732859607764665399",
       "product_title": "Efeme - Amora Vest Inner Peplum - Top Inner Cardigan Stripe Gingham Rompi Blouse  Outer Top Balon Atasan Wanita Korean Style Casual  Katun",
       "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/d4408bfb8efc4d72b5dd25c64dff40ca~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
       "checked_at": "2026-05-18T10:00:01+00:00"
     },
     "7625553431033351425": {
-      "product_url": "https://shop-id.tokopedia.com/pdp/chicmore-atasan-kemeja-lipit-dengan-kancing-aktif-gaya-elegan/1732867356445935333?source=anchor",
+      "product_url": "https://www.tiktok.com/view/product/1732867356445935333",
       "product_title": "[ready stock]CHICMORE atasan kemeja model lipit dengan kancing aktif sebaris bergaya elegan baru warna solid",
       "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-maliva-i-o3syd03w52-us/285aaeafb85b40bda92bab4b30ae99ea~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
       "checked_at": "2026-05-18T10:17:24+00:00"
     },
     "7631446724212509953": {
-      "product_url": "https://shop-id.tokopedia.com/pdp/atasan-salur-kotak-ruffle-nirina-blouse-studea-elegan-nyaman/1733344080611542378?source=anchor",
+      "product_url": "https://www.tiktok.com/view/product/1733344080611542378",
       "product_title": "NIRINA BLOUSE - STUDEA Atasan Salur Kotak Ruffle dengan Desain Ruffle",
       "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/c1e32d2773bc41509da90a9d9cfe8af6~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
       "checked_at": "2026-05-18T11:56:48+00:00"
@@ -423,76 +1170,949 @@
       "checked_at": "2026-05-18T12:50:49+00:00"
     },
     "7634164100414672145": {
-      "product_url": "https://shop-id.tokopedia.com/pdp/atasan-wanita-daily-fashion-adem-wudhu-friendly-busuiÃ¥ÂÂÃ¥Â¥Â½/1732422056334951512?source=anchor",
+      "product_url": "https://www.tiktok.com/view/product/1732422056334951512",
       "product_title": "Alice Cardy by Dippew | cardigan atasan wanita rib",
       "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/65c9bf12dea94a84a7addfa99ef0bfe4~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
       "checked_at": "2026-05-18T12:50:50+00:00"
     },
     "7638169295234665745": {
-      "product_url": "https://shop-id.tokopedia.com/pdp/blus-olla-flowy-motif-bunga-korea-lengan-karet-stylish/1729549074797070765?source=anchor",
+      "product_url": "https://www.tiktok.com/view/product/1729549074797070765",
       "product_title": "OLLA BLOUSE FLOWY KERUT MOTIF BUNGA KOREAN STYLE Atasan Wanita Casual",
       "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-maliva-i-o3syd03w52-us/ec226ebe2b74441191fda86346dae72d~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
       "checked_at": "2026-05-18T14:02:15+00:00"
     },
     "7633783171003272464": {
-      "product_url": "https://shop-id.tokopedia.com/pdp/rupa-way-baju-wanita-oversize-linen-nyaman-trendy/1734096943606302215?source=anchor",
+      "product_url": "https://www.tiktok.com/view/product/1734096943606302215",
       "product_title": "RUPA - Loly Rufle Shirt - Kemeja Oversize Linen Atasan Wanita Model Terbaru",
       "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/b416ca3b26ba4b3b98bab3aff60f91ae~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
       "checked_at": "2026-05-18T17:49:24+00:00"
     },
     "7640716122790104321": {
-      "product_url": "https://shop-id.tokopedia.com/pdp/blouse-jumbo-atasan-wanita-yessa-unique-kancing-busui-model-kekinian/1730825979557283143?source=anchor",
+      "product_url": "https://www.tiktok.com/view/product/1730825979557283143",
       "product_title": "Shakila Blouse Jumbo Terbaru Atasan Wanita Model Terbaru Blouse Korean Style Bahan Premium Pololinen Kancing Aktif Busui Friendly Ukuran XL XXL Kancing Busui Simple Baju Panjang",
       "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/4710681ea4b146d580cda34f692f2163~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
       "checked_at": "2026-05-19T03:09:59+00:00"
     },
     "7630700868681207057": {
-      "product_url": "https://shop-id.tokopedia.com/pdp/kemeja-wanita-fadfad-lengan-panjang-retro-2024-atasan-stylish/1730136176409478914?source=anchor",
+      "product_url": "https://www.tiktok.com/view/product/1730136176409478914",
       "product_title": "FADFAD Atasan Kemeja dengan motif garis berlengan panjang gaya kasual untuk wanita",
       "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-maliva-i-o3syd03w52-us/b1a37cb73e944a1f89a1aed95aceb049~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
       "checked_at": "2026-05-19T03:46:35+00:00"
     },
     "7637743592487800065": {
-      "product_url": "https://shop-id.tokopedia.com/pdp/onebrandhijab-atasan-wanita-ayesha-babydoll-motif-chic/1732122997006828933?source=anchor",
+      "product_url": "https://www.tiktok.com/view/product/1732122997006828933",
       "product_title": "ONEBRANDHIJAB - Baju atasan vest wanita CLARA SALLY Vest ayesha soft babydoll berbagai motif dan ukuran M-XXXL",
       "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/a962d3bd290c45bbaaa2594860fcdbed~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
       "checked_at": "2026-05-19T04:32:53+00:00"
     },
     "7640014426376080641": {
-      "product_url": "https://shop-id.tokopedia.com/pdp/kalea-kemeja-blouse-batwing-wanita-bahan-rayon-twill-ukuran-l-xl/1733742965884617832?source=anchor",
+      "product_url": "https://www.tiktok.com/view/product/1733742965884617832",
       "product_title": "Kalea Kemeja Blouse Atasan Batwing Wanita Panjang Kekinian Rayon twill",
       "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/196641f5753349ecb013a94c0feb5682~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
       "checked_at": "2026-05-19T05:22:36+00:00"
     },
     "7639667402283732240": {
-      "product_url": "https://shop-id.tokopedia.com/pdp/atasan-wanita-premium-stretchy-offwhite-one-size-fit-all/1732705971762725949?source=anchor",
+      "product_url": "https://www.tiktok.com/view/product/1732705971762725949",
       "product_title": "IRIS TOP | Atasan Knit Wanita Korean Top Baju Knit Wanita Lengan Panjang Basic Long Sleeve",
       "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-maliva-i-o3syd03w52-us/ed4ac4ffead74282a2a5247d3336e9bc~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
       "checked_at": "2026-05-19T06:07:04+00:00"
     },
     "7636741322648472833": {
-      "product_url": "https://shop-id.tokopedia.com/pdp/blouse-wanita-peplum-anika-bahan-katun-square-desain-minimalis/1733344558687160229?source=anchor",
+      "product_url": "https://www.tiktok.com/view/product/1733344558687160229",
       "product_title": "Floral Id - Blouse Wanita Peplum Anika Atasa Wanita Kemeja Premium Lengan Panjang Poplin Atasan Casual Oversize Kotak",
       "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/644a521937c54a2d9ca9729e2da4f37e~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
       "checked_at": "2026-05-19T06:52:11+00:00"
     },
     "7635154809066245377": {
-      "product_url": "https://shop-id.tokopedia.com/pdp/blus-wanita-katun-lace-kerah-renda-nyaman-modis/1732124156861318177?source=anchor",
+      "product_url": "https://www.tiktok.com/view/product/1732124156861318177",
       "product_title": "Mybamus X Nabilabyaaa Biyaa Poplin Blouse Atasan Wanita Lengan Panjang Renda Collar",
       "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/fbb42bf7aaba407982695a3e1f6f4a29~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
       "checked_at": "2026-05-19T07:55:30+00:00"
     },
     "7635250587063405840": {
-      "product_url": "https://shop-id.tokopedia.com/pdp/elara-blouse-kemeja-motif-salur-lengan-panjang-nyaman-santai-viral-2025/1732854925877871837?source=anchor",
+      "product_url": "https://www.tiktok.com/view/product/1732854925877871837",
       "product_title": "Elara Blouse Kemeja Motif Salur Bordir Kancing Baju Atasan Wanita Garis Panjang Muslim Santai Nyaman Simpel Basic Lengan Panjang Viral 2025 Shakila",
       "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/3d0db90bc3c348f0876b4acf24518f53~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
       "checked_at": "2026-05-19T09:18:07+00:00"
     },
     "7627721282095779073": {
-      "product_url": "https://shop-id.tokopedia.com/pdp/1734446244004922896?source=anchor",
+      "product_url": "https://www.tiktok.com/view/product/1734446244004922896",
       "product_title": "TAMARA BLOUSE BORDIR RAYON TWILL",
       "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/4526f496011c4f8589afd54e721c24b9~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
       "checked_at": "2026-05-19T11:10:15+00:00"
+    },
+    "7624021069627706640": {
+      "product_url": "",
+      "product_title": "",
+      "product_image_url": "",
+      "checked_at": "2026-05-19T14:14:22+00:00"
+    },
+    "7627133639729450256": {
+      "product_url": "",
+      "product_title": "",
+      "product_image_url": "",
+      "checked_at": "2026-05-27T15:59:51+00:00"
+    },
+    "7637112339778653457": {
+      "product_url": "https://www.tiktok.com/view/product/1734368547913106950",
+      "product_title": "Bytantisa - Cardigan Crop Flower Bordir Premium Cute Sabila",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/8d97753e720d43938a9f865ffbfde80c~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-19T14:14:24+00:00"
+    },
+    "7637784835389476097": {
+      "product_url": "https://www.tiktok.com/view/product/1734970180507830128",
+      "product_title": "Kiyana Cirebon Cloth - Fiora Ribbon Collar Top / Collar Knit Top / Ribbon Knit Top /",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-maliva-i-o3syd03w52-us/fc7d33cad5364b8b8730fd5b3e7a4668~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-19T15:01:15+00:00"
+    },
+    "7631113895754714385": {
+      "product_url": "https://www.tiktok.com/view/product/1733869354788292596",
+      "product_title": "Florine Kemeja Jeans Wanita Bordir Bunga Lengan Panjang Slim Fit Denim",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/4c0f7e6b0c494f5ea9c19f0ee8768736~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-19T18:04:37+00:00"
+    },
+    "7626296703876025616": {
+      "product_url": "https://www.tiktok.com/view/product/1730191213336364697",
+      "product_title": "WOW-Ellena Kemeja Tali Coquette Korean Style Wanita Casual",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/9eae2849b9214e969382ed1a879fb036~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-19T18:40:17+00:00"
+    },
+    "7640408367281884433": {
+      "product_url": "https://www.tiktok.com/view/product/1731025845285324163",
+      "product_title": "Wispie Alpha Girls Top Kemeja Denim Jeans Wanita Fitted Jacket Oversize Tangan Panjang Bahan Lembut Variasi Outer Blazer",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-maliva-i-o3syd03w52-us/b97f8e6c9c924a8ead2b8d8db9f8dfd2~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-19T19:20:07+00:00"
+    },
+    "7625966865420012816": {
+      "product_url": "https://www.tiktok.com/view/product/1733635589805540614",
+      "product_title": "Baju kaos slim fit kerah bulat bergaris merah import wanita murah",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/335c91bc15454d06936caa0d62f4e8f8~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-20T02:07:19+00:00"
+    },
+    "7638492540299119873": {
+      "product_url": "https://www.tiktok.com/view/product/1729561456620045416",
+      "product_title": "korean style Cardigan pink Lengan Panjang Kekinian Premium V-neck outerwear Jacket Wanita Terbaru Outer Knit",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/b10a728d72ab4912b0181a14c8c44092~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-20T02:19:29+00:00"
+    },
+    "7626609625936170257": {
+      "product_url": "https://www.tiktok.com/view/product/1734849104110192357",
+      "product_title": "[ready stock]CHICMORE Kemeja wanita gaya kasual lengan panjang kancing irregular",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-maliva-i-o3syd03w52-us/085b88f642c34b70806817fb89333154~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-20T06:24:00+00:00"
+    },
+    "7626248170250554625": {
+      "product_url": "https://www.tiktok.com/view/product/1733846255730591490",
+      "product_title": "FADFAD Women's Long-Sleeved Side-Buttoned, Embroidered, Fitted Shirt",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-maliva-i-o3syd03w52-us/8be38fad7f8f458fb6aa19896d76fab9~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-20T10:06:05+00:00"
+    },
+    "7639972332710169873": {
+      "product_url": "https://www.tiktok.com/view/product/1734096943606302215",
+      "product_title": "RUPA - Loly Rufle Shirt - Kemeja Oversize Linen Atasan Wanita Model Terbaru",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/b416ca3b26ba4b3b98bab3aff60f91ae~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-20T10:26:16+00:00"
+    },
+    "7626990082670578960": {
+      "product_url": "https://www.tiktok.com/view/product/1734538324189415141",
+      "product_title": "[ready stock]CHICMORE Atasan Kemeja lengan panjang gaya Korea kasual model baru untuk wanita",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-maliva-i-o3syd03w52-us/466e8c228ac5487ba60aeb1b53dfe0b7~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-20T10:57:48+00:00"
+    },
+    "7621125224783793425": {
+      "product_url": "https://www.tiktok.com/view/product/1734423297683523312",
+      "product_title": "ZEEROKS Baju Atasan Wanita Lengan Panjang Layla Variasi 3 layer Bahan Cotton Combed",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/9cc5362639954b1b88c9bba298300be8~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-20T11:17:05+00:00"
+    },
+    "7637158408205962503": {
+      "product_url": "https://www.tiktok.com/view/product/1731770284650956709",
+      "product_title": "ELORA SET KEMEJA RUFFLE RAYON",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/10339c9cbc2a4c0ba0aaf194bbc283a2~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-20T11:39:57+00:00"
+    },
+    "7630649767483247880": {
+      "product_url": "",
+      "product_title": "",
+      "product_image_url": "",
+      "checked_at": "2026-05-28T23:28:09+00:00"
+    },
+    "7627412376068885768": {
+      "product_url": "",
+      "product_title": "",
+      "product_image_url": "",
+      "checked_at": "2026-05-20T11:55:00+00:00"
+    },
+    "7626716926886120721": {
+      "product_url": "https://www.tiktok.com/view/product/1731531333765727973",
+      "product_title": "[ready stock]CHICMORE Atasan Kemeja Desain Kupu-Kupu Cantik Lengan Panjang Untuk Wanita Gaya Retro",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-maliva-i-o3syd03w52-us/05b056a231b043d9a7d419e09a4aed5c~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-20T11:55:00+00:00"
+    },
+    "7641097512706673927": {
+      "product_url": "https://www.tiktok.com/view/product/1733771343182660642",
+      "product_title": "Alenaouter/Outer wanita hijab style/longsleevOuter/oversize blouse",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/ed8f1c9cdcd3446aa37886b995a1d7ff~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-20T14:24:42+00:00"
+    },
+    "7629999387640335617": {
+      "product_url": "https://www.tiktok.com/view/product/1733371783977534890",
+      "product_title": "BIGIMO - Kemeja Boxi Bordir Motif Bunga - Crop Shirt - Atasan Wanita Croped Kekinian Katun Oversize Baju Panjang Cropped Casual Motif Bunga",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/ff99f9ba47344bd6ae6ce8ec11823ac1~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-20T15:50:41+00:00"
+    },
+    "7629703155135155472": {
+      "product_url": "https://www.tiktok.com/view/product/1732382901443004190",
+      "product_title": "Coloomp-Hana Atasan Wanita Korean Style Pita Variasi",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/b4b0b6cec035456a9ad6f8450c6f4d2d~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-20T16:24:19+00:00"
+    },
+    "7638858684172340497": {
+      "product_url": "https://www.tiktok.com/view/product/1733999293550659413",
+      "product_title": "LALITA Blouse Bunga Semi Crop Embos Korean Style Bahan Embos Gaya Modern dan Elegan dengan Desain Bunga Elegan (EX. SPESIAL KREATOR)",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/1124ca708bf340b3b1959da0f45fe6d2~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-20T20:24:28+00:00"
+    },
+    "7629977552831909127": {
+      "product_url": "",
+      "product_title": "",
+      "product_image_url": "",
+      "checked_at": "2026-05-23T22:20:07+00:00"
+    },
+    "7620700817816882433": {
+      "product_url": "https://www.tiktok.com/view/product/1731329642048750852",
+      "product_title": "SAHARANI BLOUSE LINEN BORDIR KEKINIAN",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/f0c793c885df4cdaa51cbf114e8e01f4~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-20T22:24:21+00:00"
+    },
+    "7637718215749094674": {
+      "product_url": "https://www.tiktok.com/view/product/1732644267423467364",
+      "product_title": "Dasterbeauty - ZIVA Setelan knit wanita kekinian oneset korean style jumbo remaja dewasa set panjang terbaru 2026",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/677efe0cd4744d4091fb54c9ed553bc5~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-21T02:28:05+00:00"
+    },
+    "7635482949458087176": {
+      "product_url": "",
+      "product_title": "",
+      "product_image_url": "",
+      "checked_at": "2026-05-27T15:28:10+00:00"
+    },
+    "7631406903372909842": {
+      "product_url": "",
+      "product_title": "",
+      "product_image_url": "",
+      "checked_at": "2026-05-21T04:25:50+00:00"
+    },
+    "7637516288805326097": {
+      "product_url": "https://www.tiktok.com/view/product/1734267578446873692",
+      "product_title": "Syifa Blouse Knit Atasan Wanita lengan Panjang Peplum Kancing",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/2446482fe6bf44d49ecf385711993f9e~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-21T04:25:50+00:00"
+    },
+    "7638636949942684945": {
+      "product_url": "https://www.tiktok.com/view/product/1732204852144276484",
+      "product_title": "Maharani Linen Shirt Wanita | Kemeja Wanita Korean Bordir Linen Angel | Kemeja Wanita Motif Bunga Bunga",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/8e9c1657e79d4e40a5b9e2545d163a76~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-21T06:25:47+00:00"
+    },
+    "7641839745949027600": {
+      "product_url": "https://www.tiktok.com/view/product/1731953677782123775",
+      "product_title": "RegulerFit Longsleeve Women Basic T-Shirt with Premium Cotton Combed 30s Kaos Polos Cewek",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/a5fbbe41c8da440cb1f1d8f89f42a2e4~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-21T08:25:54+00:00"
+    },
+    "7631024167931923730": {
+      "product_url": "",
+      "product_title": "",
+      "product_image_url": "",
+      "checked_at": "2026-05-21T10:26:06+00:00"
+    },
+    "7639606706544430354": {
+      "product_url": "https://www.tiktok.com/view/product/1735390016114885999",
+      "product_title": "KARAMOY BLOUSE-KEMEJA WANITA TERBARU -ATASAN WANITA KOMBINASI YANG STRECTI MODEL KOREAN STYLE",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/90e25d48cd2844d2b9ccbc206f8283b0~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-21T12:25:50+00:00"
+    },
+    "7634781163067903248": {
+      "product_url": "https://www.tiktok.com/view/product/1730637970258953979",
+      "product_title": "NENA - Mika Shirt - Blouse Kemeja Wanita Lady Crush - Kemeja Cantik Kekinian Korea",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/2a0de1e5be184335a33cd2cd7997d94a~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-21T14:25:50+00:00"
+    },
+    "7639608259669691655": {
+      "product_url": "https://www.tiktok.com/view/product/1733605444551870361",
+      "product_title": "Byroo - Denimwave Shirt Wanita",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/311cbf21288e4ecebcc15b1c72c06727~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-21T16:25:48+00:00"
+    },
+    "7635938966667005201": {
+      "product_url": "https://www.tiktok.com/view/product/1733703759216149620",
+      "product_title": "[Ready Stock] Topteen - Aurel knit stripe blouse lace wanita",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/9f86819b37d64358a335634b07c6244e~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-21T18:26:22+00:00"
+    },
+    "7641209564670577937": {
+      "product_url": "https://www.tiktok.com/view/product/1733302923177395856",
+      "product_title": "caomei Cardigan Simple | Atasan Wanita Koreanlook Cute",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/0dc1b8e2ff2e402cbc7d5a5c46bffbeb~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-21T20:26:01+00:00"
+    },
+    "7630000117445086472": {
+      "product_url": "",
+      "product_title": "",
+      "product_image_url": "",
+      "checked_at": "2026-05-22T00:26:07+00:00"
+    },
+    "7642304891561577744": {
+      "product_url": "https://www.tiktok.com/view/product/1732422056334951512",
+      "product_title": "Alice Cardy by Dippew | cardigan atasan wanita rib",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/65c9bf12dea94a84a7addfa99ef0bfe4~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-22T00:26:08+00:00"
+    },
+    "7639610156199726337": {
+      "product_url": "https://www.tiktok.com/view/product/1731650279006438567",
+      "product_title": "[ READY STOK ] SINAR - SUZY BALLOON KNIT TOP BLOUSE BUSUI FRIENDLY Baju Atasan Wanita Balon Knit Tebal Kancing Bunga Tangan Panjang  Cewek Dewasa Casual Knitwear",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/2cfc1bf8ef4d47338ed6d3f86684f9fc~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-22T02:27:12+00:00"
+    },
+    "7635975587244379408": {
+      "product_url": "https://www.tiktok.com/view/product/1729704744278656013",
+      "product_title": "SANJU BLOUSE -HALINKA Shirt Kemeja Kancing Kantor Formal Korean Style Baju Atasan Basic Katun Linen Premium Nyaman Elegan",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/b8cbfbedea4a4dc484581276231b85db~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-22T04:27:20+00:00"
+    },
+    "7625169103883422992": {
+      "product_url": "",
+      "product_title": "",
+      "product_image_url": "",
+      "checked_at": "2026-05-22T06:25:50+00:00"
+    },
+    "7640437258192948497": {
+      "product_url": "https://www.tiktok.com/view/product/1731932332735890495",
+      "product_title": "Elora Blouse - Atasan Wanita Kekinian - Blouse Korean Style - Blouse Lengan Panjang - Atasan Bangkok",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/fb54a14ab5b04e87b3d2ce3c8f09068a~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-22T06:25:51+00:00"
+    },
+    "7625917886770564368": {
+      "product_url": "https://www.tiktok.com/view/product/1731369016104092910",
+      "product_title": "Alesha Blouse Bahan Linen Rami. Kemeja Wanita Bordir Motif Bunga. Atasan Wanita",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/468da397690b48ed92827446a75df590~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-22T08:25:51+00:00"
+    },
+    "7634398347079535879": {
+      "product_url": "",
+      "product_title": "",
+      "product_image_url": "",
+      "checked_at": "2026-05-22T10:26:52+00:00"
+    },
+    "7630054893247581458": {
+      "product_url": "",
+      "product_title": "",
+      "product_image_url": "",
+      "checked_at": "2026-05-22T12:25:48+00:00"
+    },
+    "7629598602167471377": {
+      "product_url": "https://www.tiktok.com/view/product/1729675413388298869",
+      "product_title": "Onella Blouse Atasan Wanita Kekinian Jumbo LD 120 Terbaru Bahan Rayon Busui by Kamalin",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/7dfdf9c733d448608655ae7000fcfe5c~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-22T12:25:49+00:00"
+    },
+    "7627289375331618066": {
+      "product_url": "",
+      "product_title": "",
+      "product_image_url": "",
+      "checked_at": "2026-05-22T14:25:55+00:00"
+    },
+    "7634464422949326096": {
+      "product_url": "https://www.tiktok.com/view/product/1729895833300928640",
+      "product_title": "Kamila Curly Blouse - Atasan Rajut Wanita Korean Style Knitwear",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-maliva-i-o3syd03w52-us/a7caeda594d5410b92416874d42db777~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-22T14:25:56+00:00"
+    },
+    "7633333513575550225": {
+      "product_url": "https://www.tiktok.com/view/product/1732114031493350809",
+      "product_title": "Nola Blouse List Putih Belah Samping Bahan SnowRib Orimoza Nola Blouse Original",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/4bcd087b64414a9ea3179b5ff80e8e41~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-22T16:26:03+00:00"
+    },
+    "7628969682048912657": {
+      "product_url": "https://www.tiktok.com/view/product/1733846255730591490",
+      "product_title": "FADFAD Women's Long-Sleeved Side-Buttoned, Embroidered, Fitted Shirt",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-maliva-i-o3syd03w52-us/8be38fad7f8f458fb6aa19896d76fab9~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-22T18:27:05+00:00"
+    },
+    "7627370386505649415": {
+      "product_url": "",
+      "product_title": "",
+      "product_image_url": "",
+      "checked_at": "2026-05-22T20:25:49+00:00"
+    },
+    "7639259873183567111": {
+      "product_url": "https://www.tiktok.com/view/product/1733605444551870361",
+      "product_title": "Byroo - Denimwave Shirt Wanita",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/311cbf21288e4ecebcc15b1c72c06727~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-22T22:25:48+00:00"
+    },
+    "7630821692268465415": {
+      "product_url": "https://www.tiktok.com/view/product/1732735207419708863",
+      "product_title": "PASMINA DUBAI RAYON TENCEL // PASHMINA KAOS DUBAI TENCEL // PASHMINA TENCEL",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/eae5681efc984224a1b8ef6fd77d9d34~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-23T00:25:50+00:00"
+    },
+    "7635885580257103120": {
+      "product_url": "https://www.tiktok.com/view/product/1734930396136965495",
+      "product_title": "Shandira Blouse - Atasan Wanita Knit Premium Ruffle Kombinasi Katun Fashion Muslim Korean Style Baju Panjang Casual",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/0d362d2acaa949e5b790b08bdf487fe8~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-23T02:26:31+00:00"
+    },
+    "7631388014261947656": {
+      "product_url": "",
+      "product_title": "",
+      "product_image_url": "",
+      "checked_at": "2026-05-23T04:25:53+00:00"
+    },
+    "7634023104854920449": {
+      "product_url": "https://www.tiktok.com/view/product/1735129014974186694",
+      "product_title": "PRAYA.CLO - Valerie Blouse Wanita Polo Linen Kancing Miring",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/45bad1297cc7457d99cd7bde5cbc77c5~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-23T04:25:53+00:00"
+    },
+    "7631448931255340306": {
+      "product_url": "",
+      "product_title": "",
+      "product_image_url": "",
+      "checked_at": "2026-05-23T06:25:49+00:00"
+    },
+    "7635104316281392392": {
+      "product_url": "https://www.tiktok.com/view/product/1732011914363242099",
+      "product_title": "Hana Fashion - Moli Long Pants/Flared Long Pants/Celana Rok Layer Wanita/Celana Cutbray Wanita - LP314",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-maliva-i-o3syd03w52-us/8447a547be554cb291a92ee0ea439681~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-23T06:25:50+00:00"
+    },
+    "7639186717949381906": {
+      "product_url": "",
+      "product_title": "",
+      "product_image_url": "",
+      "checked_at": "2026-05-23T15:59:17+00:00"
+    },
+    "7630742051973369095": {
+      "product_url": "",
+      "product_title": "",
+      "product_image_url": "",
+      "checked_at": "2026-05-23T20:19:04+00:00"
+    },
+    "7637062901743865096": {
+      "product_url": "https://www.tiktok.com/view/product/1731770284650956709",
+      "product_title": "ELORA SET KEMEJA RUFFLE RAYON",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/10339c9cbc2a4c0ba0aaf194bbc283a2~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-23T20:19:04+00:00"
+    },
+    "7628270139275808017": {
+      "product_url": "",
+      "product_title": "",
+      "product_image_url": "",
+      "checked_at": "2026-05-23T20:19:36+00:00"
+    },
+    "7642656468981845265": {
+      "product_url": "https://www.tiktok.com/view/product/1733133367028647444",
+      "product_title": "Linisa Atasan Kemeja Crop Boxy Oversized Motif Garis Katun Wanita",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/305ab88f5ee94817a1a543a29d598b86~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-23T20:19:37+00:00"
+    },
+    "7643073626106760465": {
+      "product_url": "https://www.tiktok.com/view/product/1729753280305399690",
+      "product_title": "Pastelly Outfit - Last Season's Faves - Elara Top l Atasan Knit Wanita Korean Lengan Panjang Basic Long Sleeve",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-maliva-i-o3syd03w52-us/9f8449aacb024946a1242b28537ff2da~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-23T22:20:07+00:00"
+    },
+    "7642713684506103057": {
+      "product_url": "https://www.tiktok.com/view/product/1735258652547253913",
+      "product_title": "WOW - Sofia Kemeja Wanita Variasi Pita Renda Ruffle Lengan Balon Korean Style",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/834f4c5a8dc34e218b9647a593f6f758~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-24T00:19:04+00:00"
+    },
+    "7635215180774853896": {
+      "product_url": "https://www.tiktok.com/view/product/1732011914363242099",
+      "product_title": "Hana Fashion - Moli Long Pants/Flared Long Pants/Celana Rok Layer Wanita/Celana Cutbray Wanita - LP314",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-maliva-i-o3syd03w52-us/8447a547be554cb291a92ee0ea439681~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-24T00:19:15+00:00"
+    },
+    "7641877354318466312": {
+      "product_url": "https://www.tiktok.com/view/product/1732735207419708863",
+      "product_title": "PASMINA DUBAI RAYON TENCEL // PASHMINA KAOS DUBAI TENCEL // PASHMINA TENCEL",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/eae5681efc984224a1b8ef6fd77d9d34~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-24T00:19:44+00:00"
+    },
+    "7625503644535803137": {
+      "product_url": "https://www.tiktok.com/view/product/1732009384590476321",
+      "product_title": "Mybamus Alaya Rubber Blouse Poplin Atasan Kerut Dada Renda Lengan Panjang Rekomendasi Outfit Bukber",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/9ccf9ccdaadf45779ccd27f2e2f89e98~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-24T02:19:07+00:00"
+    },
+    "7639230790198496529": {
+      "product_url": "https://www.tiktok.com/view/product/1734158410116401029",
+      "product_title": "Echa Blouse Drapery Turtle Neck Rayon Twil Atasan Wanita Lengan Panjang",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/19c67d961b994a329eb3f184f44847f6~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-24T02:19:18+00:00"
+    },
+    "7637843066811976977": {
+      "product_url": "https://www.tiktok.com/view/product/1735195192471684628",
+      "product_title": "Dotty Polkadot Top Katun model Kerut Lucu Kemeja",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/d433743ae07e4e50938d12cbc6640f99~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-24T03:30:47+00:00"
+    },
+    "7642269750785101064": {
+      "product_url": "https://www.tiktok.com/view/product/1731770284650956709",
+      "product_title": "ELORA SET KEMEJA RUFFLE RAYON",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/10339c9cbc2a4c0ba0aaf194bbc283a2~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-24T04:21:37+00:00"
+    },
+    "7639328850555473169": {
+      "product_url": "",
+      "product_title": "",
+      "product_image_url": "",
+      "checked_at": "2026-05-24T06:19:09+00:00"
+    },
+    "7638576242207231249": {
+      "product_url": "https://www.tiktok.com/view/product/1732953660102378875",
+      "product_title": "Vione - Roman Vest Kemeja Blezer Casual Outfit dengan Desain Elegan dan Kancing Logam untuk Tampilan Modern",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/5876376ef2274b34af4a00b567dcd2f5~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-24T08:19:07+00:00"
+    },
+    "7626721343983176968": {
+      "product_url": "",
+      "product_title": "",
+      "product_image_url": "",
+      "checked_at": "2026-05-24T10:21:14+00:00"
+    },
+    "7629261705716976897": {
+      "product_url": "https://www.tiktok.com/view/product/1733298619276166882",
+      "product_title": "Lui Stripe Shirt - Kemeja Garis Wanita - Kemeja Salur",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/80af3791c71745358ad6a785d2f29420~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-25T12:24:57+00:00"
+    },
+    "7627787428916399361": {
+      "product_url": "https://www.tiktok.com/view/product/1730720286261282300",
+      "product_title": "Lulu blouse strip salur premium LD 110 120 130 140 XL XXL 4L 5L kemeja crop jumbo",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/f9d281a4a2604b49acebfa623e35eb95~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-24T12:20:06+00:00"
+    },
+    "7629988711576407304": {
+      "product_url": "",
+      "product_title": "",
+      "product_image_url": "",
+      "checked_at": "2026-05-24T12:23:32+00:00"
+    },
+    "7641474634029845776": {
+      "product_url": "https://www.tiktok.com/view/product/1734440220059010196",
+      "product_title": "Jaket Tracktop Tracksuit Vitage Retro Sport Simple SEVENKILLER Pria Wanita Qualitas  Distro Parasut Premium Olahraga Waterproof",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/8e5da6935af748afb40c4920c77e9c12~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-24T12:23:32+00:00"
+    },
+    "7627322017372589319": {
+      "product_url": "",
+      "product_title": "",
+      "product_image_url": "",
+      "checked_at": "2026-05-24T20:19:49+00:00"
+    },
+    "7639733567324458261": {
+      "product_url": "https://www.tiktok.com/view/product/1732191082493413358",
+      "product_title": "Felicya Kemeja Blouse Wanita Top Atasan Kancing Lengan Panjang Kerah Layer Katun - Allura.id",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/b0453bf7e1be4c938a4ea55c18a9d411~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-24T16:19:12+00:00"
+    },
+    "7642933939572673813": {
+      "product_url": "https://www.tiktok.com/view/product/1733096237853542287",
+      "product_title": "MINIMAL -  Batya - Wrap Blouse ÃÂ¢ÃÂÃÂ Light Green",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-maliva-i-o3syd03w52-us/dfb2906a50d04476a45989b9a8bcc9c4~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-24T22:19:02+00:00"
+    },
+    "7639702826834513173": {
+      "product_url": "https://www.tiktok.com/view/product/1733244558517306886",
+      "product_title": "Bytantisa-Sweater Rajut Ganeva",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/0c9e525033e84296bc5c5b69f147e829~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-25T00:19:08+00:00"
+    },
+    "7631588545433488648": {
+      "product_url": "https://www.tiktok.com/view/product/1732735207419708863",
+      "product_title": "PASMINA DUBAI RAYON TENCEL // PASHMINA KAOS DUBAI TENCEL // PASHMINA TENCEL",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/eae5681efc984224a1b8ef6fd77d9d34~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-25T02:19:11+00:00"
+    },
+    "7643343301617274120": {
+      "product_url": "https://www.tiktok.com/view/product/1735262116948903698",
+      "product_title": "Cantiqu Blouse Layering Sara Atasan Wanita Bahan Pololinen | Lengan Panjang",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/db5ac6e3068c40fdaa241e6ac7d4b3ce~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-25T06:19:56+00:00"
+    },
+    "7641851315022220565": {
+      "product_url": "https://www.tiktok.com/view/product/1731452481668678816",
+      "product_title": "PRODUK LOKAL - CLARA One Set | Kemeja Wanita | Rok Wanita Atasan Bawahan",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/26d0e0ea4f6f4daa903ffc00227f5fa6~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-25T08:19:16+00:00"
+    },
+    "7630749491703926032": {
+      "product_url": "https://www.tiktok.com/view/product/1733463939708978748",
+      "product_title": "Seemooi - Blouse Wanita Smock Pinggang Atasan Lengan Panjang Casual Elegan Motif Salur Kecil",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/60644409e74a457ca1842bd6bd44aece~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-25T10:19:16+00:00"
+    },
+    "7629191450223217921": {
+      "product_url": "https://www.tiktok.com/view/product/1734096943606302215",
+      "product_title": "RUPA - Loly Rufle Shirt - Kemeja Oversize Linen Atasan Wanita Model Terbaru",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/b416ca3b26ba4b3b98bab3aff60f91ae~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-25T12:23:43+00:00"
+    },
+    "7642175103517592853": {
+      "product_url": "https://www.tiktok.com/view/product/1731257844351403919",
+      "product_title": "MINIMAL - Chaineste - Chain Print Satin Shirt  - Beige",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/518193749e8d457eb47809cff57b1942~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-25T13:18:07+00:00"
+    },
+    "7642671907610823956": {
+      "product_url": "https://www.tiktok.com/view/product/1729727349701904089",
+      "product_title": "Kinan Dress III Tille Bordir / Gamis Size M - 5L 98cm - 130cm Gamis Jumbo / Gamis Terbaru / Seragaman Pesta / Gamis Semi Outer / Dress Pesta / Gamis Kondangan / Gamis Modern / Gamis Mewah Pesta Muslim Transparent brukat",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/b0f8e0ed368f49beaeb7657669a177fa~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-25T15:09:22+00:00"
+    },
+    "7632222759661210887": {
+      "product_url": "https://www.tiktok.com/view/product/1733244558517306886",
+      "product_title": "Bytantisa-Sweater Rajut Ganeva",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/0c9e525033e84296bc5c5b69f147e829~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-25T17:09:17+00:00"
+    },
+    "7643602710339636488": {
+      "product_url": "https://www.tiktok.com/view/product/1732186370676131117",
+      "product_title": "Cardigan Hits Moonlife Cardi Oriza Knit Pleats Premium Ld 120cm Panjang 58cm Wanita Cardigan Gelombang",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/e358e50f37294671b11d18830c5714b1~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-25T19:10:07+00:00"
+    },
+    "7642110647358082325": {
+      "product_url": "https://www.tiktok.com/view/product/1734167975967688686",
+      "product_title": "Nagita Kemeja Blouse Wanita Top Atasan Kancing Lengan Panjang Kerah Layer Katun Busui Friendly - Allura.id",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/729d4589f2eb4cf580d2a6ad499a8137~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-25T21:09:15+00:00"
+    },
+    "7638080639471717650": {
+      "product_url": "https://www.tiktok.com/view/product/1733556602027541537",
+      "product_title": "Mybamus Leoni Blouse Polkadot Ballon Sleeve Top",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/3e0fcab2d34a4b2d989f5927c5ef377c~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-25T23:09:15+00:00"
+    },
+    "7640439373179276564": {
+      "product_url": "https://www.tiktok.com/view/product/1730898114317748111",
+      "product_title": "MINIMAL - Hounstood - Gaun Wanita Motif Geometris - Beige",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-maliva-i-o3syd03w52-us/62c12e192aa24c94abb8a679f8926b69~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-26T01:09:14+00:00"
+    },
+    "7643035622952750357": {
+      "product_url": "https://www.tiktok.com/view/product/1731586155077272850",
+      "product_title": "Lily Oneset Basic Kerja Rekomendasi Ootd Wanita Kekinian Terbaru",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/404622d07a9e4c6298c9ffcec4c9c52c~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-26T05:13:10+00:00"
+    },
+    "7641592446039657744": {
+      "product_url": "https://www.tiktok.com/view/product/1732431067769767404",
+      "product_title": "Niakel | Calaa Sweater Rajut Premium Resleting Bawah Knitwear Wanita Gaya Korea",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/10f5dfdd8e2b4ba2a929447e9d0ef890~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-26T07:11:03+00:00"
+    },
+    "7627365912831593745": {
+      "product_url": "https://www.tiktok.com/view/product/1733417478084068441",
+      "product_title": "MJ_Bosss fited kemeja stripe wanita Atasan fitted crop",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/c33a14607447493fb732c990465ea8c2~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-26T09:29:12+00:00"
+    },
+    "7644063819605527825": {
+      "product_url": "https://www.tiktok.com/view/product/1732781279231968997",
+      "product_title": "CHICMORE Atasan kemeja lengan panjang kancing aktif sebaris bergaya modis",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-maliva-i-o3syd03w52-us/ff483a043171487980e090dbca4da412~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-26T11:15:50+00:00"
+    },
+    "7630336994689764626": {
+      "product_url": "",
+      "product_title": "",
+      "product_image_url": "",
+      "checked_at": "2026-05-26T13:15:50+00:00"
+    },
+    "7643065097979432212": {
+      "product_url": "https://www.tiktok.com/view/product/1730898119872907151",
+      "product_title": "MINIMAL - Jenny - Gaun Sifon Plumeti Wanita - Green",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-maliva-i-o3syd03w52-us/28e2bea5e15e4ef1aef1ff64708803eb~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-26T17:16:34+00:00"
+    },
+    "7639690669325421842": {
+      "product_url": "https://www.tiktok.com/view/product/1735106083723118262",
+      "product_title": "HYLE Luna Stripe Kemeja Fitted Wanita Lengan Panjang dengan Tali Belakang Bahan Semiwoll Casual Formal Ukuran S M L XL XXL Semiwol Baju Elegan Nyaman",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/928724d90f7142fb9d912d4ca7fb05f4~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-26T19:15:56+00:00"
+    },
+    "7640326605172149524": {
+      "product_url": "https://www.tiktok.com/view/product/1730961365882406799",
+      "product_title": "MINIMAL - Adeira - Kulot Satin Wanita Motif Geometris - Grey",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-maliva-i-o3syd03w52-us/3d87bdb1bb9c4e4a94b859f57b69e6e1~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-26T21:15:50+00:00"
+    },
+    "7639651493087464724": {
+      "product_url": "https://www.tiktok.com/view/product/1729643305827403663",
+      "product_title": "Minimal Moxy Blouse Atasan Wanita Green",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/4f43227c95754e64b3833b02c7dadcbc~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-27T01:16:49+00:00"
+    },
+    "7641805083012779284": {
+      "product_url": "https://www.tiktok.com/view/product/1730261636039149455",
+      "product_title": "Minimal Marina Blouse Beige Mix",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/cabf1d1f8531411381904b5d1e2a2aa2~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-27T03:46:15+00:00"
+    },
+    "7638896987202489621": {
+      "product_url": "https://www.tiktok.com/view/product/1735161376894191287",
+      "product_title": "Kaluna Blouse Atasan Layering Linen Kekinian Wanita Lengan Panjang Premium Baju Formal Katun Linen  Lembut Adjustable Tali Belakang",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/ff98e84822304c08b05809e6c903454a~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-27T05:25:27+00:00"
+    },
+    "7643718009667865874": {
+      "product_url": "https://www.tiktok.com/view/product/1729626181861083368",
+      "product_title": "25OCLOCK - Black Shirt Lengan Panjang V-Neck / Kemeja Hitam Trumpet Sleeve",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/f26c7353f52348bfab3fc5fe4a047882~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-27T07:47:06+00:00"
+    },
+    "7640461429459389717": {
+      "product_url": "https://www.tiktok.com/view/product/1731534718357899151",
+      "product_title": "MINIMAL - Amira - Kemeja A Line Wanita Motif Bunga - Beige",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-maliva-i-o3syd03w52-us/cdee96e9589443e39090ee96ecf1b5a8~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-27T09:26:25+00:00"
+    },
+    "7643367747304410375": {
+      "product_url": "",
+      "product_title": "",
+      "product_image_url": "",
+      "checked_at": "2026-05-27T11:27:46+00:00"
+    },
+    "7625251562922855681": {
+      "product_url": "https://www.tiktok.com/view/product/1732329534354523410",
+      "product_title": "Laura Kemeja Stripe Motif Garis Modern Ukuran XL XXL XXXL Kancing Aktif Desain Rapi Stylish",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/55ab6a8d4e004debbea581710c5b76eb~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-27T11:27:46+00:00"
+    },
+    "7641878009946868993": {
+      "product_url": "https://www.tiktok.com/view/product/1733606720109643198",
+      "product_title": "BLOUSE WANITA LENGAN BALON ELVIRA | ATASAN LENGAN PANJANG DENGAN PLISKET BAHAN POLO LINEN",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/08b2132d59404dcda410ed393d6517d1~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-27T13:27:40+00:00"
+    },
+    "7642209450484305169": {
+      "product_url": "https://www.tiktok.com/view/product/1731036065732462211",
+      "product_title": "Sweater Cardigan Rajut Garis Terbaru Atasan Lengan Panjang Wanita Gaya Korea Pendek Stretch",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/e758271c412d42d5b1e6c3cb101a717b~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-27T15:28:11+00:00"
+    },
+    "7638836479325719829": {
+      "product_url": "https://www.tiktok.com/view/product/1734364082822677772",
+      "product_title": "Aeera Blouse Denim Wanita Atasan Kemeja Wispie Jeans Formal Lengan Panjang Peplum",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/66b1f583de0c4848a6dcf03244e51839~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-27T15:59:51+00:00"
+    },
+    "7636683279059406081": {
+      "product_url": "https://www.tiktok.com/view/product/1729549074797070765",
+      "product_title": "OLLA BLOUSE FLOWY KERUT MOTIF BUNGA KOREAN STYLE Atasan Wanita Casual",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-maliva-i-o3syd03w52-us/ec226ebe2b74441191fda86346dae72d~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-27T17:27:36+00:00"
+    },
+    "7642954634792946952": {
+      "product_url": "https://www.tiktok.com/view/product/1732964652187747526",
+      "product_title": "Kayla vest poplin | vest poplin wanita | vest tali | vest ruffle",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/b332a96cf2c24b32bd784a45fce7993a~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-27T19:27:20+00:00"
+    },
+    "7642705093682400533": {
+      "product_url": "",
+      "product_title": "",
+      "product_image_url": "",
+      "checked_at": "2026-05-27T21:27:20+00:00"
+    },
+    "7634825088080055560": {
+      "product_url": "",
+      "product_title": "",
+      "product_image_url": "",
+      "checked_at": "2026-05-27T21:27:20+00:00"
+    },
+    "7630241485958565138": {
+      "product_url": "",
+      "product_title": "",
+      "product_image_url": "",
+      "checked_at": "2026-05-27T21:27:20+00:00"
+    },
+    "7640113592607476993": {
+      "product_url": "https://www.tiktok.com/view/product/1735207284407305678",
+      "product_title": "UNLOCK OUTFITS Tiara Soft Denim Atasan Kerah Ruffle Blouse Original Premium",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/6488a999292d4a14ad5f52851ba70ff9~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-27T21:27:21+00:00"
+    },
+    "7642899225348459797": {
+      "product_url": "",
+      "product_title": "",
+      "product_image_url": "",
+      "checked_at": "2026-05-27T23:28:22+00:00"
+    },
+    "7634725820237450504": {
+      "product_url": "",
+      "product_title": "",
+      "product_image_url": "",
+      "checked_at": "2026-05-27T23:28:23+00:00"
+    },
+    "7642255450074942740": {
+      "product_url": "",
+      "product_title": "",
+      "product_image_url": "",
+      "checked_at": "2026-05-27T23:28:23+00:00"
+    },
+    "7642622028679367953": {
+      "product_url": "https://www.tiktok.com/view/product/1731774918735201812",
+      "product_title": "Tetta Kaos Wanita Combed Casual Top Polos List",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/31f02bc34566459693c377228275bab2~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-28T01:27:21+00:00"
+    },
+    "7638913151353900309": {
+      "product_url": "",
+      "product_title": "",
+      "product_image_url": "",
+      "checked_at": "2026-05-28T05:27:21+00:00"
+    },
+    "7639190785660980500": {
+      "product_url": "",
+      "product_title": "",
+      "product_image_url": "",
+      "checked_at": "2026-05-28T05:27:22+00:00"
+    },
+    "7639279485719710993": {
+      "product_url": "https://www.tiktok.com/view/product/1732865035831183153",
+      "product_title": "Shilvia Blouse Fitted Denim Premium/Kemeja Jeans Wanita Jumbo",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/f3a0770fe6e8408ba42244434f28eee2~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-28T05:27:22+00:00"
+    },
+    "7643613550593805588": {
+      "product_url": "",
+      "product_title": "",
+      "product_image_url": "",
+      "checked_at": "2026-05-28T09:27:33+00:00"
+    },
+    "7640420379957267733": {
+      "product_url": "",
+      "product_title": "",
+      "product_image_url": "",
+      "checked_at": "2026-05-28T09:27:34+00:00"
+    },
+    "7629862682023283975": {
+      "product_url": "",
+      "product_title": "",
+      "product_image_url": "",
+      "checked_at": "2026-05-28T09:27:34+00:00"
+    },
+    "7631176410870140178": {
+      "product_url": "",
+      "product_title": "",
+      "product_image_url": "",
+      "checked_at": "2026-05-28T11:27:43+00:00"
+    },
+    "7642189258182298901": {
+      "product_url": "",
+      "product_title": "",
+      "product_image_url": "",
+      "checked_at": "2026-05-28T13:27:40+00:00"
+    },
+    "7643691447723527440": {
+      "product_url": "https://www.tiktok.com/view/product/1734934224815359089",
+      "product_title": "Blouse Cheongsam Sasmita Salur Kancing Ciangi Atasan Wanita Bahan Katun",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/f3cba9823b424ccda42b4fcfdd476dc2~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-28T13:27:41+00:00"
+    },
+    "7626357858501709073": {
+      "product_url": "https://www.tiktok.com/view/product/1732783552533989142",
+      "product_title": "ABBA TOP - Atasan Kardigan Peplum Knit Kancing Wanita Babydoll Button Top Lengan Panjang Kancing Basic SOMA",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-maliva-i-o3syd03w52-us/0c85d8a62ce3493caaa8703e6a5323bb~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-28T15:28:41+00:00"
+    },
+    "7637801093518380306": {
+      "product_url": "",
+      "product_title": "",
+      "product_image_url": "",
+      "checked_at": "2026-05-28T15:29:34+00:00"
+    },
+    "7643772660358335761": {
+      "product_url": "https://www.tiktok.com/view/product/1731625163359749557",
+      "product_title": "Zalmore LongSleeve Top with Ruffle | LUMA Cotton Premium - Atasan Wanita Lembut dan Sejuk",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/019892d332f746b58b88d2ff73b961b9~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-28T15:29:35+00:00"
+    },
+    "7631866087692455185": {
+      "product_url": "https://www.tiktok.com/view/product/1734538324189415141",
+      "product_title": "[ready stock]CHICMORE Atasan Kemeja lengan panjang gaya Korea kasual model baru untuk wanita",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-maliva-i-o3syd03w52-us/466e8c228ac5487ba60aeb1b53dfe0b7~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-28T17:27:24+00:00"
+    },
+    "7641132215664905490": {
+      "product_url": "https://www.tiktok.com/view/product/1730783568359622108",
+      "product_title": "JALIMA Mireya Kemeja Bordir Wanita Premium",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/a75958b092d94f1e8ba34a3e50a6d309~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-28T19:27:33+00:00"
+    },
+    "7634827193213930753": {
+      "product_url": "https://www.tiktok.com/view/product/1734930396136965495",
+      "product_title": "Shandira Blouse - Atasan Wanita Knit Premium Ruffle Kombinasi Katun Fashion Muslim Korean Style Baju Panjang Casual",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/0d362d2acaa949e5b790b08bdf487fe8~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-28T21:27:21+00:00"
+    },
+    "7638797848414375189": {
+      "product_url": "",
+      "product_title": "",
+      "product_image_url": "",
+      "checked_at": "2026-05-28T23:28:08+00:00"
+    },
+    "7639236940734270741": {
+      "product_url": "",
+      "product_title": "",
+      "product_image_url": "",
+      "checked_at": "2026-05-28T23:28:08+00:00"
+    },
+    "7641963453715877127": {
+      "product_url": "",
+      "product_title": "",
+      "product_image_url": "",
+      "checked_at": "2026-05-29T03:27:33+00:00"
+    },
+    "7643401307054804241": {
+      "product_url": "https://www.tiktok.com/view/product/1734433891354182744",
+      "product_title": "CIRA DRESS by Dippew | Dress Bordir Bunga Raya Series Fashion",
+      "product_image_url": "https://p16-oec-sg.ibyteimg.com/tos-alisg-i-aphluv4xwc-sg/3a994a15c08c40b09f70809c0f371376~tplv-aphluv4xwc-resize-jpeg:800:800.jpeg?dr=15584&t=555f072d&ps=933b5bde&shp=615b9c44&shcp=57d7afb6&idc=my&from=1633393732",
+      "checked_at": "2026-05-29T07:27:40+00:00"
+    }
+  },
+  "upload_scheduler": {
+    "attempted_window_keys": [
+      "2026-05-24:12:00-13:30",
+      "2026-05-24:18:30-19:15",
+      "2026-05-25:12:00-13:30",
+      "2026-05-25:18:30-19:15",
+      "2026-05-26:07:00-08:15",
+      "2026-05-26:16:00-18:30",
+      "2026-05-26:18:30-19:15",
+      "2026-05-27:07:00-08:15",
+      "2026-05-27:12:00-13:30",
+      "2026-05-27:18:30-19:15",
+      "2026-05-28:07:00-08:15",
+      "2026-05-28:12:00-13:30",
+      "2026-05-28:16:00-18:30",
+      "2026-05-29:07:00-08:15",
+      "2026-05-29:12:00-13:30",
+      "2026-05-29:16:00-18:30",
+      "2026-05-29:18:30-19:15"
+    ],
+    "last_attempted_window": {
+      "key": "2026-05-29:18:30-19:15",
+      "range": "18:30-19:15",
+      "trigger_time": "2026-05-29 19:07 WIB",
+      "active_until": "2026-05-29 19:17 WIB"
     }
   }
 }

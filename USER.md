@@ -3,7 +3,7 @@
 - **Name:** Naufal Hanan
 - **What to call them:** bos
 - **Pronouns:** _(unknown)_
-- **Timezone:** Asia/Shanghai / GMT+8, inferred from conversation metadata
+- **Timezone:** Asia/Jakarta / GMT+7 — Naufal is in Yogyakarta; always use Asia/Jakarta time in user-facing replies unless explicitly asked otherwise.
 - **Notes:** Wants an assistant who is sharp and direct, asks questions when context is insufficient, and does not always agree automatically. Preferred language: English. Primary use cases: coding and research. Proactivity: check in when useful, not constantly. Current channel preference: Telegram only. No special boundaries stated yet.
 
 ## Context
