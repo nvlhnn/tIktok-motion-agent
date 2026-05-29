@@ -155,6 +155,17 @@ def cleanup_supabase_generation_sources(job_id: str, info: dict, row: dict) -> l
     return deleted
 
 
+def set_result_retention_deadline(state: dict, job_id: str, row: dict) -> str:
+    """Start the 7-day Supabase result/reference retention clock after result upload."""
+    delete_after = iso(now_utc() + dt.timedelta(days=int(os.environ.get("RETENTION_DAYS", "7"))))
+    row["delete_after"] = delete_after
+    for job in state.get("jobs") or []:
+        if job.get("job_id") == job_id:
+            job["delete_after"] = delete_after
+            break
+    return delete_after
+
+
 def create_job_context(image_path: str | None = None):
     src_image = Path(image_path or require_env("MASTER_IMAGE_PATH")).expanduser().resolve()
     if not src_image.exists():
@@ -421,6 +432,7 @@ def complete(job_id: str, generated_reference_path: str, provider: str | None = 
             if used_id:
                 recent.append(used_id)
         state["recent_video_ids"] = recent[-100:]
+        set_result_retention_deadline(state, job_id, row)
         source_cleanup = cleanup_supabase_generation_sources(job_id, info, row)
         prepared.pop(job_id, None)
         state_save(state)
