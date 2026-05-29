@@ -19,10 +19,12 @@ When Naufal says **go**, run the automation with minimal chat.
 - Write a fresh Indonesian TikTok UGC-style caption from the product title.
 - Use simple Indo Gen Z language, casual and not formal.
 - Make it look like a human seller caption, not AI/copywriter text.
-- Use lowercase, casual abbreviations when natural (`bgt`, `sih`, `gini`, `nya`).
+- Make the phrase specific to the product detail or use-case, not just generic praise. Mention a concrete detail when possible: ruffle, salur, bordir, plisket, rajut, vneck, warna/tone, cut, layering, ngantor/daily/kuliah/hangout.
+- Avoid repetitive/template phrases like `cakep bgt`, `manis bgt`, `adem bgt`, `simple cakep`, `kalem cakep`, or `buat daily` on every video.
+- Use lowercase, casual abbreviations when natural (`bgt`, `sih`, `gini`, `nya`), but do not overuse `bgt`.
 - Do not use the word `ini`.
 - Keep the caption phrase max 5 words before hashtags.
-- Use max 5 hashtags total.
+- Use max 5 hashtags total, mixing 1-2 product-specific hashtags with broader discovery tags.
 - Do not use fixed/repeated templates; make captions visibly different per video.
 - No emoji.
 ```bash

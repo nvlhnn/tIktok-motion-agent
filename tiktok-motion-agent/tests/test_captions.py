@@ -2,8 +2,15 @@
 
 from pipeline.captions import (
     clean_product_title, caption_keywords, caption_tags,
-    build_tiktok_caption,
+    build_tiktok_caption, build_caption_phrase, caption_parts,
 )
+
+
+GENERIC_PHRASES = ["cakep bgt", "manis bgt", "adem bgt", "simple cakep"]
+
+
+def phrase_part(caption: str) -> str:
+    return " ".join([w for w in caption.split() if not w.startswith("#")])
 
 
 def test_clean_product_title_strips_brackets():
@@ -23,11 +30,10 @@ def test_clean_product_title_normalizes_whitespace():
 
 def test_caption_keywords_picks_meaningful_words():
     kws = caption_keywords("Kemeja Bordir Wanita Premium Terbaru")
-    # "wanita", "premium", "terbaru" are stopwords; "kemeja" is < 4 chars wait no it's 6
     assert "bordir" in kws
     assert "kemeja" in kws
-    assert "wanita" not in kws  # stopword
-    assert "premium" not in kws  # stopword
+    assert "wanita" not in kws
+    assert "premium" not in kws
 
 
 def test_caption_keywords_limit():
@@ -35,68 +41,71 @@ def test_caption_keywords_limit():
     assert len(kws) <= 2
 
 
+def test_caption_parts_extracts_details_color_category():
+    parts = caption_parts("Cardigan Beige Plisket Rajut")
+    assert "cardi" in parts["categories"]
+    assert "beige" in parts["colors"]
+    assert "plisket" in parts["details"]
+
+
 def test_caption_tags_maps_product_type():
     tags = caption_tags("Kemeja Bordir Wanita")
     assert "#kemejawanita" in tags
-    assert len(tags) <= 6
+    assert len(tags) <= 5
 
 
 def test_caption_tags_always_has_base_tags():
     tags = caption_tags("Something Random Product")
-    # Base tags should always be included
-    assert any("#atasanwanita" in t for t in tags)
+    assert any("#ootdhijab" in t for t in tags)
 
 
-def test_build_tiktok_caption_bordir():
-    result = build_tiktok_caption("Kemeja Bordir Wanita Premium")
-    assert "bordirnya manis bgt" in result
-    assert "#" in result  # has hashtags
+def test_build_caption_phrase_is_short():
+    phrase = build_caption_phrase("Ruffle Salur Blouse")
+    assert len(phrase.split()) <= 5
 
 
-def test_build_tiktok_caption_denim():
-    result = build_tiktok_caption("Kemeja Denim Wanita Import")
-    assert "denim gini cakep" in result
+def test_build_tiktok_caption_avoids_repeated_generic_phrases():
+    examples = [
+        "Ruffle Salur Blouse Wanita",
+        "Sasmita Salur Blouse Cheongsam",
+        "Kemeja Korea Wanita",
+        "Bordir Bunga Dress",
+        "Cardigan Plisket Beige",
+    ]
+    captions = [build_tiktok_caption(x) for x in examples]
+    assert not any(any(g in c for g in GENERIC_PHRASES) for c in captions)
 
 
-def test_build_tiktok_caption_rajut():
-    result = build_tiktok_caption("Sweater Rajut Wanita")
-    assert "rajutnya cakep bgt" in result
+def test_build_tiktok_caption_hashtags_max_five():
+    result = build_tiktok_caption("Ruffle Rajut Shandira Blouse")
+    hashtags = [w for w in result.split() if w.startswith("#")]
+    assert 1 <= len(hashtags) <= 5
 
 
-def test_build_tiktok_caption_blouse():
-    result = build_tiktok_caption("Blouse Simple Cewek Korea")
-    assert "blouse simple cakep" in result
+def test_build_tiktok_caption_is_deterministic():
+    title = "Cardigan Hits Moonlife Cardi Oriza Knit Pleats"
+    assert build_tiktok_caption(title) == build_tiktok_caption(title)
 
 
-def test_build_tiktok_caption_outer():
-    result = build_tiktok_caption("Cardigan Outer Wanita")
-    assert "outer kepake terus" in result
-
-
-def test_build_tiktok_caption_kemeja():
-    result = build_tiktok_caption("Kemeja Putih Wanita")
-    assert "kemejanya clean bgt" in result
-
-
-def test_build_tiktok_caption_generic():
-    result = build_tiktok_caption("Random Product Name Here")
-    assert "cakep" in result  # keyword fallback or generic
+def test_build_tiktok_caption_varies_by_title():
+    a = phrase_part(build_tiktok_caption("Cardigan Plisket Beige"))
+    b = phrase_part(build_tiktok_caption("Kulot Grey Cutbray"))
+    assert a != b
 
 
 def test_build_tiktok_caption_empty():
     result = build_tiktok_caption("")
-    assert "simple tapi cakep" in result
+    assert result
+    assert len(phrase_part(result).split()) <= 5
 
 
 def test_build_tiktok_caption_no_emoji():
     result = build_tiktok_caption("Kemeja Bordir Wanita")
-    # Should not contain emoji
     for char in result:
         assert ord(char) < 0x1F600 or ord(char) > 0x1F64F, f"Found emoji: {char}"
 
 
 def test_build_tiktok_caption_no_ini():
     result = build_tiktok_caption("Blouse ini bagus")
-    words = result.split()
-    # "ini" should not appear as a keyword
-    assert "ini" not in words[:5]  # check the phrase part before hashtags
+    words = phrase_part(result).split()
+    assert "ini" not in words

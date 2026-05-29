@@ -1,4 +1,5 @@
 import csv
+import hashlib
 import re
 import sys
 
@@ -11,43 +12,74 @@ CAPTION_STOPWORDS = {
     "ready", "stock", "import", "murah", "premium", "terbaru", "kekinian", "style", "gaya",
     "wanita", "cewek", "perempuan", "baju", "atasan", "outfit", "fashion", "casual", "korea", "korean",
     "by", "dan", "dengan", "untuk", "ukuran", "motif", "variasi", "model", "the", "a", "an",
+    "ini", "baru", "best", "seller", "ld", "all", "size", "jumbo", "simple", "basic",
 }
 
 
 CAPTION_TAG_MAP = {
-    "kemeja": ["#kemejawanita", "#atasanwanita", "#fashionwanita"],
-    "blouse": ["#blousewanita", "#atasanwanita", "#outfitinspiration"],
-    "blus": ["#blousewanita", "#atasanwanita", "#fashionwanita"],
-    "sweater": ["#sweaterwanita", "#atasanwanita", "#outfitkekinian"],
-    "rajut": ["#sweaterwanita", "#atasanwanita", "#ootd"],
-    "knit": ["#sweaterwanita", "#atasanwanita", "#outfitinspiration"],
-    "cardigan": ["#cardiganwanita", "#atasanwanita", "#outfitkekinian"],
-    "kardigan": ["#cardiganwanita", "#atasanwanita", "#outfitkekinian"],
-    "outer": ["#outerwanita", "#atasanwanita", "#ootd"],
-    "vest": ["#vestwanita", "#atasanwanita", "#outfitinspiration"],
-    "rompi": ["#rompiwanita", "#atasanwanita", "#ootd"],
-    "kaos": ["#atasanwanita", "#fashionwanita", "#ootd"],
-    "denim": ["#kemejawanita", "#atasanwanita", "#ootd"],
-    "jeans": ["#kemejawanita", "#atasanwanita", "#ootd"],
-    "crop": ["#atasanwanita", "#outfitkekinian"],
-    "babydoll": ["#blousewanita", "#atasanwanita", "#ootd"],
-    "bordir": ["#blousewanita", "#kemejawanita", "#atasanwanita"],
-    "pita": ["#blousewanita", "#atasanwanita", "#outfitinspiration"],
-    "ribbon": ["#blousewanita", "#atasanwanita", "#outfitinspiration"],
-    "peplum": ["#blousewanita", "#atasanwanita", "#outfitkekinian"],
-    "coquette": ["#blousewanita", "#atasanwanita", "#outfitinspiration"],
+    "kemeja": ["#kemejawanita", "#atasanhijab"],
+    "shirt": ["#kemejawanita", "#atasanhijab"],
+    "blouse": ["#blousewanita", "#atasanhijab"],
+    "blus": ["#blousewanita", "#atasanhijab"],
+    "sweater": ["#sweaterwanita", "#ootdhijab"],
+    "rajut": ["#atasanknit", "#ootdhijab"],
+    "knit": ["#atasanknit", "#ootdhijab"],
+    "cardigan": ["#cardiganwanita", "#ootdhijab"],
+    "kardigan": ["#cardiganwanita", "#ootdhijab"],
+    "outer": ["#outerwanita", "#ootdhijab"],
+    "vest": ["#vestwanita", "#ootdhijab"],
+    "rompi": ["#rompiwanita", "#ootdhijab"],
+    "kulot": ["#kulotwanita", "#ootdwanita"],
+    "celana": ["#celanawanita", "#ootdwanita"],
+    "rok": ["#rokwanita", "#ootdhijab"],
+    "dress": ["#dresswanita", "#ootdhijab"],
+    "gamis": ["#gamismodern", "#ootdhijab"],
+    "set": ["#setelanwanita", "#ootdhijab"],
+    "oneset": ["#setelanwanita", "#ootdhijab"],
+    "denim": ["#denimoutfit", "#ootdhijab"],
+    "jeans": ["#denimoutfit", "#ootdhijab"],
+    "bordir": ["#bordir", "#ootdhijab"],
+    "pita": ["#ribbontop", "#ootdhijab"],
+    "ribbon": ["#ribbontop", "#ootdhijab"],
+    "peplum": ["#peplumtop", "#ootdhijab"],
+    "ruffle": ["#ruffletop", "#ootdhijab"],
+    "salur": ["#blousewanita", "#ootdhijab"],
+    "plisket": ["#plisket", "#ootdhijab"],
+    "pleats": ["#plisket", "#ootdhijab"],
+    "vneck": ["#atasanhijab", "#dailylook"],
+    "v-neck": ["#atasanhijab", "#dailylook"],
 }
 
 CAPTION_BASE_TAGS = [
-    "#atasanwanita",
-    "#blouse",
-    "#kemejawanita",
-    "#blousewanita",
-    "#outfitinspiration",
+    "#ootdhijab",
+    "#dailylook",
+    "#atasanhijab",
     "#fashionwanita",
-    "#outfitkekinian",
-    "#ootd",
+    "#outfitcewek",
 ]
+
+DETAIL_WORDS = [
+    "ruffle", "salur", "bordir", "plisket", "pleats", "pita", "ribbon", "rajut", "knit",
+    "denim", "vneck", "v-neck", "kancing", "lace", "renda", "kerah", "balon", "flare",
+    "stripe", "stripes", "polos", "linen", "rayon", "katun", "satin", "rib", "smock",
+]
+
+CATEGORY_WORDS = [
+    "kemeja", "blouse", "blus", "cardigan", "cardi", "outer", "vest", "rompi", "kulot",
+    "celana", "rok", "dress", "gamis", "set", "oneset", "sweater", "top", "tunik",
+]
+
+COLOR_WORDS = {
+    "black": "hitam", "hitam": "hitam", "white": "putih", "putih": "putih", "ivory": "ivory",
+    "cream": "cream", "krem": "cream", "beige": "beige", "coklat": "coklat", "brown": "coklat",
+    "grey": "grey", "gray": "grey", "abu": "abu", "navy": "navy", "blue": "biru", "biru": "biru",
+    "green": "hijau", "hijau": "hijau", "sage": "sage", "olive": "olive", "pink": "pink",
+    "maroon": "maroon", "red": "merah", "merah": "merah", "yellow": "kuning", "kuning": "kuning",
+    "taupe": "taupe", "milo": "milo", "khaki": "khaki",
+}
+
+OCCASIONS = ["ngantor", "daily", "hangout", "kuliah", "jalan", "layering", "foto mirror"]
+MOODS = ["rapi", "kalem", "effortless", "soft", "clean", "flowy", "ringan", "jatuhnya enak"]
 
 
 def clean_product_title(title: str) -> str:
@@ -58,12 +90,15 @@ def clean_product_title(title: str) -> str:
     return title
 
 
+def _words(title: str) -> list[str]:
+    return re.findall(r"[A-Za-zÀ-ÿ0-9]+", clean_product_title(title).lower())
+
+
 def caption_keywords(title: str, limit: int = 2) -> list[str]:
-    title = clean_product_title(title)
-    words = re.findall(r"[A-Za-zÀ-ÿ0-9]+", title.lower())
+    words = _words(title)
     picked = []
     for word in words:
-        if len(word) < 4 or word in CAPTION_STOPWORDS or word == "ini":
+        if len(word) < 4 or word in CAPTION_STOPWORDS:
             continue
         if word not in picked:
             picked.append(word)
@@ -72,44 +107,119 @@ def caption_keywords(title: str, limit: int = 2) -> list[str]:
     return picked
 
 
+def _stable_pick(title: str, options: list[str], salt: str = "") -> str:
+    if not options:
+        return ""
+    digest = hashlib.sha1(f"{title}|{salt}".encode("utf-8", "ignore")).hexdigest()
+    return options[int(digest[:8], 16) % len(options)]
+
+
+def caption_parts(title: str) -> dict:
+    words = _words(title)
+    lower = " ".join(words)
+    details = []
+    categories = []
+    colors = []
+    for word in words:
+        base = re.sub(r"nya$", "", word)
+        if word in COLOR_WORDS and COLOR_WORDS[word] not in colors:
+            colors.append(COLOR_WORDS[word])
+        if base in COLOR_WORDS and COLOR_WORDS[base] not in colors:
+            colors.append(COLOR_WORDS[base])
+        if base in CATEGORY_WORDS and base not in categories:
+            categories.append("cardi" if base == "cardigan" else base)
+        if base in DETAIL_WORDS and base not in details:
+            details.append("vneck" if base == "v-neck" else base)
+    if "cutbray" in lower and "cutbray" not in details:
+        details.append("cutbray")
+    return {"details": details, "categories": categories, "colors": colors, "keywords": caption_keywords(title, limit=3)}
+
+
 def caption_tags(title: str) -> list[str]:
     lower = clean_product_title(title).lower()
     tags = []
     for key, mapped in CAPTION_TAG_MAP.items():
         if key in lower:
             tags.extend(mapped)
-    # Competitor pattern: repetitive, broad modest-fashion discovery tags beat clever/random tags.
     tags.extend(CAPTION_BASE_TAGS)
     deduped = []
     for tag in tags:
         if tag not in deduped:
             deduped.append(tag)
-    return deduped[:6]
+    return deduped[:5]
+
+
+def build_caption_phrase(product_title: str) -> str:
+    title = clean_product_title(product_title)
+    if not title:
+        return _stable_pick(title, [
+            "look daily anti ribet",
+            "buat ootd santai",
+            "potongannya gampang dipake",
+            "vibes nya soft daily",
+        ], "empty")
+
+    parts = caption_parts(title)
+    detail = parts["details"][0] if parts["details"] else ""
+    category = parts["categories"][0] if parts["categories"] else ""
+    color = parts["colors"][0] if parts["colors"] else ""
+    keyword = parts["keywords"][0] if parts["keywords"] else ""
+    occasion = _stable_pick(title, OCCASIONS, "occasion")
+    mood = _stable_pick(title, MOODS, "mood")
+
+    primary = []
+    secondary = []
+    if detail and category:
+        primary.extend([
+            f"{detail} {category} buat {occasion}",
+            f"detail {detail} nya {mood}",
+            f"{category} {detail} keliatan {mood}",
+            f"aksen {detail} nya hidup",
+        ])
+    if color and category:
+        primary.extend([
+            f"{category} {color} buat {occasion}",
+            f"tone {color} keliatan {mood}",
+        ])
+    if detail:
+        primary.extend([
+            f"detail {detail} nya niat",
+            f"{detail} nya keliatan rapi",
+            f"aksen {detail} bikin beda",
+            f"{detail} nya bukan tempelan",
+        ])
+    if category:
+        secondary.extend([
+            f"{category} buat {occasion}",
+            f"{category} nya {mood}",
+            f"potongan {category} nya enak",
+            f"{category} gampang di mix",
+        ])
+    if keyword:
+        secondary.extend([
+            f"{keyword} buat look daily",
+            f"{keyword} keliatan wearable",
+        ])
+    fallback = [
+        "look daily anti ribet",
+        "buat ootd santai",
+        "potongannya gampang dipake",
+        "look nya kalem daily",
+    ]
+
+    candidates = primary or secondary or fallback
+    phrase = _stable_pick(title, candidates, "phrase")
+    phrase = re.sub(r"\bini\b", "", phrase).strip()
+    phrase = re.sub(r"\b([a-z0-9]+) nya\b", r"\1nya", phrase)
+    phrase = re.sub(r"\s+", " ", phrase)
+    words = phrase.split()
+    return " ".join(words[:5]).lower()
 
 
 def build_tiktok_caption(product_title: str) -> str:
-    title = clean_product_title(product_title)
-    lower = title.lower()
-    kws = caption_keywords(title)
-    if "bordir" in lower:
-        text = "bordirnya manis bgt"
-    elif "denim" in lower or "jeans" in lower:
-        text = "denim gini cakep"
-    elif "rajut" in lower or "knit" in lower:
-        text = "rajutnya cakep bgt"
-    elif "pita" in lower or "ribbon" in lower:
-        text = "pitanya gemes bgt"
-    elif "outer" in lower or "cardigan" in lower or "kardigan" in lower:
-        text = "outer kepake terus"
-    elif "kemeja" in lower:
-        text = "kemejanya clean bgt"
-    elif "blouse" in lower or "blus" in lower:
-        text = "blouse simple cakep"
-    elif kws:
-        text = " ".join(kws[:2] + ["cakep"])
-    else:
-        text = "simple tapi cakep"
-    return f"{text.lower()} {' '.join(caption_tags(title))}".strip()
+    phrase = build_caption_phrase(product_title)
+    tags = caption_tags(product_title)
+    return f"{phrase} {' '.join(tags)}".strip()
 
 
 def caption_for_job(job_id: str | None = None, title: str | None = None) -> dict:
