@@ -16,7 +16,7 @@ from pipeline.orchestrator import (
 from pipeline.captions import caption_for_job, set_caption_for_job
 from pipeline.validation import validate_generated_reference_image
 from pipeline.affiliate import affiliate_monitor, set_affiliate_review
-from pipeline.upload import upload_scheduler
+from pipeline.upload import upload_scheduler, in_upload_slot, upload_windows, upload_slots, schedule_daily_uploads, check_scheduled_uploads
 from pipeline.sheets import get_sheet, ensure_sheet_header
 
 
@@ -59,6 +59,14 @@ def main():
     upp.add_argument("--dry-run", action="store_true", help="Only show what would upload. This is the default.")
     upp.add_argument("--ignore-slot", action="store_true", help="Allow live upload outside configured slots.")
     upp.add_argument("--test-channel", action="store_true", help="Use BUFFER_TEST_CHANNEL_ID instead of production channel.")
+    schedp = sub.add_parser("schedule-daily-uploads", help="Create scheduled Buffer posts for today's READY_TO_UPLOAD rows. Dry-run by default.")
+    schedp.add_argument("--live", action="store_true", help="Actually create Buffer scheduled posts. Also requires TIKTOK_UPLOAD_ENABLED=true.")
+    schedp.add_argument("--dry-run", action="store_true", help="Only show what would be scheduled. This is the default.")
+    schedp.add_argument("--count", type=int, help="Number of videos to schedule; defaults to configured windows/count.")
+    schedp.add_argument("--test-channel", action="store_true", help="Use BUFFER_TEST_CHANNEL_ID instead of production channel.")
+    checkp = sub.add_parser("check-scheduled-uploads", help="Check scheduled Buffer posts and mark/announce rows when sent. Dry-run by default.")
+    checkp.add_argument("--live", action="store_true", help="Actually update rows based on Buffer status.")
+    checkp.add_argument("--dry-run", action="store_true", help="Only show current Buffer statuses. This is the default.")
     args = ap.parse_args()
     load_env()
     if args.cmd == "run":
@@ -88,6 +96,10 @@ def main():
         print(json.dumps({"status_values": STATUS_VALUES, "formatted": True}, indent=2))
     if args.cmd == "upload-scheduler":
         print(json.dumps(upload_scheduler(dry_run=(args.dry_run or not args.live), live=args.live, ignore_slot=args.ignore_slot, test_channel=args.test_channel), indent=2, ensure_ascii=False))
+    if args.cmd == "schedule-daily-uploads":
+        print(json.dumps(schedule_daily_uploads(dry_run=(args.dry_run or not args.live), live=args.live, count=args.count, test_channel=args.test_channel), indent=2, ensure_ascii=False))
+    if args.cmd == "check-scheduled-uploads":
+        print(json.dumps(check_scheduled_uploads(dry_run=(args.dry_run or not args.live), live=args.live), indent=2, ensure_ascii=False))
 
 
 if __name__ == "__main__":

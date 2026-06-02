@@ -4,6 +4,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 DATA_DIR = ROOT / "data"
 DOWNLOADS_DIR = ROOT / "downloads"
+REVIEWS_DIR = ROOT / "reviews"
 LOGS_DIR = ROOT / "logs"
 STATE_PATH = DATA_DIR / "state.json"
 RUNS_CSV = DATA_DIR / "runs.csv"
@@ -58,6 +59,10 @@ COLUMNS = [
     "buffer_status",
     "buffer_error",
     "external_link",
+    "tiktok_post_url",
+    "facebook_post_url",
+    "instagram_post_url",
+    "post_external_links",
     "buffer_channel_id",
     "uploaded_via",
     "upload_attempts",
@@ -72,6 +77,7 @@ COLUMNS = [
     "product_match_checked_at",
     "action_needed",
     "input_image_validation",
+    "product_image_url_2",
 ]
 
 STATUS_VALUES = [
@@ -82,6 +88,7 @@ STATUS_VALUES = [
     "PROCESSING",
     "COMPLETED",
     "READY_TO_UPLOAD",
+    "SCHEDULED_UPLOAD",
     "UPLOADING",
     "REJECTED",
     "UPLOADED",
@@ -94,7 +101,7 @@ STATUS_VALUES = [
 
 
 TERMINAL_STATUSES = {"COMPLETED", "READY_TO_UPLOAD", "REJECTED", "UPLOADED", "UPLOAD_FAILED", "READY_TO_AFFILIATE", "AFFILIATED", "FAILED", "TIMEOUT"}
-ACTIVE_STATUSES = {"QUEUED", "SUBMITTED", "PROCESSING"}
+ACTIVE_STATUSES = {"QUEUED", "SUBMITTED", "PROCESSING", "SCHEDULED_UPLOAD", "UPLOADING"}
 
 STATUS_COLORS = {
     # Intentionally high-contrast and unique per status.
@@ -105,6 +112,7 @@ STATUS_COLORS = {
     "PROCESSING": {"backgroundColor": {"red": 0.65, "green": 0.92, "blue": 1.00}},       # cyan
     "COMPLETED": {"backgroundColor": {"red": 0.70, "green": 0.92, "blue": 0.70}},        # green
     "READY_TO_UPLOAD": {"backgroundColor": {"red": 0.58, "green": 1.00, "blue": 0.78}},  # mint
+    "SCHEDULED_UPLOAD": {"backgroundColor": {"red": 0.76, "green": 0.88, "blue": 1.00}}, # light blue
     "UPLOADING": {"backgroundColor": {"red": 0.65, "green": 0.92, "blue": 1.00}},        # cyan
     "REJECTED": {"backgroundColor": {"red": 1.00, "green": 0.60, "blue": 0.60}},         # red
     "UPLOADED": {"backgroundColor": {"red": 0.55, "green": 0.78, "blue": 1.00}},         # stronger blue

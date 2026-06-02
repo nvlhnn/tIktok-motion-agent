@@ -118,6 +118,50 @@ def buffer_channel_id(test: bool = False) -> str:
     return os.environ.get("BUFFER_DEFAULT_CHANNEL_ID") or "6a0c2d3d090476fb9936d831"
 
 
+def buffer_channel_ids(test: bool = False) -> list[str]:
+    """Return Buffer upload targets in order: primary channel, then extras.
+
+    Keep the first channel as the canonical/primary target because downstream TikTok
+    affiliate/stat checks read `external_link` from the first successful post.
+    """
+    if test:
+        return [buffer_channel_id(test=True)]
+    raw_ids = [buffer_channel_id(test=False)]
+    extra_raw = os.environ.get("BUFFER_EXTRA_CHANNEL_IDS", "")
+    raw_ids.extend(s.strip() for s in re.split(r"[,\n]", extra_raw) if s.strip())
+    seen = set()
+    ids = []
+    for channel_id in raw_ids:
+        if channel_id in seen:
+            continue
+        seen.add(channel_id)
+        ids.append(channel_id)
+    return ids
+
+
+def buffer_post_metadata_literal(channel_id: str) -> str:
+    """Return Buffer GraphQL metadata for channel-specific post types.
+
+    Buffer requires explicit type metadata for Facebook Page posts, and Instagram
+    video uploads should also be explicit. Default to regular feed `post`, not
+    `reel`, because generated videos may be below Reels' 540x960 minimum.
+    """
+    facebook_id = os.environ.get("BUFFER_FACEBOOK_CHANNEL_ID", "").strip()
+    instagram_id = os.environ.get("BUFFER_INSTAGRAM_CHANNEL_ID", "").strip()
+    if facebook_id and channel_id == facebook_id:
+        post_type = os.environ.get("BUFFER_FACEBOOK_POST_TYPE", "post").strip() or "post"
+        if post_type not in {"post", "story", "reel"}:
+            raise RuntimeError(f"Invalid BUFFER_FACEBOOK_POST_TYPE={post_type!r}; expected post, story, or reel")
+        return f"metadata: {{ facebook: {{ type: {post_type} }} }}"
+    if instagram_id and channel_id == instagram_id:
+        post_type = os.environ.get("BUFFER_INSTAGRAM_POST_TYPE", "post").strip() or "post"
+        if post_type not in {"post", "story", "reel"}:
+            raise RuntimeError(f"Invalid BUFFER_INSTAGRAM_POST_TYPE={post_type!r}; expected post, story, or reel")
+        should_share = "true" if truthy_env("BUFFER_INSTAGRAM_SHARE_TO_FEED", True) else "false"
+        return f"metadata: {{ instagram: {{ type: {post_type}, shouldShareToFeed: {should_share} }} }}"
+    return ""
+
+
 def buffer_graphql(query: str, variables: dict | None = None, timeout: int = 90) -> dict:
     api_key = require_env("BUFFER_API_KEY")
     resp = requests.post(
@@ -143,13 +187,27 @@ def buffer_graphql(query: str, variables: dict | None = None, timeout: int = 90)
 
 
 def buffer_create_video_post(channel_id: str, video_url: str, caption: str) -> dict:
+    return buffer_create_video_post_at(channel_id, video_url, caption, due_at=None)
+
+
+def buffer_create_video_post_at(channel_id: str, video_url: str, caption: str, due_at: dt.datetime | None = None) -> dict:
+    metadata = buffer_post_metadata_literal(channel_id)
+    metadata_line = f"    {metadata}\n" if metadata else ""
+    if due_at:
+        due_at_utc = due_at.astimezone(dt.timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
+        mode_line = "    mode: customScheduled\n"
+        due_at_line = f"    dueAt: {json.dumps(due_at_utc)}\n"
+    else:
+        mode_line = "    mode: shareNow\n"
+        due_at_line = ""
     query = """
 mutation CreatePost {
   createPost(input: {
     text: %s
     channelId: %s
     schedulingType: automatic
-    mode: shareNow
+%s%s
+%s
     assets: [{ video: { url: %s } }]
   }) {
     ... on PostActionSuccess {
@@ -158,7 +216,7 @@ mutation CreatePost {
     ... on MutationError { message }
   }
 }
-""" % (json.dumps(caption), json.dumps(channel_id), json.dumps(video_url))
+""" % (json.dumps(caption), json.dumps(channel_id), mode_line, due_at_line, metadata_line, json.dumps(video_url))
     payload = buffer_graphql(query)
     result = ((payload.get("data") or {}).get("createPost") or {})
     if result.get("message"):
@@ -169,11 +227,227 @@ mutation CreatePost {
     return post
 
 
+def _local_tz() -> ZoneInfo:
+    return ZoneInfo(os.environ.get("TIKTOK_UPLOAD_TIMEZONE", "Asia/Jakarta"))
+
+
+def _parse_window_for_date(window: str, base: dt.datetime) -> tuple[dt.datetime, dt.datetime]:
+    if "-" not in window:
+        raise RuntimeError(f"Invalid upload window {window!r}; expected HH:MM-HH:MM")
+    start_raw, end_raw = [x.strip() for x in window.split("-", 1)]
+    sh, sm = parse_hhmm(start_raw)
+    eh, em = parse_hhmm(end_raw)
+    start = base.replace(hour=sh, minute=sm, second=0, microsecond=0)
+    end = base.replace(hour=eh, minute=em, second=0, microsecond=0)
+    if end <= start:
+        raise RuntimeError(f"Invalid upload window {window!r}; end must be after start on same day")
+    return start, end
+
+
+def daily_schedule_times(count: int | None = None, now: dt.datetime | None = None) -> list[dict]:
+    tz = _local_tz()
+    now = (now or now_utc()).astimezone(tz)
+    windows = upload_windows()
+    if not windows:
+        slots = upload_slots()
+        count = count or len(slots)
+        times = []
+        for slot in slots[:count]:
+            h, m = parse_hhmm(slot)
+            due = now.replace(hour=h, minute=m, second=0, microsecond=0)
+            times.append({"range": slot, "due_at": due, "due_at_local": due.strftime("%Y-%m-%d %H:%M %Z")})
+        return times
+    count = count or len(windows)
+    salt = os.environ.get("TIKTOK_UPLOAD_RANDOM_SALT") or buffer_channel_id(test=False)
+    today = now.strftime("%Y-%m-%d")
+    times = []
+    for idx, window in enumerate(windows[:count]):
+        start, end = _parse_window_for_date(window, now)
+        latest = end - dt.timedelta(minutes=1)
+        span_minutes = max(0, int((latest - start).total_seconds() // 60))
+        seed = f"schedule|{today}|{window}|{idx}|{salt}"
+        due = start + dt.timedelta(minutes=random.Random(seed).randint(0, span_minutes))
+        times.append({"range": window, "due_at": due, "due_at_local": due.strftime("%Y-%m-%d %H:%M %Z")})
+    return times
+
+
+def _posts_from_row(row: dict) -> list[dict]:
+    ids = [s.strip() for s in str(row.get("buffer_post_id") or "").split(",") if s.strip()]
+    channel_ids = [s.strip() for s in str(row.get("buffer_channel_id") or "").split(",") if s.strip()]
+    posts = []
+    for idx, post_id in enumerate(ids):
+        post = buffer_get_post(post_id)
+        post["channel_id"] = channel_ids[idx] if idx < len(channel_ids) else post.get("channelId", "")
+        posts.append(post)
+    return posts
+
+
+def schedule_daily_uploads(dry_run: bool = True, live: bool = False, count: int | None = None, test_channel: bool = False) -> dict:
+    rows = load_run_rows(prefer_sheet=True)
+    candidates = upload_candidates(rows)
+    random.shuffle(candidates)
+    now_local = now_utc().astimezone(_local_tz())
+    min_lead = dt.timedelta(minutes=int_env("TIKTOK_DAILY_SCHEDULE_MIN_LEAD_MINUTES", 15))
+    times = [t for t in daily_schedule_times(count=count) if t["due_at"] > now_local + min_lead]
+    count = min(len(times), len(candidates), max(1, int_env("TIKTOK_DAILY_SCHEDULE_COUNT", len(times) or 4)))
+    picked = candidates[:count]
+    channel_ids = buffer_channel_ids(test=test_channel)
+    today = now_utc().astimezone(_local_tz()).strftime("%Y-%m-%d")
+    result = {
+        "dry_run": dry_run or not live,
+        "enabled": truthy_env("TIKTOK_UPLOAD_ENABLED", False),
+        "date": today,
+        "channel_ids": channel_ids,
+        "candidate_count": len(candidates),
+        "scheduled": [],
+    }
+    state = state_load()
+    upload_state = state.setdefault("upload_scheduler", {})
+    if upload_state.get("daily_schedule_date") == today:
+        result["skipped"] = "daily_schedule_already_created"
+        result["existing"] = upload_state.get("daily_schedule", [])
+        return result
+    for row, scheduled in zip(picked, times[:count]):
+        item = {
+            "job_id": row.get("job_id"),
+            "due_at": scheduled["due_at"].astimezone(dt.timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z"),
+            "due_at_local": scheduled["due_at_local"],
+            "window": scheduled["range"],
+            "caption": row.get("caption"),
+            "result_supabase_url": row.get("result_supabase_url"),
+        }
+        result["scheduled"].append(item)
+    if dry_run or not live:
+        return result
+    if not truthy_env("TIKTOK_UPLOAD_ENABLED", False):
+        raise RuntimeError("Daily schedule refused: set TIKTOK_UPLOAD_ENABLED=true")
+    created = []
+    for row, scheduled in zip(picked, times[:count]):
+        attempts = int(row.get("upload_attempts") or 0) + 1
+        video_url = row["result_supabase_url"].strip()
+        validate_public_video_url(video_url)
+        posts = []
+        for target_channel_id in channel_ids:
+            post = buffer_create_video_post_at(target_channel_id, video_url, row["caption"].strip(), due_at=scheduled["due_at"])
+            post["channel_id"] = target_channel_id
+            posts.append(post)
+        row.update({
+            "status": "SCHEDULED_UPLOAD",
+            "scheduled_at": scheduled["due_at_local"],
+            "buffer_channel_id": ",".join(channel_ids),
+            "buffer_post_id": ",".join(p.get("id", "") for p in posts if p.get("id")),
+            "buffer_status": ",".join(p.get("status", "") for p in posts if p.get("status")),
+            "uploaded_via": "buffer",
+            "upload_attempts": str(attempts),
+            "buffer_error": "",
+            "error": "",
+        })
+        log_row(row)
+        created.append({
+            "job_id": row.get("job_id"),
+            "due_at_local": scheduled["due_at_local"],
+            "window": scheduled["range"],
+            "buffer_post_id": row.get("buffer_post_id"),
+            "buffer_status": row.get("buffer_status"),
+            "product_url": row.get("product_url"),
+            "product_image_url": row.get("product_image_url"),
+            "caption": row.get("caption"),
+        })
+    upload_state["daily_schedule_date"] = today
+    upload_state["daily_schedule"] = created
+    state_save(state)
+    result["scheduled"] = created
+    return result
+
+
+def check_scheduled_uploads(dry_run: bool = True, live: bool = False) -> dict:
+    rows = load_run_rows(prefer_sheet=True)
+    pending = [r for r in rows if (r.get("status") or "").strip().upper() in {"SCHEDULED_UPLOAD", "UPLOADING"} and (r.get("buffer_post_id") or "").strip() and not (r.get("uploaded_at") or "").strip()]
+    result = {"dry_run": dry_run or not live, "pending_count": len(pending), "checked": [], "uploaded": [], "failed": []}
+    for row in pending:
+        try:
+            posts = _posts_from_row(row)
+        except Exception as e:
+            result["checked"].append({"job_id": row.get("job_id"), "error": str(e)[:500]})
+            continue
+        primary_post = posts[0] if posts else {}
+        post_links = post_external_links_by_service(posts)
+        failed_posts = [p for p in posts if str(p.get("status", "")).lower() == "error"]
+        primary_status = str(primary_post.get("status", "")).lower()
+        pending_statuses = {"sending", "pending", "scheduled", "processing"}
+        has_pending_posts = any(str(p.get("status", "")).lower() in pending_statuses for p in posts)
+        item = {
+            "job_id": row.get("job_id"),
+            "buffer_post_id": row.get("buffer_post_id"),
+            "buffer_status": ",".join(p.get("status", "") for p in posts if p.get("status")),
+            "post_urls": post_links,
+        }
+        result["checked"].append(item)
+        if dry_run or not live:
+            continue
+        if primary_status == "sent" and not has_pending_posts:
+            buffer_error = ""
+            if failed_posts:
+                parts = []
+                for p in failed_posts:
+                    err = p.get("error") or {}
+                    msg = err.get("message") or err.get("rawError") or "unknown Buffer publishing error"
+                    parts.append(f"{p.get('channelService') or p.get('channel_id')}: {msg}")
+                buffer_error = "partial Buffer scheduled upload failure: " + "; ".join(parts)
+            row.update({
+                "status": "UPLOADED",
+                "uploaded_at": indonesia_pretty_datetime(now_utc()),
+                "buffer_status": item["buffer_status"],
+                "external_link": primary_post.get("externalLink", ""),
+                "tiktok_post_url": post_links.get("tiktok", ""),
+                "facebook_post_url": post_links.get("facebook", ""),
+                "instagram_post_url": post_links.get("instagram", ""),
+                "post_external_links": "\n".join(f"{service}: {link}" for service, link in post_links.items()),
+                "buffer_error": buffer_error,
+                "error": "",
+            })
+            log_row(row)
+            uploaded = dict(item)
+            uploaded.update({
+                "product_url": row.get("product_url"),
+                "product_image_url": row.get("product_image_url"),
+                "uploaded_at": row.get("uploaded_at"),
+                "buffer_error": row.get("buffer_error"),
+                "caption": row.get("caption"),
+                "posts": [
+                    {
+                        "channel_id": p.get("channel_id") or p.get("channelId"),
+                        "channel_service": p.get("channelService"),
+                        "buffer_post_id": p.get("id"),
+                        "buffer_status": p.get("status"),
+                        "external_link": p.get("externalLink"),
+                        "error": (p.get("error") or {}).get("message"),
+                    }
+                    for p in posts
+                ],
+            })
+            result["uploaded"].append(uploaded)
+        elif primary_status == "error" or (failed_posts and not has_pending_posts):
+            parts = []
+            for p in failed_posts:
+                err = p.get("error") or {}
+                msg = err.get("message") or err.get("rawError") or "unknown Buffer publishing error"
+                parts.append(f"{p.get('channelService') or p.get('channel_id')}: {msg}")
+            buffer_error = "Buffer scheduled upload failure: " + "; ".join(parts)
+            row.update({"status": "UPLOAD_FAILED", "buffer_status": item["buffer_status"], "buffer_error": buffer_error, "error": buffer_error})
+            log_row(row)
+            failed = dict(item)
+            failed["buffer_error"] = buffer_error
+            result["failed"].append(failed)
+    return result
+
+
 def buffer_get_post(post_id: str) -> dict:
     query = """
 query GetPost($id: PostId!) {
   post(input: {id: $id}) {
     id status createdAt updatedAt dueAt sentAt text externalLink channelId channelService
+    error { message rawError supportUrl }
     assets { id source mimeType }
   }
 }
@@ -196,13 +470,24 @@ def buffer_wait_until_posted(post_id: str, timeout_seconds: int | None = None, i
     return last_post
 
 
+def post_external_links_by_service(posts: list[dict]) -> dict[str, str]:
+    links = {}
+    for post in posts:
+        service = str(post.get("channelService") or "").strip().lower()
+        link = str(post.get("externalLink") or "").strip()
+        if service and link and service not in links:
+            links[service] = link
+    return links
+
+
 def upload_scheduler(dry_run: bool = True, live: bool = False, ignore_slot: bool = False, test_channel: bool = False) -> dict:
     rows = load_run_rows(prefer_sheet=True)
     candidates = upload_candidates(rows)
     random.shuffle(candidates)
     max_per_run = max(1, int_env("TIKTOK_UPLOAD_MAX_PER_RUN", 1))
     picked = candidates[:max_per_run]
-    channel_id = buffer_channel_id(test=test_channel)
+    channel_ids = buffer_channel_ids(test=test_channel)
+    channel_id = channel_ids[0]
     active_window = None if ignore_slot else randomized_upload_window()
     state = state_load()
     upload_state = state.setdefault("upload_scheduler", {})
@@ -216,6 +501,7 @@ def upload_scheduler(dry_run: bool = True, live: bool = False, ignore_slot: bool
         "active_window": active_window,
         "active_window_already_attempted": bool(active_window and active_window.get("key") in attempted_windows),
         "channel_id": channel_id,
+        "channel_ids": channel_ids,
         "candidate_count": len(candidates),
         "picked": [{"job_id": r.get("job_id"), "caption": r.get("caption"), "result_supabase_url": r.get("result_supabase_url")} for r in picked],
         "uploaded": [],
@@ -235,7 +521,7 @@ def upload_scheduler(dry_run: bool = True, live: bool = False, ignore_slot: bool
         row.update({
             "status": "UPLOADING",
             "scheduled_at": now_pretty,
-            "buffer_channel_id": channel_id,
+            "buffer_channel_id": ",".join(channel_ids),
             "uploaded_via": "buffer",
             "upload_attempts": str(attempts),
             "buffer_error": "",
@@ -250,24 +536,61 @@ def upload_scheduler(dry_run: bool = True, live: bool = False, ignore_slot: bool
         try:
             video_url = row["result_supabase_url"].strip()
             validate_public_video_url(video_url)
-            post = buffer_create_video_post(channel_id, video_url, row["caption"].strip())
-            if truthy_env("TIKTOK_UPLOAD_WAIT_FOR_BUFFER_SENT", True) and post.get("id"):
-                post = buffer_wait_until_posted(post["id"])
+            posts = []
+            for target_channel_id in channel_ids:
+                post = buffer_create_video_post(target_channel_id, video_url, row["caption"].strip())
+                if truthy_env("TIKTOK_UPLOAD_WAIT_FOR_BUFFER_SENT", True) and post.get("id"):
+                    post = buffer_wait_until_posted(post["id"])
+                post["channel_id"] = target_channel_id
+                posts.append(post)
+            primary_post = posts[0] if posts else {}
+            post_links = post_external_links_by_service(posts)
+            failed_posts = [p for p in posts if str(p.get("status", "")).lower() == "error"]
+            primary_failed = primary_post and str(primary_post.get("status", "")).lower() == "error"
+            buffer_error = ""
+            if failed_posts:
+                parts = []
+                for p in failed_posts:
+                    err = p.get("error") or {}
+                    msg = err.get("message") or err.get("rawError") or "unknown Buffer publishing error"
+                    parts.append(f"{p.get('channelService') or p.get('channel_id')}: {msg}")
+                buffer_error = "partial Buffer upload failure: " + "; ".join(parts)
             row.update({
-                "status": "UPLOADED",
+                "status": "UPLOAD_FAILED" if primary_failed else "UPLOADED",
                 "uploaded_at": indonesia_pretty_datetime(now_utc()),
-                "buffer_post_id": post.get("id", ""),
-                "buffer_status": post.get("status", ""),
-                "external_link": post.get("externalLink", ""),
-                "buffer_error": "",
-                "error": "",
+                "buffer_post_id": ",".join(p.get("id", "") for p in posts if p.get("id")),
+                "buffer_status": ",".join(p.get("status", "") for p in posts if p.get("status")),
+                "external_link": primary_post.get("externalLink", ""),
+                "tiktok_post_url": post_links.get("tiktok", ""),
+                "facebook_post_url": post_links.get("facebook", ""),
+                "instagram_post_url": post_links.get("instagram", ""),
+                "post_external_links": "\n".join(f"{service}: {link}" for service, link in post_links.items()),
+                "buffer_error": buffer_error,
+                "error": buffer_error if primary_failed else "",
             })
             log_row(row)
+            if primary_failed:
+                raise RuntimeError(buffer_error or "Primary Buffer upload failed")
             result["uploaded"].append({
                 "job_id": row.get("job_id"),
+                "product_url": row.get("product_url"),
+                "product_image_url": row.get("product_image_url"),
                 "buffer_post_id": row.get("buffer_post_id"),
                 "buffer_status": row.get("buffer_status"),
                 "external_link": row.get("external_link"),
+                "post_urls": post_links,
+                "buffer_error": row.get("buffer_error"),
+                "posts": [
+                    {
+                        "channel_id": p.get("channel_id"),
+                        "channel_service": p.get("channelService"),
+                        "buffer_post_id": p.get("id"),
+                        "buffer_status": p.get("status"),
+                        "external_link": p.get("externalLink"),
+                        "error": (p.get("error") or {}).get("message"),
+                    }
+                    for p in posts
+                ],
             })
         except Exception as e:
             msg = str(e)[:1000]

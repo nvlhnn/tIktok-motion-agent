@@ -32,7 +32,10 @@ def affiliate_monitor(update: bool = False, limit: int | None = None) -> dict:
             skipped.append({"job_id": r.get("job_id"), "reason": "affiliate_review_closed", "status": status, "product_match_status": product_match_status})
             continue
         age_days = row_uploaded_age_days(r)
-        known_views = int(float(r.get("tiktok_views") or 0)) if str(r.get("tiktok_views") or "").strip() else 0
+        try:
+            known_views = int(float(r.get("tiktok_views") or 0)) if str(r.get("tiktok_views") or "").strip() else 0
+        except (TypeError, ValueError):
+            known_views = 0
         if age_days is not None and age_days > max_age_days:
             if known_views < threshold:
                 r.update({

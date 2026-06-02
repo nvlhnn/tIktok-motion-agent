@@ -13,7 +13,7 @@ When Naufal says **go**, run the automation with minimal chat.
 - `job_id`
 - `product_title`
 - `master_path`
-- `product_image_path`
+- `product_image_paths` if present; otherwise fallback to `product_image_path`
 
 3. Generate an AI caption from `product_title`, then save it:
 - Write a fresh Indonesian TikTok UGC-style caption from the product title.
@@ -32,30 +32,27 @@ When Naufal says **go**, run the automation with minimal chat.
 ```
 
 4. Generate image with OpenClaw `image_generate` using quota-friendly settings:
-- refs: `master_path`, `product_image_path`
+- refs MUST be built from the prepared job data in this exact order: `master_path`, then every path in `product_image_paths` up to 2 product refs.
+- If `product_image_paths` has two entries, the `image_generate.images` array MUST contain 3 images total: `[master_path, product_image_paths[0], product_image_paths[1]]`.
+- If `product_image_paths` has one entry, use `[master_path, product_image_paths[0]]`.
+- Only if `product_image_paths` is absent/empty, fall back to `[master_path, product_image_path]`.
+- Do not silently drop `product_reference_2.jpg` when it exists.
 - model: `openai/gpt-image-2`
 - size: `2160x3840`
 - quality: `high`
 - outputFormat: `jpeg`
 - openai.outputCompression: `92`
 - set `aspectRatio: 9:16` too as an intent hint, but do not rely on it for OpenAI/gpt-image-2. Current runtime reports `aspectRatio=9:16` as ignored for OpenAI, so the actual control is `size: 2160x3840`.
-- prompt: `Preserve master face/identity, lighting, wooden-door background, camera distance, and mid-thigh-up framing. Apply outfit style from product image only. Restyle top, bottom, hijab, and accessories to match; use product bottom if visible, otherwise modest matching bottom. Do not keep original jeans, cream hijab, or bag by default. No UI/text/watermark/product model/background. Realistic fit, true TikTok vertical 9:16 composition. Keep the subject close to camera like the master reference; do not zoom out, do not generate head-to-toe/full-body framing, do not show shoes or extra floor space.`
+- prompt: `Preserve master face/identity, lighting, wooden-door background, camera distance, and mid-thigh-up framing. The outfit must VERY closely match the product references. Preserve the exact garment construction, not just the general style: garment category, color/tone, pattern/print, fabric texture, neckline/collar, sleeve shape and cuffs, front/back closures, seams, waist construction, hem shape, trims, buttons, lace, ruffles, pleats, ties, pockets, panels, layering, and visible set composition. Distinctive product details must be clearly visible and structurally accurate; do not simplify, smooth out, hide, replace, or reinterpret them. Avoid generic fashion interpretation; do not convert the product into a similar-looking but different item. Do not hide important neckline, closure, waist, sleeve, hem, print, or trim details under hijab, pose, arm placement, crop, bag, or accessories. The person must not wear, carry, hold, sling, or pose with any bag, purse, handbag, tote, backpack, clutch, crossbody bag, shoulder bag, or strap; no bag-like accessory anywhere in the image. Restyle top, bottom, hijab, and accessories to match the product while keeping modest coverage; use product bottom if visible, otherwise modest matching bottom. Do not keep original jeans, cream hijab, or bag by default. No UI/text/watermark/product model/background. Realistic fit, true TikTok vertical 9:16 composition. Keep the subject close to camera like the master reference; do not zoom out, do not generate head-to-toe/full-body framing, do not show shoes or extra floor space.`
 
 5. Validate the generated input image before complete:
-- First run the local hard gate:
+- Run only the local hard gate:
 ```bash
 /root/.openclaw/workspace/tiktok-motion-agent/.venv/bin/python /root/.openclaw/workspace/tiktok-motion-agent/motion_pipeline.py validate-reference <generated_reference_path>
 ```
 - It must be readable, non-empty, non-blank, exact 9:16, and at least 1080x1920. Preferred output remains `2160x3840` high-quality JPEG.
 - If it comes back `1024x1536` / 2:3, too small, corrupt, blank, or wrong format, regenerate before continuing.
-- Also run a semantic image review before video creation using the generated reference image plus the product reference image. Do not rely on dimensions only.
-- The generated image must pass ALL of these before `complete`:
-  - Product match: same garment category, color/tone, silhouette/cut, pattern/print, fabric/texture, buttons/count/placement, collar/neckline, sleeves, hem, pockets/seams/trims, ties/ribbons/lace/pleats, and set composition when applicable. Similar vibe is not enough.
-  - Muslim modesty: hijab/head covering intact; no visible neck, collarbone, upper chest, cleavage, bare shoulders, upper arms, waist/back, thighs, bare legs, transparent/sheer revealing areas, or tight body-revealing fit. If the product is revealing, modest layering must cover skin while keeping the product design recognizable.
-  - Identity/background/framing: master face/identity preserved, wooden-door background and close mid-thigh-up framing preserved, no head-to-toe zoom-out, no shoes/floor emphasis.
-  - Visual quality: no UI/text/watermark, no deformed hands/body/face, no warped garment, no duplicate limbs, no obvious AI artifacts, sharp enough for TikTok.
-- If product match is weak, modesty fails, identity/background/framing is wrong, or artifacts are obvious, regenerate the input image before continuing.
-- Before calling `complete`, write a short pass/fail note in your own working notes/message: `REFERENCE_REVIEW: PASS` with product_match/modesty/quality reasons, or regenerate if not pass.
+- Do NOT run or require a semantic product-match/reference-image checker before `complete`, and do not regenerate solely because of semantic product-match concerns. The prompt must still ask the image model to match the product closely; this rule only disables the checker/regeneration loop as a blocker.
 - `complete` also runs the local validation automatically and will refuse to submit a video if the generated reference fails objective checks.
 
 6. Complete:
@@ -78,10 +75,12 @@ When Naufal says **go**, run the automation with minimal chat.
 ## Rules
 
 - Product video and motion video must be different.
-- Use product URL's first PDP image as outfit reference.
+- Use up to two product PDP images as outfit references when available; do not use only the first PDP image if `product_image_paths` includes a second reference.
 - Store links/status in Sheet.
 - Generate the caption with AI reasoning from `product_title`; the pipeline's built-in caption is only a fallback, not the final style.
 - Captions must not include emoji, including star/sparkle emoji.
-- On successful completion and review, reply with `done` plus final status, `result_link`, caption, and a short review verdict. Do not reply with only `done`.
-- Keep replies short: start, `done <result_link>`, or fail only.
+- On successful completion and review, reply with `done` plus `job_id`, final status, `result_link`, product image, caption, and a short review verdict. Do not reply with only `done`.
+- Telegram/video-done notifications must always include the `job_id` so Naufal can trace the row/job later.
+- Telegram/video-done notifications must also include the product image URL only; do not attach/upload the image. Use `product_image_url` when available, otherwise the first URL from `product_image_urls`; if two product refs exist, include only the first product image URL unless Naufal asks for all.
+- Keep replies short: start, `done <job_id> <result_link>`, product image URL, or fail only.
 - Never expose secrets.

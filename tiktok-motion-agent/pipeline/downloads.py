@@ -5,7 +5,7 @@ from pathlib import Path
 
 import requests
 
-from .tiktok import get_tikwm_data, extract_product_from_html, get_first_product_image
+from .tiktok import get_tikwm_data, extract_product_from_html, get_first_product_image, get_product_images
 
 
 def download_url(url: str, path: Path):
@@ -37,6 +37,50 @@ def download_product_image(product_url: str, job_dir: Path, fallback_image_url: 
     if out.stat().st_size < 5 * 1024:
         raise RuntimeError("Downloaded product image is suspiciously small")
     return out, image_url
+
+
+def download_product_images(product_url: str, job_dir: Path, fallback_image_urls: list[str] | None = None, limit: int = 2):
+    """Download up to `limit` product references while keeping the first path backward-compatible."""
+    urls = []
+    seen = set()
+
+    def add(url: str):
+        url = (url or "").strip()
+        if not url or url in seen:
+            return
+        seen.add(url)
+        urls.append(url)
+
+    for url in fallback_image_urls or []:
+        add(url)
+    for url in get_product_images(product_url, limit=limit):
+        add(url)
+    if not urls:
+        first = get_first_product_image(product_url)
+        add(first)
+    if not urls:
+        raise RuntimeError(f"Could not extract product images from product URL or TikTok product card: {product_url}")
+
+    headers = {"User-Agent": "Mozilla/5.0"}
+    downloaded = []
+    for idx, image_url in enumerate(urls[:limit], start=1):
+        ext = ".webp"
+        if ".png" in image_url:
+            ext = ".png"
+        elif ".jpg" in image_url or ".jpeg" in image_url:
+            ext = ".jpg"
+        stem = "product_reference" if idx == 1 else f"product_reference_{idx}"
+        out = job_dir / f"{stem}{ext}"
+        with requests.get(image_url, headers=headers, stream=True, timeout=90) as r:
+            r.raise_for_status()
+            with out.open("wb") as f:
+                for chunk in r.iter_content(1024 * 128):
+                    if chunk:
+                        f.write(chunk)
+        if out.stat().st_size < 5 * 1024:
+            raise RuntimeError(f"Downloaded product image {idx} is suspiciously small")
+        downloaded.append((out, image_url))
+    return downloaded
 
 
 def download_tiktok_video_with_ytdlp(video_id: str, tiktok_url: str, job_dir: Path, reason: Exception | None = None):

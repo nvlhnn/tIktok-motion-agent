@@ -1,5 +1,7 @@
 import json
+import mimetypes
 import os
+from pathlib import Path
 
 import requests
 
@@ -95,7 +97,7 @@ def dreamface_quota(auth: dict) -> dict:
 
 
 def dreamface_remaining_credits(auth: dict) -> dict:
-    """Return DreamFace paid credit balances from the credits endpoint."""
+    """Return DreamFace credit balances from the credits endpoint."""
     body = {
         "user_id": auth["user_id"],
         "account_id": auth["account_id"],
@@ -111,26 +113,54 @@ def dreamface_remaining_credits(auth: dict) -> dict:
     return data.get("data") or {}
 
 
-def dreamface_combined_quota(auth: dict) -> dict:
-    """Return quota using both DreamFace sources.
+def dreamface_free_task_times(auth: dict) -> dict:
+    """Return the real daily free render counter for DreamAct/REPLACE_DANCE.
 
-    Base free quota comes from /dw-server/rights/get_free_rights remain_count.
-    Additional usable quota comes from /dw-server/credits/get_remaining_credits
-    free_count, per current DreamFace account behavior.
+    DreamFace's older /rights/get_free_rights can report remain_count=5 even
+    when /task/v2/submit immediately returns web_work_status -3
+    (credits_not_enough). The web app checks get_free_task_times for the daily
+    free render. Count this endpoint plus credits.free_count as usable quota.
     """
-    free = dreamface_quota(auth)
+    body = {
+        "biz_type": os.environ.get("DREAMFACE_TEMPLATE_ID", "REPLACE_DANCE"),
+        "user_id": auth["user_id"],
+    }
+    data = dreamface_request(
+        "POST",
+        "/dw-server/rights/get_free_task_times",
+        auth,
+        json_body=body,
+        referer="https://www.dreamfaceapp.com/apps/dreamact",
+    )
+    return data.get("data") or {}
+
+
+def dreamface_combined_quota(auth: dict) -> dict:
+    """Return usable DreamFace quota.
+
+    Usable quota is daily free task times + credits.free_count (+ paid_count if
+    present). Keep get_free_rights in the diagnostic payload only; do not count
+    its remain_count because it has proven unusable for DreamAct renders.
+    """
+    legacy_rights = dreamface_quota(auth)
+    daily = dreamface_free_task_times(auth)
     credits = dreamface_remaining_credits(auth)
-    free_count = int(free.get("remain_count") or 0)
+    daily_free_count = int(daily.get("free_times") or 0)
     credits_free_count = int(credits.get("free_count") or 0)
+    credits_paid_count = int(credits.get("paid_count") or 0)
     return {
-        "quota_source": "rights/get_free_rights + credits/get_remaining_credits",
-        "free_remain_count": free_count,
-        "free_total_count": free.get("total_count"),
+        "quota_source": "rights/get_free_task_times + credits/get_remaining_credits (legacy get_free_rights diagnostic only)",
+        "daily_free_count": daily_free_count,
+        "daily_total_free_count": daily.get("total_free_times"),
+        "daily_this_free": daily.get("this_free"),
         "credits_free_count": credits_free_count,
-        "credits_paid_count": credits.get("paid_count"),
+        "credits_paid_count": credits_paid_count,
         "credits_free_expires_time": credits.get("free_expires_time"),
-        "available_count": free_count + credits_free_count,
-        "free_quota": free,
+        "legacy_free_remain_count": legacy_rights.get("remain_count"),
+        "legacy_free_total_count": legacy_rights.get("total_count"),
+        "available_count": daily_free_count + credits_free_count + credits_paid_count,
+        "daily_quota": daily,
+        "legacy_free_quota": legacy_rights,
         "credits_quota": credits,
     }
 
@@ -138,25 +168,44 @@ def dreamface_combined_quota(auth: dict) -> dict:
 def dreamface_available_count(quota: dict) -> int:
     if "available_count" in quota:
         return int(quota.get("available_count") or 0)
-    if "remain_count" in quota:
-        return int(quota.get("remain_count") or 0)
-    if "paid_count" in quota or "free_count" in quota:
-        return int(quota.get("paid_count") or 0) + int(quota.get("free_count") or 0)
-    return 0
+    return int(quota.get("daily_free_count") or 0) + int(quota.get("credits_free_count") or 0) + int(quota.get("credits_paid_count") or 0)
 
 
 def select_dreamface_auth() -> tuple[dict, dict]:
+    def label_rank(auth: dict) -> int:
+        label = str(auth.get("label") or "")
+        try:
+            return int(label.rsplit("-", 1)[-1])
+        except Exception:
+            return 0
+
     exhausted = []
+    candidates = []
     for auth in dreamface_auths():
         quota = dreamface_combined_quota(auth)
         remain = dreamface_available_count(quota)
         if remain > 0:
-            return auth, quota
-        exhausted.append({"label": auth.get("label"), "quota": quota})
+            # Prefer daily free because it expires/reset fastest, then weekly
+            # free credits, then paid credits if any are ever configured. For
+            # exact quota ties, prefer the newest/largest-numbered account so
+            # new daily-free accounts are used before older equal accounts.
+            candidates.append((
+                int(quota.get("daily_free_count") or 0),
+                int(quota.get("credits_free_count") or 0),
+                int(quota.get("credits_paid_count") or 0),
+                label_rank(auth),
+                auth,
+                quota,
+            ))
+        else:
+            exhausted.append({"label": auth.get("label"), "quota": quota})
+    if candidates:
+        candidates.sort(key=lambda item: (item[0], item[1], item[2], item[3]), reverse=True)
+        return candidates[0][4], candidates[0][5]
     raise RuntimeError(json.dumps({
         "ok": False,
         "code": "DREAMFACE_QUOTA_EXHAUSTED",
-        "message": "All configured DreamFace accounts have no quota left.",
+        "message": "No usable DreamFace quota left. Need daily free task time or credits_free/paid credits; legacy free_rights is ignored.",
         "auths": exhausted,
     }, ensure_ascii=False))
 
@@ -208,6 +257,42 @@ def dreamface_submit(auth: dict, image_url: str, video_url: str) -> str:
     if not animate_id:
         raise RuntimeError(f"No animate_image_id from DreamFace submit: {data}")
     return animate_id
+
+
+def dreamface_upload_material(auth: dict, path: str | os.PathLike) -> str:
+    """Upload an image/video material to DreamFace USS3 and return its public URL.
+
+    DreamFace currently rejects Supabase public URLs during task submit because
+    that domain is not on its OSS whitelist. The web app first uploads local
+    materials through this endpoint and submits the returned uss3.dreamfaceapp.com
+    URL, which is accepted by /task/v2/submit.
+    """
+    file_path = Path(path).expanduser().resolve()
+    if not file_path.exists():
+        raise RuntimeError(f"DreamFace material upload file not found: {file_path}")
+    mime = mimetypes.guess_type(str(file_path))[0] or "application/octet-stream"
+    headers = dreamface_headers(auth, referer="https://www.dreamfaceapp.com/apps/dreamact", json_body=False)
+    url = f"https://www.dreamfaceapp.com/dw-server/phone_file/upload_uss3_server/WEB_ANIMATE_MATERIAL?user_id={auth['user_id']}"
+    with file_path.open("rb") as fh:
+        r = requests.post(
+            url,
+            headers=headers,
+            files={"file": (file_path.name, fh, mime)},
+            timeout=300,
+        )
+    text = r.text
+    try:
+        data = r.json()
+    except Exception:
+        data = {"raw": text}
+    if not (200 <= r.status_code < 300):
+        raise RuntimeError(f"DreamFace material upload failed {r.status_code}: {data}")
+    if data.get("status_code") and data.get("status_code") != "THS12140000000":
+        raise RuntimeError(f"DreamFace material upload returned {data.get('status_code')}: {data.get('status_msg') or data}")
+    uploaded_url = (data.get("data") or {}).get("file_path") or (data.get("data") or {}).get("url")
+    if not uploaded_url:
+        raise RuntimeError(f"DreamFace material upload returned no URL: {data}")
+    return uploaded_url
 
 
 def dreamface_recent_creation(auth: dict, animate_id: str, size: int | None = None) -> dict | None:

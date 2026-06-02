@@ -110,6 +110,17 @@ def product_video_candidates(state):
     return candidates
 
 
+def banned_motion_video_ids(state: dict | None = None) -> set[str]:
+    banned = set((state or {}).get("banned_motion_video_ids") or [])
+    ban_file = DATA_DIR / "banned_motion_video_ids.txt"
+    if ban_file.exists():
+        for line in ban_file.read_text(encoding="utf-8").splitlines():
+            video_id = line.strip()
+            if video_id and not video_id.startswith("#"):
+                banned.add(video_id)
+    return banned
+
+
 def recent_motion_video_ids_from_runs(limit: int) -> set[str]:
     if limit <= 0 or not RUNS_CSV.exists():
         return set()
@@ -133,6 +144,7 @@ def motion_video_candidates(state):
     min_duration = float(os.environ.get("TIKTOK_MOTION_MIN_DURATION_SECONDS", "10"))
     recent = set(state.get("recent_video_ids", [])[-avoid_count:])
     recent.update(recent_motion_video_ids_from_runs(motion_avoid_count))
+    recent.update(banned_motion_video_ids(state))
 
     def add_candidates(skip_recent: bool) -> list[dict]:
         picked = []
@@ -184,26 +196,27 @@ def pick_video_with_product(state):
             continue
         checked += 1
         cached = product_cache.get(video_id)
-        if cached and cached.get("product_image_url"):
+        if cached and cached.get("product_image_url") and cached.get("product_image_urls"):
             product_url = cached.get("product_url", "")
             product_title = cached.get("product_title", "")
-            product_image_url = cached.get("product_image_url", "")
+            product_image_urls = cached.get("product_image_urls") or [cached.get("product_image_url", "")]
         else:
             # Re-parse older cache entries too: Tokopedia PDPs often show a captcha,
             # but the TikTok video HTML usually embeds the product card image.
             tiktok_url = tiktok_video_url(entry, entry.get("_profile_url"))
-            product_url, product_title, product_image_url = extract_product_from_html(tiktok_url)
+            product_url, product_title, product_image_url, product_image_urls = extract_product_from_html_with_images(tiktok_url, limit=2)
             product_cache[video_id] = {
                 "product_url": product_url,
                 "product_title": product_title,
                 "product_image_url": product_image_url,
+                "product_image_urls": product_image_urls,
                 "checked_at": iso(now_utc()),
             }
             dirty = True
         if product_url or product_title:
             if dirty:
                 state_save(state)
-            return entry, product_url, product_title, product_image_url
+            return entry, product_url, product_title, product_image_urls
     if dirty:
         state_save(state)
     raise RuntimeError(f"No affiliate/product TikTok video found after checking {checked} candidates")
@@ -218,18 +231,18 @@ def get_tikwm_data(tiktok_url: str):
     return j.get("data") or {}
 
 
-def extract_product_from_html(tiktok_url: str):
+def extract_product_from_html_with_images(tiktok_url: str, limit: int = 2):
     headers = {
         "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1"
     }
     try:
         text = requests.get(tiktok_url, headers=headers, timeout=45).text
     except Exception:
-        return "", "", ""
+        return "", "", "", []
     # Product info often appears as escaped JSON inside the HTML.
     idx = text.find("product_id")
     if idx == -1:
-        return "", "", ""
+        return "", "", "", []
     window = text[max(0, idx - 10000): idx + 30000]
     # Repeated unescape helps nested JSON strings.
     for _ in range(3):
@@ -238,7 +251,8 @@ def extract_product_from_html(tiktok_url: str):
     title = ""
     product_id = ""
     seo_url = ""
-    image_url = first_oec_image_from_text(window)
+    image_urls = oec_images_from_text(window, limit=limit)
+    image_url = image_urls[0] if image_urls else ""
     m = re.search(r'"title"\s*:\s*"([^"]+)"', window)
     if m:
         title = m.group(1)
@@ -252,6 +266,11 @@ def extract_product_from_html(tiktok_url: str):
         # TikTok affiliate/showcase accepts the TikTok product URL format, not
         # the Tokopedia PDP/anchor URL that is embedded in some video cards.
         seo_url = f"https://www.tiktok.com/view/product/{product_id}"
+    return seo_url, title, image_url, image_urls
+
+
+def extract_product_from_html(tiktok_url: str):
+    seo_url, title, image_url, _ = extract_product_from_html_with_images(tiktok_url, limit=1)
     return seo_url, title, image_url
 
 
@@ -266,40 +285,79 @@ def oec_uri_to_image_url(uri: str):
     )
 
 
-def first_oec_image_from_text(text: str):
+def oec_images_from_text(text: str, limit: int = 2):
     # Prefer the product's ordered image list. TikTok's product card often has
     # full `cover_url`/`img_url` fields later in the JSON; those can correspond
     # to a card cover rather than the PDP's first gallery image.
+    images = []
+    seen = set()
+
+    def add(url: str):
+        if not url or url in seen:
+            return
+        seen.add(url)
+        images.append(url)
+
     for m in re.finditer(r'"img"\s*:\s*\[(.*?)\]', text, re.S):
         for uri in re.findall(r'"(tos-[^"]+)"', m.group(1)):
             image_url = oec_uri_to_image_url(uri)
             if image_url:
-                return image_url
+                add(image_url)
+                if len(images) >= limit:
+                    return images
 
     urls = re.findall(r'https?://[^"\'\<\>\\\\\\s]+', text)
     for u in urls:
         u = urllib.parse.unquote(u.replace("&amp;", "&").replace("\\/", "/"))
         if any(host in u for host in ["p16-oec", "p19-oec", "ibyteimg"]):
             if any(ext in u for ext in ["webp", "jpeg", "jpg", "png"]):
-                return u
-    return ""
+                add(u)
+                if len(images) >= limit:
+                    return images
+    return images
 
 
-def get_first_product_image(product_url: str):
-    """Return first product image URL from TikTok Shop/Tokopedia PDP metadata."""
+def first_oec_image_from_text(text: str):
+    images = oec_images_from_text(text, limit=1)
+    return images[0] if images else ""
+
+
+def get_product_images(product_url: str, limit: int = 2):
+    """Return up to `limit` product gallery image URLs from TikTok Shop/Tokopedia PDP metadata."""
     if not product_url:
-        return ""
+        return []
     headers = {
         "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1"
     }
     try:
         text = requests.get(product_url, headers=headers, timeout=45).text
     except Exception:
-        return ""
+        return []
+
+    images = []
+    seen = set()
+
+    def add(url: str):
+        if not url or url in seen:
+            return
+        seen.add(url)
+        images.append(url)
+
+    for image_url in oec_images_from_text(text, limit=limit):
+        add(image_url)
+        if len(images) >= limit:
+            return images
+
     m = re.search(r'property="og:image"\s+content="([^"]+)"', text)
     if m:
-        return urllib.parse.unquote(m.group(1).replace("&amp;", "&"))
-    return first_oec_image_from_text(text)
+        add(urllib.parse.unquote(m.group(1).replace("&amp;", "&")))
+    return images[:limit]
+
+
+def get_first_product_image(product_url: str):
+    """Return first product image URL from TikTok Shop/Tokopedia PDP metadata."""
+    images = get_product_images(product_url, limit=1)
+    return images[0] if images else ""
 
 
 def tiktok_public_stats(tiktok_url: str) -> dict:

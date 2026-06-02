@@ -9,7 +9,7 @@ import time
 from pathlib import Path
 
 from .config import (
-    DATA_DIR, DOWNLOADS_DIR, LOGS_DIR, RUNS_CSV,
+    DATA_DIR, DOWNLOADS_DIR, REVIEWS_DIR, LOGS_DIR, RUNS_CSV,
     COLUMNS, STATUS_VALUES, MODEST_TRYON_PROMPT, DEFAULT_PROMPT,
     load_env, require_env,
 )
@@ -21,9 +21,11 @@ from .tiktok import (
     pick_video_with_product, pick_different_motion_video,
     tiktok_video_url,
 )
-from .downloads import download_product_image, download_url, download_tiktok_video
+from .downloads import download_product_images, download_url, download_tiktok_video
 from .validation import validate_generated_reference_image
 from .supabase import supabase_upload, supabase_rm_prefix, supabase_rm_object
+from .huggingface_storage import upload_result_video as hf_upload_result_video
+from .video_processing import prepare_hf_upload_video_720p
 from .providers import selected_video_provider
 from .providers.magnific import (
     magnific_auths, magnific_auth_by_label,
@@ -33,6 +35,7 @@ from .providers.magnific import (
 from .providers.dreamface import (
     dreamface_auths, select_dreamface_auth,
     dreamface_available_count, dreamface_submit,
+    dreamface_upload_material,
     dreamface_recent_creation, dreamface_work_detail,
     max_dreamface_wait_seconds, dreamface_poll_interval_seconds,
 )
@@ -75,7 +78,9 @@ def cleanup_old(dry_run: bool = False):
     removed_supabase = []
 
     # Local cleanup.
-    for base in [DOWNLOADS_DIR, LOGS_DIR]:
+    # Keep reviews on the same retention mechanic as downloads: delete old files
+    # by mtime after RETENTION_DAYS, then remove empty directories.
+    for base in [DOWNLOADS_DIR, REVIEWS_DIR, LOGS_DIR]:
         if not base.exists():
             continue
         for p in base.rglob("*"):
@@ -117,8 +122,12 @@ def cleanup_old(dry_run: bool = False):
             except Exception:
                 expired = False
         if expired and prefix and row_status == "UPLOADED":
-            removed_supabase.append(supabase_rm_prefix(prefix, dry_run=dry_run))
-            if dry_run:
+            try:
+                removed_supabase.append(supabase_rm_prefix(prefix, dry_run=dry_run))
+                if dry_run:
+                    kept_jobs.append(job)
+            except Exception as e:
+                print(f"cleanup Supabase prefix skipped for {prefix}: {e}", file=sys.stderr)
                 kept_jobs.append(job)
         else:
             kept_jobs.append(job)
@@ -140,6 +149,12 @@ def cleanup_supabase_generation_sources(job_id: str, info: dict, row: dict) -> l
         value = (info.get(key) or "").strip()
         if value:
             object_paths.append(value)
+
+    # New DreamFace flow uses native DreamFace uploads for inputs and stores
+    # final results outside Supabase, so there may be no Supabase source
+    # objects to clean up. Avoid backward-compatible inference in that case.
+    if not object_paths and not (row.get("motion_supabase_video_url") or "").strip():
+        return []
 
     # Backward-compatible inference for prepared jobs created before explicit
     # object-path tracking was added.
@@ -177,6 +192,22 @@ def set_result_retention_deadline(state: dict, job_id: str, row: dict) -> str:
     return delete_after
 
 
+def upload_final_result_video(result_path: Path, job_id: str, provider_name: str, fallback_object: str) -> str:
+    """Upload completed provider output to the configured durable result store.
+
+    The Sheet column is still named result_supabase_url for backward
+    compatibility with the upload scheduler, but when RESULT_STORAGE_PROVIDER=hf
+    it contains a HuggingFace Dataset public URL.
+    """
+    storage_provider = (os.environ.get("RESULT_STORAGE_PROVIDER") or os.environ.get("FINAL_STORAGE_PROVIDER") or "hf").strip().lower()
+    if storage_provider in {"hf", "huggingface", "hugging_face"}:
+        upload_path = prepare_hf_upload_video_720p(result_path, output_dir=result_path.parent)
+        return hf_upload_result_video(upload_path, job_id, provider=provider_name)
+    if storage_provider in {"supabase", "sb"}:
+        return supabase_upload(result_path, fallback_object)
+    raise RuntimeError(f"Unsupported RESULT_STORAGE_PROVIDER={storage_provider!r}; use hf or supabase")
+
+
 def create_job_context(image_path: str | None = None):
     src_image = Path(image_path or require_env("MASTER_IMAGE_PATH")).expanduser().resolve()
     if not src_image.exists():
@@ -195,10 +226,12 @@ def prepare(image_path: str | None = None):
     """Prepare a job up to the OpenClaw image-generation handoff.
 
     This intentionally does not generate the try-on reference image. The caller
-    should use OpenClaw's image_generate tool with master_path + product_image_path,
+    should use OpenClaw's image_generate tool with master_path + product_image_paths,
     then call `complete <job_id> <generated_reference_path>`.
     """
     load_env()
+    provider_name = selected_video_provider(None)
+    use_supabase_inputs = not (provider_name == "dreamface" and os.environ.get("DREAMFACE_NATIVE_INPUT_UPLOAD", "true").lower() != "false")
     DATA_DIR.mkdir(exist_ok=True)
     DOWNLOADS_DIR.mkdir(exist_ok=True)
     LOGS_DIR.mkdir(exist_ok=True)
@@ -208,7 +241,7 @@ def prepare(image_path: str | None = None):
     src_image, job_id, delete_after, job_dir, row = create_job_context(image_path)
     state = state_load()
     try:
-        product_entry, picked_product_url, picked_product_title, picked_product_image_url = pick_video_with_product(state)
+        product_entry, picked_product_url, picked_product_title, picked_product_image_urls = pick_video_with_product(state)
         product_video_id = product_entry["id"]
         product_tiktok_url = tiktok_video_url(product_entry, product_entry.get("_profile_url"))
         row["product_video_url"] = product_tiktok_url
@@ -225,13 +258,32 @@ def prepare(image_path: str | None = None):
 
         motion_local_video, motion_tikwm_data, _, _ = download_tiktok_video(motion_video_id, motion_tiktok_url, job_dir)
 
-        motion_video_obj = f"magnific/automation/{job_id}/motion_source_{motion_video_id}.mp4"
-        row["motion_supabase_video_url"] = supabase_upload(motion_local_video, motion_video_obj)
+        motion_video_obj = ""
+        if use_supabase_inputs:
+            motion_video_obj = f"magnific/automation/{job_id}/motion_source_{motion_video_id}.mp4"
+            row["motion_supabase_video_url"] = supabase_upload(motion_local_video, motion_video_obj)
+        else:
+            row["motion_supabase_video_url"] = ""
 
-        product_image_path, product_image_source_url = download_product_image(row["product_url"], job_dir, picked_product_image_url)
-        product_image_obj = f"magnific/automation/{job_id}/product_reference{product_image_path.suffix.lower()}"
+        product_images = download_product_images(row["product_url"], job_dir, picked_product_image_urls, limit=2)
+        product_image_path, product_image_source_url = product_images[0]
+        product_image_obj = ""
         row["product_image_url"] = product_image_source_url
-        supabase_product_image_url = supabase_upload(product_image_path, product_image_obj)
+        supabase_product_image_url = ""
+        if use_supabase_inputs:
+            product_image_obj = f"magnific/automation/{job_id}/product_reference{product_image_path.suffix.lower()}"
+            supabase_product_image_url = supabase_upload(product_image_path, product_image_obj)
+        product_image_paths = [str(path) for path, _ in product_images]
+        product_image_urls = [url for _, url in product_images]
+        if len(product_image_urls) > 1:
+            row["product_image_url_2"] = product_image_urls[1]
+        supabase_product_image_urls = [supabase_product_image_url] if supabase_product_image_url else []
+        supabase_product_image_objects = [product_image_obj] if product_image_obj else []
+        for idx, (extra_path, _) in enumerate(product_images[1:], start=2):
+            if use_supabase_inputs:
+                extra_obj = f"magnific/automation/{job_id}/product_reference_{idx}{extra_path.suffix.lower()}"
+                supabase_product_image_objects.append(extra_obj)
+                supabase_product_image_urls.append(supabase_upload(extra_path, extra_obj))
         validation_note = "product_image_from_pdp"
         row["status"] = "NEEDS_REFERENCE_IMAGE"
 
@@ -239,7 +291,7 @@ def prepare(image_path: str | None = None):
             "job_id": job_id,
             "created_at": row["created_at"],
             "delete_after": delete_after,
-            "supabase_prefix": f"magnific/automation/{job_id}/",
+            "supabase_prefix": f"magnific/automation/{job_id}/" if use_supabase_inputs else "",
         })
         prepared = state.setdefault("prepared_jobs", {})
         prompt_path = job_dir / "modest_tryon_prompt.txt"
@@ -253,8 +305,12 @@ def prepare(image_path: str | None = None):
             "job_dir": str(job_dir),
             "master_path": str(src_image),
             "product_image_path": str(product_image_path),
+            "product_image_paths": product_image_paths,
+            "product_image_urls": product_image_urls,
             "supabase_product_image_object": product_image_obj,
             "supabase_product_image_url": supabase_product_image_url,
+            "supabase_product_image_objects": supabase_product_image_objects,
+            "supabase_product_image_urls": supabase_product_image_urls,
             "motion_supabase_video_object": motion_video_obj,
             "motion_local_video_path": str(motion_local_video),
             "modest_tryon_prompt": MODEST_TRYON_PROMPT,
@@ -270,6 +326,7 @@ def prepare(image_path: str | None = None):
             "caption": row.get("caption", ""),
             "master_path": str(src_image),
             "product_image_path": str(product_image_path),
+            "product_image_paths": product_image_paths,
             "prompt_path": str(prompt_path),
             "prompt": MODEST_TRYON_PROMPT,
         }
@@ -314,10 +371,9 @@ def complete(job_id: str, generated_reference_path: str, provider: str | None = 
         state_save(state)
         log_row(row)
 
-        gen_ref_obj = f"magnific/automation/{job_id}/generated_reference{ref_path.suffix.lower() or '.png'}"
-        row["input_image_url"] = row.get("input_image_url") or supabase_upload(ref_path, gen_ref_obj)
-
         if provider_name == "magnific":
+            gen_ref_obj = f"magnific/automation/{job_id}/generated_reference{ref_path.suffix.lower() or '.png'}"
+            row["input_image_url"] = row.get("input_image_url") or supabase_upload(ref_path, gen_ref_obj)
             task_id = row.get("provider_task_id") or row.get("magnific_task_id")
             selected_auth = magnific_auth_by_label(row.get("provider_auth_label")) or magnific_auths()[0]
             if not task_id:
@@ -359,8 +415,7 @@ def complete(job_id: str, generated_reference_path: str, provider: str | None = 
                     row["provider_result_url"] = generated[0]
                     result_path = job_dir / f"result_{task_id}.mp4"
                     download_url(generated[0], result_path)
-                    result_obj = f"magnific/automation/{job_id}/result_{task_id}.mp4"
-                    row["result_supabase_url"] = supabase_upload(result_path, result_obj)
+                    row["result_supabase_url"] = upload_final_result_video(result_path, job_id, provider_name, fallback_object=f"magnific/automation/{job_id}/result_{task_id}.mp4")
                     row["status"] = "COMPLETED"
                     row["provider_status"] = "COMPLETED"
                     break
@@ -387,7 +442,17 @@ def complete(job_id: str, generated_reference_path: str, provider: str | None = 
 
             animate_id = row.get("provider_task_id") or row.get("dreamface_animate_id")
             if not animate_id:
-                animate_id = dreamface_submit(selected_auth, row["input_image_url"], row["motion_supabase_video_url"])
+                submit_image_url = row.get("dreamface_input_image_url") or row.get("input_image_url") or dreamface_upload_material(selected_auth, ref_path)
+                row["dreamface_input_image_url"] = submit_image_url
+                row["input_image_url"] = submit_image_url
+                motion_local_path = info.get("motion_local_video_path")
+                submit_video_url = row.get("dreamface_motion_video_url")
+                if not submit_video_url and motion_local_path and Path(motion_local_path).exists():
+                    submit_video_url = dreamface_upload_material(selected_auth, motion_local_path)
+                    row["dreamface_motion_video_url"] = submit_video_url
+                if not submit_video_url:
+                    submit_video_url = row["motion_supabase_video_url"]
+                animate_id = dreamface_submit(selected_auth, submit_image_url, submit_video_url)
                 row["provider_task_id"] = animate_id
             row["status"] = "PROCESSING"
             row["provider_status"] = "PROCESSING"
@@ -432,8 +497,7 @@ def complete(job_id: str, generated_reference_path: str, provider: str | None = 
                 row["provider_result_url"] = work_url
                 result_path = job_dir / f"result_dreamface_{work_id}.mp4"
                 download_url(work_url, result_path)
-                result_obj = f"magnific/automation/{job_id}/result_dreamface_{work_id}.mp4"
-                row["result_supabase_url"] = supabase_upload(result_path, result_obj)
+                row["result_supabase_url"] = upload_final_result_video(result_path, job_id, provider_name, fallback_object=f"magnific/automation/{job_id}/result_dreamface_{work_id}.mp4")
                 row["provider_status"] = "COMPLETED"
                 row["status"] = "COMPLETED"
                 break
