@@ -15,3 +15,9 @@ tiktok-motion-agent/logs/
 tiktok-motion-agent/data/tiktok_entries_cache.json
 tiktok-motion-agent/data/ayrshare_last_upload.json
 tiktok-motion-agent/data/backups/
+
+# YouTube timestamp workflow runtime/private artifacts
+yt-timestamp-image-workflow/.openclaw/
+yt-timestamp-image-workflow/memory/
+yt-timestamp-image-workflow/projects/
+yt-timestamp-image-workflow/__pycache__/
