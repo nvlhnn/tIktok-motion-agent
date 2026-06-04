@@ -21,7 +21,7 @@ from .tiktok import (
     pick_video_with_product, pick_different_motion_video,
     tiktok_video_url,
 )
-from .downloads import download_product_images, download_url, download_tiktok_video
+from .downloads import download_product_images, download_url, download_tiktok_video, extract_product_video_frames
 from .validation import validate_generated_reference_image
 from .supabase import supabase_upload, supabase_rm_prefix, supabase_rm_object
 from .huggingface_storage import upload_result_video as hf_upload_result_video
@@ -251,6 +251,9 @@ def prepare(image_path: str | None = None):
         if not row["product_url"]:
             raise RuntimeError("Selected TikTok product video has no extractable affiliate/product URL")
 
+        product_local_video, _, _, _ = download_tiktok_video(product_video_id, product_tiktok_url, job_dir)
+        product_video_frame_paths = [str(path) for path in extract_product_video_frames(product_local_video, job_dir, count=2)]
+
         motion_entry = pick_different_motion_video(state, product_video_id)
         motion_video_id = motion_entry["id"]
         motion_tiktok_url = tiktok_video_url(motion_entry, motion_entry.get("_profile_url"))
@@ -306,6 +309,8 @@ def prepare(image_path: str | None = None):
             "master_path": str(src_image),
             "product_image_path": str(product_image_path),
             "product_image_paths": product_image_paths,
+            "product_video_path": str(product_local_video),
+            "product_video_frame_paths": product_video_frame_paths,
             "product_image_urls": product_image_urls,
             "supabase_product_image_object": product_image_obj,
             "supabase_product_image_url": supabase_product_image_url,
@@ -327,6 +332,8 @@ def prepare(image_path: str | None = None):
             "master_path": str(src_image),
             "product_image_path": str(product_image_path),
             "product_image_paths": product_image_paths,
+            "product_video_path": str(product_local_video),
+            "product_video_frame_paths": product_video_frame_paths,
             "prompt_path": str(prompt_path),
             "prompt": MODEST_TRYON_PROMPT,
         }

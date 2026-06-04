@@ -11,14 +11,15 @@ RUNS_CSV = DATA_DIR / "runs.csv"
 TIKTOK_LIST_CACHE_PATH = DATA_DIR / "tiktok_entries_cache.json"
 
 MODEST_TRYON_PROMPT = (
-    "Create a realistic modest Muslim-friendly fashion try-on image. The person must remain hijab-friendly and fully modest. "
-    "Keep the hijab/head covering intact. The hijab or an added inner scarf/underscarf MUST cover the entire neck, collarbone, upper chest, and any skin between chin and shirt. "
-    "ABSOLUTE REQUIREMENTS: zero visible neck skin, zero visible collarbone, zero visible upper chest, no open neckline, no V-neck/open collar gap, no cleavage, no exposed chest, no shorts, no bare legs, no exposed thighs, no bare shoulders, no bare upper arms, no exposed waist or back, no transparent/sheer clothing, no tight body-revealing fit. "
-    "Do not alter the affiliated product itself: keep the product's original cut, sleeve length, neckline, silhouette, color, pattern, texture, and style as accurately as possible. "
-    "If the product reference is sleeveless, short, low-cut, open-collar, V-neck, cropped, sheer, tight, or revealing, keep that product unchanged and make the full outfit modest by layering separate clothing under or around it: matching long-sleeve inner shirt, high-neck turtleneck/dickey inner layer, neck-covering underscarf, leggings/full-length pants, long skirt, and/or outer cardigan/blazer. "
-    "For button-up shirts, close the collar area visually with a high-neck inner layer or scarf so no skin is visible below the chin. "
-    "The product must look like the same affiliated item; modest coverage should come from added inner/outer layers, not by modifying the product design. "
-    "Final outfit should look natural for Indonesian Muslim women / hijab OOTD: long sleeves, fully covered neck and chest, covered legs to ankles, loose/comfortable fit."
+    "Preserve master face/identity, lighting, wooden-door background, camera distance, and mid-thigh-up framing. "
+    "Use the product TikTok video frame references as the primary outfit source, not the product-card/PDP stills. "
+    "Copy the outfit worn in the product TikTok video frames VERY closely. Preserve the exact garment construction, not just the general style: garment category, color/tone, pattern/print, fabric texture, neckline/collar, sleeve shape and cuffs, front/back closures, seams, waist construction, hem shape, trims, buttons, lace, ruffles, pleats, ties, pockets, panels, layering, and visible set composition. "
+    "Use product-card/PDP stills only as secondary clarification if video frames are ambiguous. Distinctive product details from the TikTok video must be clearly visible and structurally accurate; do not simplify, smooth out, hide, replace, or reinterpret them. "
+    "Avoid generic fashion interpretation; do not convert the TikTok outfit into a similar-looking but different item. Do not hide important neckline, closure, waist, sleeve, hem, print, or trim details under hijab, pose, arm placement, crop, bag, or accessories. "
+    "The person must not wear, carry, hold, sling, or pose with any bag, purse, handbag, tote, backpack, clutch, crossbody bag, shoulder bag, or strap; no bag-like accessory anywhere in the image. "
+    "Restyle top, bottom, hijab, and accessories to match the product TikTok outfit while keeping modest coverage; if the TikTok outfit shows a bottom, copy it, otherwise use a modest matching bottom. "
+    "Do not keep original jeans, cream hijab, or bag by default. No UI/text/watermark/product model/background. Realistic fit, true TikTok vertical 9:16 composition. "
+    "Keep the subject close to camera like the master reference; do not zoom out, do not generate head-to-toe/full-body framing, do not show shoes or extra floor space."
 )
 
 DEFAULT_PROMPT = (
