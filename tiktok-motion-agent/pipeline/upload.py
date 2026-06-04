@@ -10,7 +10,7 @@ from zoneinfo import ZoneInfo
 import requests
 
 from .config import require_env, int_env, truthy_env
-from .utils import now_utc, indonesia_pretty_datetime, parse_hhmm
+from .utils import now_utc, indonesia_pretty_datetime, parse_hhmm, parse_indonesia_pretty_datetime
 from .state import state_load, state_save
 from .storage import log_row, load_run_rows
 
@@ -360,10 +360,55 @@ def schedule_daily_uploads(dry_run: bool = True, live: bool = False, count: int 
     return result
 
 
+def scheduled_upload_check_due_at(row: dict, now: dt.datetime | None = None) -> dt.datetime | None:
+    """Return when this row may be checked against Buffer.
+
+    Buffer has a small daily API quota, so don't poll scheduled posts constantly.
+    If the scheduled time falls inside a configured upload window, wait until the
+    end of that window (plus a small grace period) before the first Buffer hit.
+    Otherwise, wait until the scheduled time plus the same grace period.
+    """
+    scheduled = parse_indonesia_pretty_datetime(row.get("scheduled_at") or "")
+    if not scheduled:
+        return None
+    tz = _local_tz()
+    scheduled = scheduled.astimezone(tz)
+    grace = dt.timedelta(minutes=int_env("TIKTOK_SCHEDULED_CHECK_GRACE_MINUTES", 5))
+    for window in upload_windows():
+        try:
+            start, end = _parse_window_for_date(window, scheduled)
+        except Exception:
+            continue
+        if start <= scheduled <= end:
+            return end + grace
+    return scheduled + grace
+
+
+def scheduled_upload_ready_to_check(row: dict, now: dt.datetime | None = None) -> bool:
+    due_at = scheduled_upload_check_due_at(row, now=now)
+    if not due_at:
+        return False
+    tz = _local_tz()
+    current = (now or now_utc()).astimezone(tz)
+    return current >= due_at.astimezone(tz)
+
+
 def check_scheduled_uploads(dry_run: bool = True, live: bool = False) -> dict:
     rows = load_run_rows(prefer_sheet=True)
-    pending = [r for r in rows if (r.get("status") or "").strip().upper() in {"SCHEDULED_UPLOAD", "UPLOADING"} and (r.get("buffer_post_id") or "").strip() and not (r.get("uploaded_at") or "").strip()]
-    result = {"dry_run": dry_run or not live, "pending_count": len(pending), "checked": [], "uploaded": [], "failed": []}
+    pending_all = [r for r in rows if (r.get("status") or "").strip().upper() in {"SCHEDULED_UPLOAD", "UPLOADING"} and (r.get("buffer_post_id") or "").strip() and not (r.get("uploaded_at") or "").strip()]
+    now = now_utc()
+    pending = [r for r in pending_all if scheduled_upload_ready_to_check(r, now=now)]
+    skipped_waiting = []
+    for row in pending_all:
+        if row in pending:
+            continue
+        due_at = scheduled_upload_check_due_at(row, now=now)
+        skipped_waiting.append({
+            "job_id": row.get("job_id"),
+            "scheduled_at": row.get("scheduled_at"),
+            "check_due_at": due_at.astimezone(_local_tz()).strftime("%Y-%m-%d %H:%M %Z") if due_at else "",
+        })
+    result = {"dry_run": dry_run or not live, "pending_count": len(pending), "waiting_count": len(skipped_waiting), "waiting": skipped_waiting, "checked": [], "uploaded": [], "failed": []}
     for row in pending:
         try:
             posts = _posts_from_row(row)

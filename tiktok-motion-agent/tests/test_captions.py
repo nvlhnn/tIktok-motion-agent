@@ -48,15 +48,14 @@ def test_caption_parts_extracts_details_color_category():
     assert "plisket" in parts["details"]
 
 
-def test_caption_tags_maps_product_type():
+def test_caption_tags_are_fixed():
     tags = caption_tags("Kemeja Bordir Wanita")
-    assert "#kemejawanita" in tags
-    assert len(tags) <= 5
+    assert tags == ["#fyp", "#muslimah", "#outfitideas", "#ootdhijab", "#outfittiktok"]
 
 
-def test_caption_tags_always_has_base_tags():
+def test_caption_tags_do_not_vary_by_product_type():
     tags = caption_tags("Something Random Product")
-    assert any("#ootdhijab" in t for t in tags)
+    assert tags == ["#fyp", "#muslimah", "#outfitideas", "#ootdhijab", "#outfittiktok"]
 
 
 def test_build_caption_phrase_is_short():

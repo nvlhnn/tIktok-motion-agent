@@ -24,8 +24,9 @@ When Naufal says **go**, run the automation with minimal chat.
 - Use lowercase, casual abbreviations when natural (`bgt`, `sih`, `gini`, `nya`), but do not overuse `bgt`.
 - Do not use the word `ini`.
 - Keep the caption phrase max 5 words before hashtags.
-- Use max 5 hashtags total, mixing 1-2 product-specific hashtags with broader discovery tags.
-- Do not use fixed/repeated templates; make captions visibly different per video.
+- Always use exactly these fixed hashtags: `#fyp #muslimah #outfitideas #ootdhijab #outfittiktok`.
+- Do not add product-specific or extra hashtags.
+- Do not use fixed/repeated phrase templates; make caption phrases visibly different per video.
 - No emoji.
 ```bash
 /root/.openclaw/workspace/tiktok-motion-agent/.venv/bin/python /root/.openclaw/workspace/tiktok-motion-agent/motion_pipeline.py set-caption <job_id> '<AI_GENERATED_CAPTION>'

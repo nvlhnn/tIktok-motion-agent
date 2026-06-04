@@ -100,8 +100,12 @@ STATUS_VALUES = [
 ]
 
 
-TERMINAL_STATUSES = {"COMPLETED", "READY_TO_UPLOAD", "REJECTED", "UPLOADED", "UPLOAD_FAILED", "READY_TO_AFFILIATE", "AFFILIATED", "FAILED", "TIMEOUT"}
-ACTIVE_STATUSES = {"QUEUED", "SUBMITTED", "PROCESSING", "SCHEDULED_UPLOAD", "UPLOADING"}
+TERMINAL_STATUSES = {"COMPLETED", "READY_TO_UPLOAD", "SCHEDULED_UPLOAD", "REJECTED", "UPLOADED", "UPLOAD_FAILED", "READY_TO_AFFILIATE", "AFFILIATED", "FAILED", "TIMEOUT"}
+# Statuses that still represent in-flight local generation/provider work and
+# should block starting another generation. Once Buffer accepts a post
+# (SCHEDULED_UPLOAD), Buffer owns the scheduled publishing and generation may
+# continue with the next video.
+ACTIVE_STATUSES = {"QUEUED", "SUBMITTED", "PROCESSING", "UPLOADING"}
 
 STATUS_COLORS = {
     # Intentionally high-contrast and unique per status.

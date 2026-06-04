@@ -16,46 +16,12 @@ CAPTION_STOPWORDS = {
 }
 
 
-CAPTION_TAG_MAP = {
-    "kemeja": ["#kemejawanita", "#atasanhijab"],
-    "shirt": ["#kemejawanita", "#atasanhijab"],
-    "blouse": ["#blousewanita", "#atasanhijab"],
-    "blus": ["#blousewanita", "#atasanhijab"],
-    "sweater": ["#sweaterwanita", "#ootdhijab"],
-    "rajut": ["#atasanknit", "#ootdhijab"],
-    "knit": ["#atasanknit", "#ootdhijab"],
-    "cardigan": ["#cardiganwanita", "#ootdhijab"],
-    "kardigan": ["#cardiganwanita", "#ootdhijab"],
-    "outer": ["#outerwanita", "#ootdhijab"],
-    "vest": ["#vestwanita", "#ootdhijab"],
-    "rompi": ["#rompiwanita", "#ootdhijab"],
-    "kulot": ["#kulotwanita", "#ootdwanita"],
-    "celana": ["#celanawanita", "#ootdwanita"],
-    "rok": ["#rokwanita", "#ootdhijab"],
-    "dress": ["#dresswanita", "#ootdhijab"],
-    "gamis": ["#gamismodern", "#ootdhijab"],
-    "set": ["#setelanwanita", "#ootdhijab"],
-    "oneset": ["#setelanwanita", "#ootdhijab"],
-    "denim": ["#denimoutfit", "#ootdhijab"],
-    "jeans": ["#denimoutfit", "#ootdhijab"],
-    "bordir": ["#bordir", "#ootdhijab"],
-    "pita": ["#ribbontop", "#ootdhijab"],
-    "ribbon": ["#ribbontop", "#ootdhijab"],
-    "peplum": ["#peplumtop", "#ootdhijab"],
-    "ruffle": ["#ruffletop", "#ootdhijab"],
-    "salur": ["#blousewanita", "#ootdhijab"],
-    "plisket": ["#plisket", "#ootdhijab"],
-    "pleats": ["#plisket", "#ootdhijab"],
-    "vneck": ["#atasanhijab", "#dailylook"],
-    "v-neck": ["#atasanhijab", "#dailylook"],
-}
-
-CAPTION_BASE_TAGS = [
+CAPTION_FIXED_TAGS = [
+    "#fyp",
+    "#muslimah",
+    "#outfitideas",
     "#ootdhijab",
-    "#dailylook",
-    "#atasanhijab",
-    "#fashionwanita",
-    "#outfitcewek",
+    "#outfittiktok",
 ]
 
 DETAIL_WORDS = [
@@ -136,17 +102,7 @@ def caption_parts(title: str) -> dict:
 
 
 def caption_tags(title: str) -> list[str]:
-    lower = clean_product_title(title).lower()
-    tags = []
-    for key, mapped in CAPTION_TAG_MAP.items():
-        if key in lower:
-            tags.extend(mapped)
-    tags.extend(CAPTION_BASE_TAGS)
-    deduped = []
-    for tag in tags:
-        if tag not in deduped:
-            deduped.append(tag)
-    return deduped[:5]
+    return CAPTION_FIXED_TAGS.copy()
 
 
 def build_caption_phrase(product_title: str) -> str:

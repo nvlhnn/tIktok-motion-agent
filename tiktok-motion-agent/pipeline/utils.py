@@ -51,6 +51,10 @@ def parse_indonesia_pretty_datetime(value: str) -> dt.datetime | None:
     value = (value or "").strip()
     if not value:
         return None
+    numeric_wib = re.match(r"^(\d{4})-(\d{2})-(\d{2})\s+(\d{1,2}):(\d{2})\s+WIB$", value)
+    if numeric_wib:
+        year, month, day, hour, minute = numeric_wib.groups()
+        return dt.datetime(int(year), int(month), int(day), int(hour), int(minute), tzinfo=ZoneInfo("Asia/Jakarta"))
     m = re.match(r"^(\d{1,2})\s+(\w+)\s+(\d{4})\s+(\d{1,2}):(\d{2})\s+WIB$", value)
     if not m:
         try:
