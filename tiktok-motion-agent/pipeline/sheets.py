@@ -10,13 +10,17 @@ except Exception:
     gspread = None
 
 
-def get_sheet():
+def get_spreadsheet():
     if gspread is None:
         raise RuntimeError("gspread is not installed")
     cred_path = require_env("GOOGLE_SERVICE_ACCOUNT_JSON")
     spreadsheet_id = require_env("SPREADSHEET_ID")
     gc = gspread.service_account(filename=cred_path)
-    return gc.open_by_key(spreadsheet_id).sheet1
+    return gc.open_by_key(spreadsheet_id)
+
+
+def get_sheet():
+    return get_spreadsheet().sheet1
 
 
 def ensure_sheet_header(ws, apply_controls: bool = False):

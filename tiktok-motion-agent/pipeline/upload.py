@@ -13,6 +13,12 @@ from .config import require_env, int_env, truthy_env
 from .utils import now_utc, indonesia_pretty_datetime, parse_hhmm, parse_indonesia_pretty_datetime
 from .state import state_load, state_save
 from .storage import log_row, load_run_rows
+from .affiliate_links import (
+    affiliate_state_for_row,
+    comment_affiliate_for_row,
+    load_affiliate_links,
+    upsert_affiliate_link,
+)
 
 
 def upload_slots() -> list[str]:
@@ -247,6 +253,8 @@ def _parse_window_for_date(window: str, base: dt.datetime) -> tuple[dt.datetime,
 def daily_schedule_times(count: int | None = None, now: dt.datetime | None = None) -> list[dict]:
     tz = _local_tz()
     now = (now or now_utc()).astimezone(tz)
+    days_ahead = int_env("TIKTOK_DAILY_SCHEDULE_DAYS_AHEAD", 1)
+    schedule_base = now + dt.timedelta(days=days_ahead)
     windows = upload_windows()
     if not windows:
         slots = upload_slots()
@@ -254,7 +262,7 @@ def daily_schedule_times(count: int | None = None, now: dt.datetime | None = Non
         times = []
         for slot in slots[:count]:
             h, m = parse_hhmm(slot)
-            due = now.replace(hour=h, minute=m, second=0, microsecond=0)
+            due = schedule_base.replace(hour=h, minute=m, second=0, microsecond=0)
             times.append({"range": slot, "due_at": due, "due_at_local": due.strftime("%Y-%m-%d %H:%M %Z")})
         return times
     count = count or len(windows)
@@ -262,7 +270,7 @@ def daily_schedule_times(count: int | None = None, now: dt.datetime | None = Non
     today = now.strftime("%Y-%m-%d")
     times = []
     for idx, window in enumerate(windows[:count]):
-        start, end = _parse_window_for_date(window, now)
+        start, end = _parse_window_for_date(window, schedule_base)
         latest = end - dt.timedelta(minutes=1)
         span_minutes = max(0, int((latest - start).total_seconds() // 60))
         seed = f"schedule|{today}|{window}|{idx}|{salt}"
@@ -293,13 +301,17 @@ def schedule_daily_uploads(dry_run: bool = True, live: bool = False, count: int 
     picked = candidates[:count]
     channel_ids = buffer_channel_ids(test=test_channel)
     today = now_utc().astimezone(_local_tz()).strftime("%Y-%m-%d")
+    target_date = times[0]["due_at"].astimezone(_local_tz()).strftime("%Y-%m-%d") if times else ""
+    affiliate_rows = load_affiliate_links(prefer_sheet=True)
     result = {
         "dry_run": dry_run or not live,
         "enabled": truthy_env("TIKTOK_UPLOAD_ENABLED", False),
         "date": today,
+        "target_date": target_date,
         "channel_ids": channel_ids,
         "candidate_count": len(candidates),
         "scheduled": [],
+        "affiliate_followups": [],
     }
     state = state_load()
     upload_state = state.setdefault("upload_scheduler", {})
@@ -308,6 +320,7 @@ def schedule_daily_uploads(dry_run: bool = True, live: bool = False, count: int 
         result["existing"] = upload_state.get("daily_schedule", [])
         return result
     for row, scheduled in zip(picked, times[:count]):
+        aff = affiliate_state_for_row(row, affiliate_rows)
         item = {
             "job_id": row.get("job_id"),
             "due_at": scheduled["due_at"].astimezone(dt.timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z"),
@@ -315,12 +328,23 @@ def schedule_daily_uploads(dry_run: bool = True, live: bool = False, count: int 
             "window": scheduled["range"],
             "caption": row.get("caption"),
             "result_supabase_url": row.get("result_supabase_url"),
+            "product_key": aff.get("product_key"),
+            "affiliate_status": aff.get("affiliate_status"),
         }
         result["scheduled"].append(item)
+        if aff.get("affiliate_status") == "MISSING":
+            result["affiliate_followups"].append({
+                "job_id": row.get("job_id"),
+                "product_key": aff.get("product_key"),
+                "product_url": row.get("product_url"),
+                "product_title": row.get("product_title"),
+                "action_needed": "Send Shopee affiliate link; scheduling would still continue in live mode.",
+            })
     if dry_run or not live:
         return result
     if not truthy_env("TIKTOK_UPLOAD_ENABLED", False):
         raise RuntimeError("Daily schedule refused: set TIKTOK_UPLOAD_ENABLED=true")
+    result["affiliate_followups"] = []
     created = []
     for row, scheduled in zip(picked, times[:count]):
         attempts = int(row.get("upload_attempts") or 0) + 1
@@ -331,6 +355,9 @@ def schedule_daily_uploads(dry_run: bool = True, live: bool = False, count: int 
             post = buffer_create_video_post_at(target_channel_id, video_url, row["caption"].strip(), due_at=scheduled["due_at"])
             post["channel_id"] = target_channel_id
             posts.append(post)
+        aff = affiliate_state_for_row(row, affiliate_rows)
+        if aff.get("affiliate_status") == "MISSING" and aff.get("product_key"):
+            upsert_affiliate_link(row.get("product_url", ""), product_name=row.get("product_title", ""), notes="Created by Buffer scheduler; waiting for Shopee affiliate link")
         row.update({
             "status": "SCHEDULED_UPLOAD",
             "scheduled_at": scheduled["due_at_local"],
@@ -339,20 +366,38 @@ def schedule_daily_uploads(dry_run: bool = True, live: bool = False, count: int 
             "buffer_status": ",".join(p.get("status", "") for p in posts if p.get("status")),
             "uploaded_via": "buffer",
             "upload_attempts": str(attempts),
+            "product_key": aff.get("product_key", ""),
+            "affiliate_status": aff.get("affiliate_status", ""),
+            "shopee_affiliate_url": aff.get("shopee_affiliate_url", ""),
+            "fb_comment_status": "PENDING_POST" if aff.get("affiliate_status") == "FOUND" else "PENDING_LINK",
+            "ig_comment_status": "PENDING_POST" if aff.get("affiliate_status") == "FOUND" else "PENDING_LINK",
+            "action_needed": aff.get("action_needed", ""),
             "buffer_error": "",
             "error": "",
         })
         log_row(row)
-        created.append({
+        created_item = {
             "job_id": row.get("job_id"),
             "due_at_local": scheduled["due_at_local"],
             "window": scheduled["range"],
             "buffer_post_id": row.get("buffer_post_id"),
             "buffer_status": row.get("buffer_status"),
             "product_url": row.get("product_url"),
+            "product_key": row.get("product_key"),
+            "affiliate_status": row.get("affiliate_status"),
+            "shopee_affiliate_url": row.get("shopee_affiliate_url"),
             "product_image_url": row.get("product_image_url"),
             "caption": row.get("caption"),
-        })
+        }
+        created.append(created_item)
+        if aff.get("affiliate_status") == "MISSING":
+            result["affiliate_followups"].append({
+                "job_id": row.get("job_id"),
+                "product_key": aff.get("product_key"),
+                "product_url": row.get("product_url"),
+                "product_title": row.get("product_title"),
+                "action_needed": "Send Shopee affiliate link; Buffer schedule was created and is not blocked.",
+            })
     upload_state["daily_schedule_date"] = today
     upload_state["daily_schedule"] = created
     state_save(state)
@@ -408,7 +453,7 @@ def check_scheduled_uploads(dry_run: bool = True, live: bool = False) -> dict:
             "scheduled_at": row.get("scheduled_at"),
             "check_due_at": due_at.astimezone(_local_tz()).strftime("%Y-%m-%d %H:%M %Z") if due_at else "",
         })
-    result = {"dry_run": dry_run or not live, "pending_count": len(pending), "waiting_count": len(skipped_waiting), "waiting": skipped_waiting, "checked": [], "uploaded": [], "failed": []}
+    result = {"dry_run": dry_run or not live, "pending_count": len(pending), "waiting_count": len(skipped_waiting), "waiting": skipped_waiting, "checked": [], "uploaded": [], "failed": [], "affiliate_comments": []}
     for row in pending:
         try:
             posts = _posts_from_row(row)
@@ -452,6 +497,11 @@ def check_scheduled_uploads(dry_run: bool = True, live: bool = False) -> dict:
                 "error": "",
             })
             log_row(row)
+            try:
+                _, affiliate_comment_result = comment_affiliate_for_row(row, live=live, prefer_sheet=True)
+                result["affiliate_comments"].append(affiliate_comment_result)
+            except Exception as e:
+                result["affiliate_comments"].append({"job_id": row.get("job_id"), "error": str(e)[:500], "non_blocking": True})
             uploaded = dict(item)
             uploaded.update({
                 "product_url": row.get("product_url"),
@@ -550,6 +600,8 @@ def upload_scheduler(dry_run: bool = True, live: bool = False, ignore_slot: bool
         "candidate_count": len(candidates),
         "picked": [{"job_id": r.get("job_id"), "caption": r.get("caption"), "result_supabase_url": r.get("result_supabase_url")} for r in picked],
         "uploaded": [],
+        "affiliate_followups": [],
+        "affiliate_comments": [],
     }
     if dry_run or not live:
         return result
@@ -563,12 +615,21 @@ def upload_scheduler(dry_run: bool = True, live: bool = False, ignore_slot: bool
     for row in picked:
         now_pretty = indonesia_pretty_datetime(now_utc())
         attempts = int(row.get("upload_attempts") or 0) + 1
+        aff = affiliate_state_for_row(row, load_affiliate_links(prefer_sheet=True))
+        if aff.get("affiliate_status") == "MISSING" and aff.get("product_key"):
+            upsert_affiliate_link(row.get("product_url", ""), product_name=row.get("product_title", ""), notes="Created by Buffer uploader; waiting for Shopee affiliate link")
         row.update({
             "status": "UPLOADING",
             "scheduled_at": now_pretty,
             "buffer_channel_id": ",".join(channel_ids),
             "uploaded_via": "buffer",
             "upload_attempts": str(attempts),
+            "product_key": aff.get("product_key", ""),
+            "affiliate_status": aff.get("affiliate_status", ""),
+            "shopee_affiliate_url": aff.get("shopee_affiliate_url", ""),
+            "fb_comment_status": "PENDING_POST" if aff.get("affiliate_status") == "FOUND" else "PENDING_LINK",
+            "ig_comment_status": "PENDING_POST" if aff.get("affiliate_status") == "FOUND" else "PENDING_LINK",
+            "action_needed": aff.get("action_needed", ""),
             "buffer_error": "",
             "error": "",
         })
@@ -614,6 +675,19 @@ def upload_scheduler(dry_run: bool = True, live: bool = False, ignore_slot: bool
                 "error": buffer_error if primary_failed else "",
             })
             log_row(row)
+            try:
+                _, affiliate_comment_result = comment_affiliate_for_row(row, live=live, prefer_sheet=True)
+                result["affiliate_comments"].append(affiliate_comment_result)
+                if affiliate_comment_result.get("needs_affiliate_link"):
+                    result["affiliate_followups"].append({
+                        "job_id": row.get("job_id"),
+                        "product_key": row.get("product_key"),
+                        "product_url": row.get("product_url"),
+                        "product_title": row.get("product_title"),
+                        "action_needed": "Send Shopee affiliate link; upload was not blocked.",
+                    })
+            except Exception as e:
+                result["affiliate_comments"].append({"job_id": row.get("job_id"), "error": str(e)[:500], "non_blocking": True})
             if primary_failed:
                 raise RuntimeError(buffer_error or "Primary Buffer upload failed")
             result["uploaded"].append({

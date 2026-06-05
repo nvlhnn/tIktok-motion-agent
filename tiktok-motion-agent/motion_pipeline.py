@@ -16,6 +16,8 @@ from pipeline.orchestrator import (
 from pipeline.captions import caption_for_job, set_caption_for_job
 from pipeline.validation import validate_generated_reference_image
 from pipeline.affiliate import affiliate_monitor, set_affiliate_review
+from pipeline.affiliate_links import upsert_affiliate_link, comment_affiliate_for_row
+from pipeline.storage import load_run_rows
 from pipeline.upload import upload_scheduler, in_upload_slot, upload_windows, upload_slots, schedule_daily_uploads, check_scheduled_uploads
 from pipeline.sheets import get_sheet, ensure_sheet_header
 
@@ -53,6 +55,14 @@ def main():
     affrp.add_argument("verdict", help="MATCH_STRONG/VERY_MATCH or MISMATCH_RISK/MISMATCH_BAD/etc.")
     affrp.add_argument("--score", default="")
     affrp.add_argument("--reason", default="")
+    afflinkp = sub.add_parser("set-affiliate-link", help="Save/reuse a Shopee affiliate link for a TikTok product URL, optionally from a job id.")
+    afflinkp.add_argument("target", help="Job id or TikTok product URL")
+    afflinkp.add_argument("shopee_affiliate_url")
+    afflinkp.add_argument("--product-name", default="")
+    afflinkp.add_argument("--notes", default="")
+    affcommentp = sub.add_parser("affiliate-comment-monitor", help="Try non-blocking FB/IG affiliate comments for uploaded rows with saved Shopee links.")
+    affcommentp.add_argument("--live", action="store_true", help="Actually post comments when AFFILIATE_COMMENT_ENABLED=true and Meta tokens are configured.")
+    affcommentp.add_argument("--limit", type=int, help="Maximum uploaded rows to process.")
     sub.add_parser("format-sheet", help="Apply status dropdown enum and color marks to the Google Sheet.")
     upp = sub.add_parser("upload-scheduler", help="Pick random READY_TO_UPLOAD rows and publish via Buffer/TikTok. Dry-run by default.")
     upp.add_argument("--live", action="store_true", help="Actually upload. Also requires TIKTOK_UPLOAD_ENABLED=true.")
@@ -90,6 +100,29 @@ def main():
         print(json.dumps(affiliate_monitor(update=args.update, limit=args.limit), indent=2, ensure_ascii=False))
     if args.cmd == "set-affiliate-review":
         print(json.dumps(set_affiliate_review(args.job_id, args.verdict, args.score, args.reason), indent=2, ensure_ascii=False))
+    if args.cmd == "set-affiliate-link":
+        target = args.target
+        product_url = target
+        product_name = args.product_name
+        rows = load_run_rows(prefer_sheet=False)
+        matched_row = next((r for r in rows if r.get("job_id") == target), None)
+        if matched_row:
+            product_url = matched_row.get("product_url", "")
+            product_name = product_name or matched_row.get("product_title", "")
+        print(json.dumps(upsert_affiliate_link(product_url, args.shopee_affiliate_url, product_name=product_name, notes=args.notes), indent=2, ensure_ascii=False))
+    if args.cmd == "affiliate-comment-monitor":
+        rows = [r for r in load_run_rows(prefer_sheet=True) if (r.get("status") or "").strip().upper() == "UPLOADED"]
+        rows = [r for r in rows if (r.get("product_url") or "").strip() and ((r.get("facebook_post_url") or "").strip() or (r.get("instagram_post_url") or "").strip())]
+        if args.limit:
+            rows = rows[:args.limit]
+        results = []
+        for row in rows:
+            try:
+                _, res = comment_affiliate_for_row(row, live=args.live, prefer_sheet=True)
+                results.append(res)
+            except Exception as e:
+                results.append({"job_id": row.get("job_id"), "error": str(e)[:500], "non_blocking": True})
+        print(json.dumps({"live": args.live, "processed": len(results), "results": results}, indent=2, ensure_ascii=False))
     if args.cmd == "format-sheet":
         ws = get_sheet()
         ensure_sheet_header(ws, apply_controls=True)
