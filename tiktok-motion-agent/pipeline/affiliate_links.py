@@ -20,7 +20,10 @@ AFFILIATE_LINK_COLUMNS = [
 ]
 
 AFFILIATE_LINKS_CSV = DATA_DIR / "affiliate_links.csv"
-AFFILIATE_SHEET_TITLE = os.environ.get("AFFILIATE_LINKS_SHEET_TITLE", "affiliate_links")
+
+
+def affiliate_sheet_title() -> str:
+    return os.environ.get("AFFILIATE_LINKS_SHEET_TITLE", "affiliate_links")
 
 
 def normalize_product_url(url: str) -> str:
@@ -74,11 +77,11 @@ def get_affiliate_sheet(create: bool = True):
         from .sheets import get_spreadsheet
         sh = get_spreadsheet()
         try:
-            return sh.worksheet(AFFILIATE_SHEET_TITLE)
+            return sh.worksheet(affiliate_sheet_title())
         except Exception:
             if not create:
                 raise
-            return sh.add_worksheet(title=AFFILIATE_SHEET_TITLE, rows=1000, cols=len(AFFILIATE_LINK_COLUMNS))
+            return sh.add_worksheet(title=affiliate_sheet_title(), rows=1000, cols=len(AFFILIATE_LINK_COLUMNS))
     except Exception as e:
         raise RuntimeError(f"affiliate sheet unavailable: {e}")
 
@@ -91,15 +94,34 @@ def ensure_affiliate_sheet_header(ws):
         ws.update(f"A1:{end_col}1", [AFFILIATE_LINK_COLUMNS])
 
 
+def _merge_affiliate_link_rows(primary: list[dict], secondary: list[dict]) -> list[dict]:
+    merged: dict[str, dict] = {}
+    for source_rows in (secondary, primary):
+        for raw in source_rows:
+            row = normalize_affiliate_link_row(raw)
+            key = row.get("product_key")
+            if not key:
+                continue
+            existing = merged.get(key, {})
+            combined = dict(existing)
+            for col in AFFILIATE_LINK_COLUMNS:
+                value = row.get(col, "")
+                if value or not combined.get(col):
+                    combined[col] = value
+            merged[key] = normalize_affiliate_link_row(combined)
+    return list(merged.values())
+
+
 def load_affiliate_links(prefer_sheet: bool = True) -> list[dict]:
+    local_rows = _read_local_affiliate_links()
     if prefer_sheet:
         try:
-            ws = get_affiliate_sheet(create=True)
-            ensure_affiliate_sheet_header(ws)
-            return [normalize_affiliate_link_row(r) for r in ws.get_all_records(default_blank="") if r.get("product_key") or r.get("tiktok_product_url")]
+            ws = get_affiliate_sheet(create=False)
+            sheet_rows = [normalize_affiliate_link_row(r) for r in ws.get_all_records(default_blank="") if r.get("product_key") or r.get("tiktok_product_url")]
+            return _merge_affiliate_link_rows(sheet_rows, local_rows)
         except Exception as e:
             print(f"affiliate sheet read skipped, falling back to local csv: {e}", file=sys.stderr)
-    return _read_local_affiliate_links()
+    return local_rows
 
 
 def find_affiliate_link(product_url: str, rows: list[dict] | None = None) -> dict | None:
@@ -182,17 +204,46 @@ def affiliate_state_for_row(row: dict, affiliate_rows: list[dict] | None = None)
 
 def facebook_object_id_from_url(url: str) -> str:
     url = (url or "").strip()
-    for pattern in [r"facebook\.com/(?:reel|watch)/([0-9]+)", r"fb\.watch/([^/?#]+)", r"/posts/([0-9_]+)", r"story_fbid=([0-9_]+)"]:
+    for pattern in [r"facebook\.com/(?:reel|watch)/([0-9]+)", r"facebook\.com/([0-9]+_[0-9]+)", r"fb\.watch/([^/?#]+)", r"/posts/([0-9_]+)", r"story_fbid=([0-9_]+)"]:
         m = re.search(pattern, url)
         if m:
             return m.group(1)
     return ""
 
 
+def instagram_shortcode_from_url(url: str) -> str:
+    m = re.search(r"instagram\.com/(?:reel|p|tv)/([^/?#]+)/?", (url or ""))
+    return m.group(1) if m else ""
+
+
 def instagram_media_id_from_url(url: str) -> str:
     # Instagram Graph comments require an IG media id, not the public shortcode.
-    # Store the public URL for traceability, but only comment automatically if an id
-    # is supplied separately later or Buffer/Meta exposes one.
+    # If an IG business account id is configured, resolve the public permalink by
+    # scanning recent media. Otherwise leave it retryable instead of marking hard
+    # failed.
+    shortcode = instagram_shortcode_from_url(url)
+    ig_user_id = os.environ.get("INSTAGRAM_BUSINESS_ACCOUNT_ID", "").strip()
+    token = os.environ.get("INSTAGRAM_GRAPH_ACCESS_TOKEN", "").strip() or os.environ.get("FACEBOOK_PAGE_ACCESS_TOKEN", "").strip()
+    if not shortcode or not ig_user_id or not token:
+        return ""
+    after = None
+    for _ in range(int(os.environ.get("INSTAGRAM_MEDIA_LOOKUP_PAGES", "5") or 5)):
+        params = {"fields": "id,permalink", "limit": 50, "access_token": token}
+        if after:
+            params["after"] = after
+        resp = requests.get(f"https://graph.facebook.com/v20.0/{ig_user_id}/media", params=params, timeout=45)
+        try:
+            payload = resp.json()
+        except Exception:
+            payload = {"raw": resp.text[:1000]}
+        if resp.status_code >= 400 or payload.get("error"):
+            raise RuntimeError(f"Instagram media lookup failed HTTP {resp.status_code}: {payload}")
+        for item in payload.get("data") or []:
+            if shortcode in (item.get("permalink") or ""):
+                return item.get("id") or ""
+        after = ((payload.get("paging") or {}).get("cursors") or {}).get("after")
+        if not after:
+            break
     return ""
 
 
@@ -226,7 +277,8 @@ def comment_affiliate_for_row(row: dict, live: bool = False, prefer_sheet: bool 
         updated["fb_comment_status"] = updated.get("fb_comment_status") or "PENDING_LINK"
         updated["ig_comment_status"] = updated.get("ig_comment_status") or "PENDING_LINK"
         updated["action_needed"] = aff["action_needed"]
-        log_row(updated)
+        if live:
+            log_row(updated)
         result["needs_affiliate_link"] = True
         return updated, result
 
@@ -250,20 +302,26 @@ def comment_affiliate_for_row(row: dict, live: bool = False, prefer_sheet: bool 
         if updated.get(status_field) == "COMMENTED":
             result["comments"].append({"service": service, "status": "COMMENTED", "reason": "already_done"})
             continue
-        object_id = id_fn(url)
-        if not object_id:
-            updated[status_field] = "FAILED"
-            updated[f"{service}_comment_error"] = "Cannot derive Meta object/media id from public URL"
-            result["comments"].append({"service": service, "status": "FAILED", "reason": updated[f"{service}_comment_error"], "url": url})
+        if not live or not truthy_env("AFFILIATE_COMMENT_ENABLED", False):
+            updated[status_field] = "READY_TO_COMMENT"
+            result["comments"].append({"service": service, "status": "READY_TO_COMMENT", "dry_run": True, "url": url, "message": message})
             continue
         if not token:
             updated[status_field] = "READY_TO_COMMENT"
             updated[f"{service}_comment_error"] = "Missing Meta access token env; posting flow is not blocked"
             result["comments"].append({"service": service, "status": "READY_TO_COMMENT", "reason": updated[f"{service}_comment_error"], "url": url})
             continue
-        if not live or not truthy_env("AFFILIATE_COMMENT_ENABLED", False):
+        try:
+            object_id = id_fn(url)
+        except Exception as e:
             updated[status_field] = "READY_TO_COMMENT"
-            result["comments"].append({"service": service, "status": "READY_TO_COMMENT", "dry_run": True, "url": url, "message": message})
+            updated[f"{service}_comment_error"] = str(e)[:500]
+            result["comments"].append({"service": service, "status": "READY_TO_COMMENT", "reason": str(e)[:500], "url": url})
+            continue
+        if not object_id:
+            updated[status_field] = "READY_TO_COMMENT"
+            updated[f"{service}_comment_error"] = "Cannot derive Meta object/media id yet; will retry"
+            result["comments"].append({"service": service, "status": "READY_TO_COMMENT", "reason": updated[f"{service}_comment_error"], "url": url})
             continue
         try:
             payload = _graph_post_comment(object_id, message, token)
@@ -277,7 +335,9 @@ def comment_affiliate_for_row(row: dict, live: bool = False, prefer_sheet: bool 
             updated[f"{service}_comment_error"] = str(e)[:500]
             result["comments"].append({"service": service, "status": "FAILED", "reason": str(e)[:500], "url": url})
 
-    if any(c.get("status") == "COMMENTED" for c in result["comments"]):
-        updated["affiliate_status"] = "COMMENTED"
-    log_row(updated)
+    # Keep affiliate_status as link-state only (MISSING/FOUND). Comment progress
+    # belongs in fb_comment_status / ig_comment_status so later checks do not
+    # overwrite a separate COMMENTED pseudo-state.
+    if live:
+        log_row(updated)
     return updated, result

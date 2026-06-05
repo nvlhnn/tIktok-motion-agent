@@ -297,7 +297,8 @@ def schedule_daily_uploads(dry_run: bool = True, live: bool = False, count: int 
     now_local = now_utc().astimezone(_local_tz())
     min_lead = dt.timedelta(minutes=int_env("TIKTOK_DAILY_SCHEDULE_MIN_LEAD_MINUTES", 15))
     times = [t for t in daily_schedule_times(count=count) if t["due_at"] > now_local + min_lead]
-    count = min(len(times), len(candidates), max(1, int_env("TIKTOK_DAILY_SCHEDULE_COUNT", len(times) or 4)))
+    requested_count = count if count is not None else int_env("TIKTOK_DAILY_SCHEDULE_COUNT", len(times) or 4)
+    count = min(len(times), len(candidates), max(1, requested_count))
     picked = candidates[:count]
     channel_ids = buffer_channel_ids(test=test_channel)
     today = now_utc().astimezone(_local_tz()).strftime("%Y-%m-%d")
