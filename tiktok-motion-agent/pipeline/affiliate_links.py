@@ -13,6 +13,7 @@ AFFILIATE_LINK_COLUMNS = [
     "product_key",
     "tiktok_product_url",
     "product_name",
+    "product_image_url",
     "shopee_affiliate_url",
     "created_at",
     "updated_at",
@@ -135,7 +136,7 @@ def find_affiliate_link(product_url: str, rows: list[dict] | None = None) -> dic
     return None
 
 
-def upsert_affiliate_link(product_url: str, shopee_affiliate_url: str = "", product_name: str = "", notes: str = "", prefer_sheet: bool = True) -> dict:
+def upsert_affiliate_link(product_url: str, shopee_affiliate_url: str = "", product_name: str = "", product_image_url: str = "", notes: str = "", prefer_sheet: bool = True) -> dict:
     now = indonesia_pretty_datetime(now_utc())
     key = product_key(product_url)
     if not key:
@@ -144,6 +145,7 @@ def upsert_affiliate_link(product_url: str, shopee_affiliate_url: str = "", prod
         "product_key": key,
         "tiktok_product_url": product_url,
         "product_name": product_name,
+        "product_image_url": product_image_url,
         "shopee_affiliate_url": shopee_affiliate_url,
         "updated_at": now,
         "notes": notes,

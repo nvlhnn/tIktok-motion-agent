@@ -104,14 +104,16 @@ def main():
         target = args.target
         product_url = target
         product_name = args.product_name
+        product_image_url = ""
         rows = load_run_rows(prefer_sheet=True)
         matched_row = next((r for r in rows if r.get("job_id") == target), None)
         if matched_row:
             product_url = matched_row.get("product_url", "")
             product_name = product_name or matched_row.get("product_title", "")
+            product_image_url = matched_row.get("product_image_url", "")
         elif not (target.startswith("http://") or target.startswith("https://")):
             raise SystemExit(f"Job id not found in sheet/CSV and target is not a URL: {target}")
-        print(json.dumps(upsert_affiliate_link(product_url, args.shopee_affiliate_url, product_name=product_name, notes=args.notes), indent=2, ensure_ascii=False))
+        print(json.dumps(upsert_affiliate_link(product_url, args.shopee_affiliate_url, product_name=product_name, product_image_url=product_image_url, notes=args.notes), indent=2, ensure_ascii=False))
     if args.cmd == "affiliate-comment-monitor":
         rows = [r for r in load_run_rows(prefer_sheet=True) if (r.get("status") or "").strip().upper() == "UPLOADED"]
         rows = [r for r in rows if (r.get("product_url") or "").strip() and ((r.get("facebook_post_url") or "").strip() or (r.get("instagram_post_url") or "").strip())]
