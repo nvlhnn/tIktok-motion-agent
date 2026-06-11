@@ -5,6 +5,9 @@ When Naufal says **go**, run the automation with minimal chat.
 ## Flow
 
 1. Prepare:
+
+If the cron/request assigns a worker, prefix every `motion_pipeline.py` command with `MOTION_WORKER_ID=<worker> MAX_ACTIVE_GENERATIONS=2`.
+
 ```bash
 /root/.openclaw/workspace/tiktok-motion-agent/.venv/bin/python /root/.openclaw/workspace/tiktok-motion-agent/motion_pipeline.py prepare
 ```

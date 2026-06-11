@@ -11,7 +11,8 @@ RUNS_CSV = DATA_DIR / "runs.csv"
 TIKTOK_LIST_CACHE_PATH = DATA_DIR / "tiktok_entries_cache.json"
 
 MODEST_TRYON_PROMPT = (
-    "Create a realistic modest Muslim-friendly fashion try-on image. The person must remain hijab-friendly and fully modest. "
+    "Create a realistic modest Muslim-friendly fashion try-on image using the first image as the master scene and identity reference. The person must remain hijab-friendly and fully modest. "
+    "Preserve the master image background exactly: same wall/door/interior, lighting direction, camera distance, crop, perspective, and overall scene. Do not use, borrow, blend, replace, or reinterpret the background from any product reference image. Product reference images are for garment details only, never for background, location, signage, props, stickers, storefronts, doors, windows, walls, floors, or lighting. "
     "Keep the hijab/head covering intact. The hijab or an added inner scarf/underscarf MUST cover the entire neck, collarbone, upper chest, and any skin between chin and shirt. "
     "ABSOLUTE REQUIREMENTS: zero visible neck skin, zero visible collarbone, zero visible upper chest, no open neckline, no V-neck/open collar gap, no cleavage, no exposed chest, no shorts, no bare legs, no exposed thighs, no bare shoulders, no bare upper arms, no exposed waist or back, no transparent/sheer clothing, no tight body-revealing fit. "
     "Do not alter the affiliated product itself: keep the product's original cut, sleeve length, neckline, silhouette, color, pattern, texture, and style as accurately as possible. "
@@ -53,6 +54,8 @@ COLUMNS = [
     "provider_work_id",
     "provider_result_url",
     "provider_status",
+    "worker_id",
+    "generation_slot",
     "figmawave_image_asset_url",
     "figmawave_video_asset_url",
     "delete_after",

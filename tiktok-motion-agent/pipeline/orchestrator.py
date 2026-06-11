@@ -14,7 +14,8 @@ from .config import (
     load_env, require_env,
 )
 from .utils import now_utc, iso, indonesia_pretty_datetime
-from .state import state_load, state_save, assert_no_active_generation
+from .state import state_load, state_save, assert_no_active_generation, current_worker_id
+from .locking import state_lock
 from .storage import normalize_provider_fields, log_row
 from .captions import build_tiktok_caption
 from .tiktok import (
@@ -46,6 +47,51 @@ from .providers.figmawave import (
 )
 
 
+def sync_job_record(state: dict, job_id: str, row: dict) -> None:
+    for job in state.get("jobs") or []:
+        if job.get("job_id") == job_id:
+            job["status"] = row.get("status", job.get("status", ""))
+            job["provider"] = row.get("provider", job.get("provider", ""))
+            job["worker_id"] = row.get("worker_id", job.get("worker_id", ""))
+            job["generation_slot"] = row.get("generation_slot", job.get("generation_slot", ""))
+            break
+
+
+def persist_prepared_job(job_id: str, info: dict, row: dict, *, write_log: bool = True) -> dict:
+    """Merge-save one prepared job without clobbering other workers' state."""
+    with state_lock():
+        state = state_load()
+        prepared = state.setdefault("prepared_jobs", {})
+        latest = dict(prepared.get(job_id) or {})
+        latest.update({k: v for k, v in (info or {}).items() if k != "row"})
+        latest["row"] = row
+        prepared[job_id] = latest
+        sync_job_record(state, job_id, row)
+        state_save(state)
+        if write_log:
+            log_row(row)
+        return latest
+
+
+def finish_prepared_job(job_id: str, info: dict, row: dict, product_video_id: str, motion_video_id: str) -> list[dict]:
+    """Mark a generation complete and remove it from prepared_jobs safely."""
+    source_cleanup = cleanup_supabase_generation_sources(job_id, info, row)
+    with state_lock():
+        state = state_load()
+        prepared = state.setdefault("prepared_jobs", {})
+        recent = state.setdefault("recent_video_ids", [])
+        for used_id in [product_video_id, motion_video_id]:
+            if used_id:
+                recent.append(used_id)
+        state["recent_video_ids"] = recent[-100:]
+        set_result_retention_deadline(state, job_id, row)
+        prepared.pop(job_id, None)
+        sync_job_record(state, job_id, row)
+        state_save(state)
+        log_row(row)
+    return source_cleanup
+
+
 def set_status_for_job(job_id: str, status: str, note: str = "") -> dict:
     status = (status or "").strip().upper()
     if status not in STATUS_VALUES:
@@ -60,6 +106,7 @@ def set_status_for_job(job_id: str, status: str, note: str = "") -> dict:
             row["error"] = note
         info["row"] = row
         state["prepared_jobs"][job_id] = info
+        sync_job_record(state, job_id, row)
         state_save(state)
     if row is None and RUNS_CSV.exists():
         with RUNS_CSV.open("r", newline="") as f:
@@ -206,7 +253,12 @@ def upload_final_result_video(result_path: Path, job_id: str, provider_name: str
     """
     storage_provider = (os.environ.get("RESULT_STORAGE_PROVIDER") or os.environ.get("FINAL_STORAGE_PROVIDER") or "hf").strip().lower()
     if storage_provider in {"hf", "huggingface", "hugging_face"}:
-        upload_path = prepare_hf_upload_video_720p(result_path, output_dir=result_path.parent)
+        # FigmaWave/Weavy outputs should be preserved exactly; do not downscale
+        # or re-encode provider MP4s before uploading to the durable result store.
+        if provider_name.strip().lower() in {"figmawave", "figma_wave", "figma-wave", "weavy"}:
+            upload_path = result_path
+        else:
+            upload_path = prepare_hf_upload_video_720p(result_path, output_dir=result_path.parent)
         return hf_upload_result_video(upload_path, job_id, provider=provider_name)
     if storage_provider in {"supabase", "sb"}:
         return supabase_upload(result_path, fallback_object)
@@ -241,25 +293,54 @@ def prepare(image_path: str | None = None):
     DOWNLOADS_DIR.mkdir(exist_ok=True)
     LOGS_DIR.mkdir(exist_ok=True)
     cleanup_old()
-    assert_no_active_generation()
+    worker_id = current_worker_id()
 
     src_image, job_id, delete_after, job_dir, row = create_job_context(image_path)
-    state = state_load()
+    row["worker_id"] = worker_id
+    row["generation_slot"] = worker_id
     try:
-        product_entry, picked_product_url, picked_product_title, picked_product_image_urls = pick_video_with_product(state)
-        product_video_id = product_entry["id"]
-        product_tiktok_url = tiktok_video_url(product_entry, product_entry.get("_profile_url"))
-        row["product_video_url"] = product_tiktok_url
-        row["product_url"] = picked_product_url
-        row["product_title"] = picked_product_title
-        row["caption"] = build_tiktok_caption(picked_product_title)
-        if not row["product_url"]:
-            raise RuntimeError("Selected TikTok product video has no extractable affiliate/product URL")
+        with state_lock():
+            assert_no_active_generation()
+            state = state_load()
+            product_entry, picked_product_url, picked_product_title, picked_product_image_urls = pick_video_with_product(state)
+            product_video_id = product_entry["id"]
+            product_tiktok_url = tiktok_video_url(product_entry, product_entry.get("_profile_url"))
+            row["product_video_url"] = product_tiktok_url
+            row["product_url"] = picked_product_url
+            row["product_title"] = picked_product_title
+            row["caption"] = build_tiktok_caption(picked_product_title)
+            if not row["product_url"]:
+                raise RuntimeError("Selected TikTok product video has no extractable affiliate/product URL")
 
-        motion_entry = pick_different_motion_video(state, product_video_id)
-        motion_video_id = motion_entry["id"]
-        motion_tiktok_url = tiktok_video_url(motion_entry, motion_entry.get("_profile_url"))
-        row["motion_tiktok_video_url"] = motion_tiktok_url
+            motion_entry = pick_different_motion_video(state, product_video_id)
+            motion_video_id = motion_entry["id"]
+            motion_tiktok_url = tiktok_video_url(motion_entry, motion_entry.get("_profile_url"))
+            row["motion_tiktok_video_url"] = motion_tiktok_url
+            row["status"] = "STARTED"
+            state.setdefault("jobs", []).append({
+                "job_id": job_id,
+                "created_at": row["created_at"],
+                "delete_after": delete_after,
+                "status": row["status"],
+                "worker_id": worker_id,
+                "generation_slot": worker_id,
+                "product_video_id": product_video_id,
+                "motion_video_id": motion_video_id,
+                "supabase_prefix": f"magnific/automation/{job_id}/" if use_supabase_inputs else "",
+            })
+            prepared = state.setdefault("prepared_jobs", {})
+            prepared[job_id] = {
+                "row": row,
+                "worker_id": worker_id,
+                "generation_slot": worker_id,
+                "product_video_id": product_video_id,
+                "motion_video_id": motion_video_id,
+                "video_id": motion_video_id,
+                "job_dir": str(job_dir),
+                "master_path": str(src_image),
+            }
+            state_save(state)
+            log_row(row)
 
         motion_local_video, motion_tikwm_data, _, _ = download_tiktok_video(motion_video_id, motion_tiktok_url, job_dir)
 
@@ -292,38 +373,44 @@ def prepare(image_path: str | None = None):
         validation_note = "product_image_from_pdp"
         row["status"] = "NEEDS_REFERENCE_IMAGE"
 
-        state.setdefault("jobs", []).append({
-            "job_id": job_id,
-            "created_at": row["created_at"],
-            "delete_after": delete_after,
-            "supabase_prefix": f"magnific/automation/{job_id}/" if use_supabase_inputs else "",
-        })
-        prepared = state.setdefault("prepared_jobs", {})
         prompt_path = job_dir / "modest_tryon_prompt.txt"
         prompt_path.write_text(MODEST_TRYON_PROMPT + "\n", encoding="utf-8")
 
-        prepared[job_id] = {
-            "row": row,
-            "product_video_id": product_video_id,
-            "motion_video_id": motion_video_id,
-            "video_id": motion_video_id,
-            "job_dir": str(job_dir),
-            "master_path": str(src_image),
-            "product_image_path": str(product_image_path),
-            "product_image_paths": product_image_paths,
-            "product_image_urls": product_image_urls,
-            "supabase_product_image_object": product_image_obj,
-            "supabase_product_image_url": supabase_product_image_url,
-            "supabase_product_image_objects": supabase_product_image_objects,
-            "supabase_product_image_urls": supabase_product_image_urls,
-            "motion_supabase_video_object": motion_video_obj,
-            "motion_local_video_path": str(motion_local_video),
-            "modest_tryon_prompt": MODEST_TRYON_PROMPT,
-            "modest_tryon_prompt_path": str(prompt_path),
-            "validation_note": validation_note,
-        }
-        state_save(state)
-        log_row(row)
+        row["status"] = "NEEDS_REFERENCE_IMAGE"
+        with state_lock():
+            state = state_load()
+            prepared = state.setdefault("prepared_jobs", {})
+            info = dict(prepared.get(job_id) or {})
+            info.update({
+                "row": row,
+                "worker_id": worker_id,
+                "generation_slot": worker_id,
+                "product_video_id": product_video_id,
+                "motion_video_id": motion_video_id,
+                "video_id": motion_video_id,
+                "job_dir": str(job_dir),
+                "master_path": str(src_image),
+                "product_image_path": str(product_image_path),
+                "product_image_paths": product_image_paths,
+                "product_image_urls": product_image_urls,
+                "supabase_product_image_object": product_image_obj,
+                "supabase_product_image_url": supabase_product_image_url,
+                "supabase_product_image_objects": supabase_product_image_objects,
+                "supabase_product_image_urls": supabase_product_image_urls,
+                "motion_supabase_video_object": motion_video_obj,
+                "motion_local_video_path": str(motion_local_video),
+                "modest_tryon_prompt": MODEST_TRYON_PROMPT,
+                "modest_tryon_prompt_path": str(prompt_path),
+                "validation_note": validation_note,
+            })
+            prepared[job_id] = info
+            for job in state.get("jobs") or []:
+                if job.get("job_id") == job_id:
+                    job["status"] = row["status"]
+                    job["worker_id"] = worker_id
+                    break
+            state_save(state)
+            log_row(row)
         # Keep stdout intentionally tiny; details are already in state + Sheet.
         payload = {
             "job_id": job_id,
@@ -341,7 +428,16 @@ def prepare(image_path: str | None = None):
         row["status"] = "FAILED"
         row["error"] = str(e)
         try:
-            log_row(row)
+            with state_lock():
+                state = state_load()
+                prepared = state.setdefault("prepared_jobs", {})
+                info = dict(prepared.get(job_id) or {})
+                if info:
+                    info["row"] = row
+                    prepared[job_id] = info
+                sync_job_record(state, job_id, row)
+                state_save(state)
+                log_row(row)
         except Exception as e2:
             print(f"sheet/log failed too: {e2}", file=sys.stderr)
         print(json.dumps(row, indent=2, ensure_ascii=False), file=sys.stderr)
@@ -354,13 +450,23 @@ def complete(job_id: str, generated_reference_path: str, provider: str | None = 
     ref_path = Path(generated_reference_path).expanduser().resolve()
     if not ref_path.exists():
         raise RuntimeError(f"Generated reference image not found: {ref_path}")
-    state = state_load()
-    assert_no_active_generation(exclude_job_id=job_id)
-    prepared = state.get("prepared_jobs", {})
-    info = prepared.get(job_id)
-    if not info:
-        raise RuntimeError(f"Prepared job not found: {job_id}")
-    row = normalize_provider_fields(info.get("row", {}))
+    worker_id = current_worker_id()
+    with state_lock():
+        state = state_load()
+        assert_no_active_generation(exclude_job_id=job_id)
+        prepared = state.get("prepared_jobs", {})
+        info = prepared.get(job_id)
+        if not info:
+            raise RuntimeError(f"Prepared job not found: {job_id}")
+        row = normalize_provider_fields(info.get("row", {}))
+        row["worker_id"] = row.get("worker_id") or info.get("worker_id") or worker_id
+        row["generation_slot"] = row.get("generation_slot") or info.get("generation_slot") or row["worker_id"]
+        info["worker_id"] = row["worker_id"]
+        info["generation_slot"] = row["generation_slot"]
+        info["row"] = row
+        prepared[job_id] = info
+        sync_job_record(state, job_id, row)
+        state_save(state)
     job_dir = Path(info["job_dir"])
     motion_video_id = info.get("motion_video_id") or info.get("video_id")
     product_video_id = info.get("product_video_id") or info.get("capture_video_id")
@@ -378,9 +484,7 @@ def complete(job_id: str, generated_reference_path: str, provider: str | None = 
         row["error"] = ""
         row["provider"] = provider_name
         row["input_image_validation"] = json.dumps(reference_validation, ensure_ascii=False)
-        prepared[job_id] = {**info, "row": row}
-        state_save(state)
-        log_row(row)
+        info = persist_prepared_job(job_id, info, row)
 
         if provider_name == "magnific":
             gen_ref_obj = f"magnific/automation/{job_id}/generated_reference{ref_path.suffix.lower() or '.png'}"
@@ -404,9 +508,7 @@ def complete(job_id: str, generated_reference_path: str, provider: str | None = 
             row["status"] = "PROCESSING"
             row["provider_status"] = "PROCESSING"
             row["error"] = ""
-            prepared[job_id] = {**info, "row": row}
-            state_save(state)
-            log_row(row)
+            info = persist_prepared_job(job_id, info, row)
 
             magnific_started_at = time.time()
             while True:
@@ -417,8 +519,7 @@ def complete(job_id: str, generated_reference_path: str, provider: str | None = 
                 d = status.get("data") or status
                 state_value = d.get("status")
                 row["provider_status"] = state_value or ""
-                prepared[job_id] = {**info, "row": row}
-                state_save(state)
+                info = persist_prepared_job(job_id, info, row, write_log=False)
                 if state_value == "COMPLETED":
                     generated = d.get("generated") or []
                     if not generated:
@@ -438,9 +539,7 @@ def complete(job_id: str, generated_reference_path: str, provider: str | None = 
             row["provider_auth_label"] = selected_auth.get("label", "")
             recipe_id = figmawave_recipe_id(selected_auth)
             row["provider_status"] = f"quota {quota.get('credits')} credits (~{quota.get('estimated_generations')} generations), recipe {recipe_id}; uploading assets"
-            prepared[job_id] = {**info, "row": row}
-            state_save(state)
-            log_row(row)
+            info = persist_prepared_job(job_id, info, row)
 
             batch_id = row.get("provider_task_id")
             if not batch_id:
@@ -454,9 +553,7 @@ def complete(job_id: str, generated_reference_path: str, provider: str | None = 
                 row["figmawave_image_asset_url"] = image_asset.get("url", "")
                 row["figmawave_video_asset_url"] = video_asset.get("url", "")
                 row["provider_status"] = "assets uploaded; executing recipe"
-                prepared[job_id] = {**info, "row": row}
-                state_save(state)
-                log_row(row)
+                info = persist_prepared_job(job_id, info, row)
 
                 started = figmawave_execute(
                     selected_auth,
@@ -475,9 +572,7 @@ def complete(job_id: str, generated_reference_path: str, provider: str | None = 
             row["status"] = "PROCESSING"
             row["provider_status"] = "PROCESSING"
             row["error"] = ""
-            prepared[job_id] = {**info, "row": row}
-            state_save(state)
-            log_row(row)
+            info = persist_prepared_job(job_id, info, row)
 
             result_url, provider_status = figmawave_poll_result(
                 selected_auth,
@@ -527,9 +622,7 @@ def complete(job_id: str, generated_reference_path: str, provider: str | None = 
             row["status"] = "PROCESSING"
             row["provider_status"] = "PROCESSING"
             row["error"] = ""
-            prepared[job_id] = {**info, "row": row}
-            state_save(state)
-            log_row(row)
+            info = persist_prepared_job(job_id, info, row)
 
             started_at = time.time()
             work_id = row.get("provider_work_id") or row.get("dreamface_work_id")
@@ -541,28 +634,22 @@ def complete(job_id: str, generated_reference_path: str, provider: str | None = 
                 if item:
                     row["provider_status"] = str(item.get("web_work_status", ""))
                     if item.get("animate_id") and item.get("animate_id") != animate_id and os.environ.get("DREAMFACE_RECENT_SIZE", "1") != "1":
-                        prepared[job_id] = {**info, "row": row}
-                        state_save(state)
-                        log_row(row)
+                        info = persist_prepared_job(job_id, info, row)
                         continue
                     work_id = item.get("id") or work_id
                     row["provider_work_id"] = work_id or ""
-                    prepared[job_id] = {**info, "row": row}
-                    state_save(state)
-                    log_row(row)
+                    info = persist_prepared_job(job_id, info, row)
                     if item.get("web_work_status") not in {200, "200"}:
                         continue
 
                 if not work_id:
-                    prepared[job_id] = {**info, "row": row}
-                    state_save(state)
+                    info = persist_prepared_job(job_id, info, row, write_log=False)
                     continue
 
                 detail = dreamface_work_detail(selected_auth, work_id)
                 work_url = detail.get("nw_work_url") or detail.get("work_url")
                 if not work_url:
-                    prepared[job_id] = {**info, "row": row}
-                    state_save(state)
+                    info = persist_prepared_job(job_id, info, row, write_log=False)
                     continue
                 row["provider_result_url"] = work_url
                 result_path = job_dir / f"result_dreamface_{work_id}.mp4"
@@ -572,16 +659,7 @@ def complete(job_id: str, generated_reference_path: str, provider: str | None = 
                 row["status"] = "COMPLETED"
                 break
 
-        recent = state.setdefault("recent_video_ids", [])
-        for used_id in [product_video_id, motion_video_id]:
-            if used_id:
-                recent.append(used_id)
-        state["recent_video_ids"] = recent[-100:]
-        set_result_retention_deadline(state, job_id, row)
-        source_cleanup = cleanup_supabase_generation_sources(job_id, info, row)
-        prepared.pop(job_id, None)
-        state_save(state)
-        log_row(row)
+        source_cleanup = finish_prepared_job(job_id, info, row, product_video_id, motion_video_id)
         print(json.dumps({
             "status": "done",
             "job_id": job_id,
@@ -594,8 +672,7 @@ def complete(job_id: str, generated_reference_path: str, provider: str | None = 
     except TimeoutError as e:
         row["status"] = "TIMEOUT"
         row["error"] = str(e)
-        prepared[job_id] = {**info, "row": row}
-        state_save(state)
+        info = persist_prepared_job(job_id, info, row, write_log=False)
         try:
             log_row(row)
         except Exception as e2:
@@ -610,8 +687,7 @@ def complete(job_id: str, generated_reference_path: str, provider: str | None = 
         else:
             row["status"] = "FAILED"
         row["error"] = str(e)
-        prepared[job_id] = {**info, "row": row}
-        state_save(state)
+        info = persist_prepared_job(job_id, info, row, write_log=False)
         try:
             log_row(row)
         except Exception as e2:

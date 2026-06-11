@@ -129,9 +129,16 @@ def in_upload_slot(now: dt.datetime | None = None, window_minutes: int | None = 
 
 def upload_candidates(rows: list[dict]) -> list[dict]:
     required_status = os.environ.get("TIKTOK_UPLOAD_REQUIRED_STATUS", "READY_TO_UPLOAD").strip().upper()
+    excluded_providers = {
+        item.strip().lower()
+        for item in os.environ.get("TIKTOK_UPLOAD_EXCLUDED_PROVIDERS", "figmawave").split(",")
+        if item.strip()
+    }
     candidates = []
     for row in rows:
         if (row.get("status") or "").strip().upper() != required_status:
+            continue
+        if (row.get("provider") or row.get("video_provider") or "").strip().lower() in excluded_providers:
             continue
         if not (row.get("result_supabase_url") or "").strip():
             continue

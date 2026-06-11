@@ -1,8 +1,23 @@
 import csv
 import json
+import os
 from pathlib import Path
 
 from .config import STATE_PATH, DATA_DIR, RUNS_CSV, ACTIVE_STATUSES
+
+
+GENERATION_ACTIVE_STATUSES = set(ACTIVE_STATUSES) | {"STARTED", "NEEDS_REFERENCE_IMAGE"}
+
+
+def current_worker_id() -> str:
+    return (os.environ.get("MOTION_WORKER_ID") or os.environ.get("WORKER_ID") or "default").strip() or "default"
+
+
+def max_active_generations() -> int:
+    try:
+        return max(1, int(os.environ.get("MAX_ACTIVE_GENERATIONS", "1")))
+    except Exception:
+        return 1
 
 
 def state_load():
@@ -16,87 +31,140 @@ def state_save(state):
     STATE_PATH.write_text(json.dumps(state, indent=2, ensure_ascii=False) + "\n")
 
 
-def active_generation_from_state(state: dict, exclude_job_id: str | None = None) -> dict | None:
-    """Return an active unfinished generation, if any.
+def active_generations_from_state(state: dict, exclude_job_id: str | None = None) -> list[dict]:
+    """Return active unfinished generations from state.
 
     The local state file is the source of truth for in-flight video-provider work.
-    Waiting-for-reference jobs are intentionally not considered running; only
-    queued/submitted/processing provider jobs block a new generation.
+    For parallel workers, waiting-for-reference jobs also count as active because
+    an agent may be between prepare -> image_generate -> complete.
     """
+    active = []
+    seen_job_ids = set()
     for job_id, info in (state.get("prepared_jobs") or {}).items():
         if exclude_job_id and job_id == exclude_job_id:
             continue
         row = info.get("row") or {}
         status = row.get("status") or ""
-        if status in ACTIVE_STATUSES:
-            return {
+        if status in GENERATION_ACTIVE_STATUSES:
+            seen_job_ids.add(job_id)
+            active.append({
                 "job_id": job_id,
                 "status": status,
                 "created_at": row.get("created_at", ""),
                 "provider": row.get("provider") or row.get("video_provider") or ("magnific" if row.get("magnific_task_id") else ""),
-            }
+                "worker_id": row.get("worker_id") or info.get("worker_id") or "",
+            })
 
     # Fallback for older state shapes / interrupted writes.
     for job in state.get("jobs") or []:
         job_id = job.get("job_id")
         if exclude_job_id and job_id == exclude_job_id:
             continue
+        if job_id and job_id in seen_job_ids:
+            continue
         status = job.get("status")
-        if status in ACTIVE_STATUSES:
-            return {
+        if status in GENERATION_ACTIVE_STATUSES:
+            active.append({
                 "job_id": job_id or "",
                 "status": status,
                 "created_at": job.get("created_at", ""),
                 "provider": job.get("provider") or job.get("video_provider", ""),
-            }
-    return None
+                "worker_id": job.get("worker_id", ""),
+            })
+    return active
 
 
-def active_generation_from_csv(exclude_job_id: str | None = None) -> dict | None:
+def active_generation_from_state(state: dict, exclude_job_id: str | None = None) -> dict | None:
+    active = active_generations_from_state(state, exclude_job_id=exclude_job_id)
+    return active[0] if active else None
+
+
+def active_generations_from_csv(exclude_job_id: str | None = None) -> list[dict]:
     if not RUNS_CSV.exists():
-        return None
+        return []
     try:
         with RUNS_CSV.open("r", newline="") as f:
             rows = list(csv.DictReader(f))
     except Exception:
-        return None
+        return []
+    active = []
     for row in reversed(rows):
         job_id = row.get("job_id")
         if exclude_job_id and job_id == exclude_job_id:
             continue
         status = row.get("status") or ""
-        if status in ACTIVE_STATUSES:
-            return {
+        if status in GENERATION_ACTIVE_STATUSES:
+            active.append({
                 "job_id": job_id or "",
                 "status": status,
                 "created_at": row.get("created_at", ""),
                 "provider": row.get("provider") or row.get("video_provider") or ("magnific" if row.get("magnific_task_id") else ""),
-            }
-    return None
+                "worker_id": row.get("worker_id", ""),
+            })
+    return active
+
+
+def active_generation_from_csv(exclude_job_id: str | None = None) -> dict | None:
+    active = active_generations_from_csv(exclude_job_id=exclude_job_id)
+    return active[0] if active else None
+
+
+def find_active_generations(exclude_job_id: str | None = None) -> list[dict]:
+    state_active = active_generations_from_state(state_load(), exclude_job_id=exclude_job_id)
+    if state_active:
+        return state_active
+    return active_generations_from_csv(exclude_job_id=exclude_job_id)
 
 
 def find_active_generation(exclude_job_id: str | None = None) -> dict | None:
-    state_active = active_generation_from_state(state_load(), exclude_job_id=exclude_job_id)
-    if state_active:
-        return state_active
-    return active_generation_from_csv(exclude_job_id=exclude_job_id)
+    active = find_active_generations(exclude_job_id=exclude_job_id)
+    return active[0] if active else None
 
 
-def assert_no_active_generation(exclude_job_id: str | None = None):
-    active = find_active_generation(exclude_job_id=exclude_job_id)
-    if not active:
+def assert_generation_slot_available(exclude_job_id: str | None = None, worker_id: str | None = None):
+    worker_id = worker_id or current_worker_id()
+    active = find_active_generations(exclude_job_id=exclude_job_id)
+    same_worker = [item for item in active if (item.get("worker_id") or "default") == worker_id]
+    if same_worker:
+        item = same_worker[0]
+        raise RuntimeError(
+            json.dumps(
+                {
+                    "ok": False,
+                    "code": "WORKER_GENERATION_ALREADY_RUNNING",
+                    "message": "This motion worker already has an unfinished generation.",
+                    "worker_id": worker_id,
+                    "active_job_id": item.get("job_id", ""),
+                    "active_status": item.get("status", ""),
+                    "active_provider": item.get("provider", ""),
+                    "active_created_at": item.get("created_at", ""),
+                },
+                ensure_ascii=False,
+            )
+        )
+    max_active = max_active_generations()
+    if len(active) < max_active:
         return
+    item = active[0]
     raise RuntimeError(
         json.dumps(
             {
                 "ok": False,
-                "code": "GENERATION_ALREADY_RUNNING",
-                "message": "A video generation is already running. Please wait until it finishes.",
-                "active_job_id": active.get("job_id", ""),
-                "active_status": active.get("status", ""),
-                "active_provider": active.get("provider", ""),
-                "active_created_at": active.get("created_at", ""),
+                "code": "MAX_ACTIVE_GENERATIONS_REACHED",
+                "message": "Maximum active video generations reached. Please wait until one finishes.",
+                "max_active_generations": max_active,
+                "active_count": len(active),
+                "active_job_id": item.get("job_id", ""),
+                "active_status": item.get("status", ""),
+                "active_provider": item.get("provider", ""),
+                "active_created_at": item.get("created_at", ""),
+                "active_jobs": active[:10],
             },
             ensure_ascii=False,
         )
     )
+
+
+def assert_no_active_generation(exclude_job_id: str | None = None):
+    """Backward-compatible guard name, now worker/max-active aware."""
+    assert_generation_slot_available(exclude_job_id=exclude_job_id)

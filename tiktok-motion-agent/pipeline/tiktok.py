@@ -138,6 +138,23 @@ def banned_motion_video_ids(state: dict | None = None) -> set[str]:
     return banned
 
 
+def product_id_from_url(url: str) -> str:
+    m = re.search(r"/view/product/(\d+)", url or "")
+    return m.group(1) if m else ""
+
+
+def banned_product_ids(state: dict | None = None) -> set[str]:
+    banned = set((state or {}).get("banned_product_ids") or [])
+    ban_file = DATA_DIR / "banned_product_ids.txt"
+    if ban_file.exists():
+        for line in ban_file.read_text(encoding="utf-8").splitlines():
+            value = line.strip()
+            if not value or value.startswith("#"):
+                continue
+            banned.add(product_id_from_url(value) or value)
+    return banned
+
+
 def recent_motion_video_ids_from_runs(limit: int) -> set[str]:
     if limit <= 0 or not RUNS_CSV.exists():
         return set()
@@ -201,6 +218,7 @@ def pick_different_motion_video(state, excluded_video_id: str):
 
 def pick_video_with_product(state):
     candidates = product_video_candidates(state)
+    banned_products = banned_product_ids(state)
     product_cache = state.setdefault("product_cache", {})
     max_checks = int(os.environ.get("PRODUCT_PICK_MAX_CHECKS", "30"))
     checked = 0
@@ -230,6 +248,9 @@ def pick_video_with_product(state):
                 "checked_at": iso(now_utc()),
             }
             dirty = True
+        product_id = product_id_from_url(product_url)
+        if product_id and product_id in banned_products:
+            continue
         if product_url or product_title:
             if dirty:
                 state_save(state)
