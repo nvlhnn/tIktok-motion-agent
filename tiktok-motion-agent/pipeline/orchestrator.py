@@ -534,7 +534,11 @@ def complete(job_id: str, generated_reference_path: str, provider: str | None = 
                 if state_value in {"FAILED", "ERROR", "CANCELED", "CANCELLED"}:
                     raise RuntimeError(f"Magnific ended with {state_value}: {status}")
         elif provider_name == "figmawave":
-            auth_label = row.get("provider_auth_label")
+            auth_label = (
+                row.get("provider_auth_label")
+                or os.environ.get("FIGMAWAVE_AUTH_LABEL", "").strip()
+                or os.environ.get("VIDEO_PROVIDER_AUTH_LABEL", "").strip()
+            )
             selected_auth, quota = select_figmawave_auth(auth_label or None)
             row["provider_auth_label"] = selected_auth.get("label", "")
             recipe_id = figmawave_recipe_id(selected_auth)
