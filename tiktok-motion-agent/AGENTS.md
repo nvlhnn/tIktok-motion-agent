@@ -41,6 +41,7 @@ If the cron/request assigns a worker, prefix every `motion_pipeline.py` command 
 - If `product_image_paths` has one entry, use `[master_path, product_image_paths[0]]`.
 - Only if `product_image_paths` is absent/empty, fall back to `[master_path, product_image_path]`.
 - Do not silently drop `product_reference_2.jpg` when it exists.
+- The generated image MUST show exactly one person only. Product reference images are garment-detail references only; ignore their human models as subjects. Never generate two people, side-by-side duplicates, before/after comparison, collage, mirror duplicate, ghost duplicate, extra model, extra face/body, mannequin, or poster person.
 - model: `openai/gpt-image-2`
 - size: `2160x3840`
 - quality: `high`
