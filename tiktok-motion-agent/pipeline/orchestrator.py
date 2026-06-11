@@ -472,11 +472,11 @@ def complete(job_id: str, generated_reference_path: str, provider: str | None = 
     product_video_id = info.get("product_video_id") or info.get("capture_video_id")
     provider_name = selected_video_provider(provider)
     if provider_name == "figmawave" and provider is None:
+        env_auth_label = os.environ.get("FIGMAWAVE_AUTH_LABEL", "").strip() or os.environ.get("VIDEO_PROVIDER_AUTH_LABEL", "").strip()
         try:
-            select_figmawave_auth(row.get("provider_auth_label") or None)
+            select_figmawave_auth(row.get("provider_auth_label") or env_auth_label or None)
         except Exception as e:
-            provider_name = "dreamface"
-            row["provider_status"] = f"FigmaWave unavailable, falling back to DreamFace: {e}"
+            raise RuntimeError(f"FigmaWave unavailable; refusing DreamFace fallback for FigmaWave job: {e}") from e
     try:
         reference_validation = validate_generated_reference_image(ref_path)
         row["action_needed"] = "Generated reference validated before video submission"
