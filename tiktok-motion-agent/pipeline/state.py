@@ -1,4 +1,5 @@
 import csv
+import datetime as dt
 import json
 import os
 from pathlib import Path
@@ -7,6 +8,7 @@ from .config import STATE_PATH, DATA_DIR, RUNS_CSV, ACTIVE_STATUSES
 
 
 GENERATION_ACTIVE_STATUSES = set(ACTIVE_STATUSES) | {"STARTED", "NEEDS_REFERENCE_IMAGE"}
+PRE_PROVIDER_ACTIVE_STATUSES = {"STARTED", "NEEDS_REFERENCE_IMAGE"}
 
 
 def current_worker_id() -> str:
@@ -18,6 +20,46 @@ def max_active_generations() -> int:
         return max(1, int(os.environ.get("MAX_ACTIVE_GENERATIONS", "1")))
     except Exception:
         return 1
+
+
+def pre_provider_active_ttl_seconds() -> int:
+    """How long prepare/ref-generation states can block a worker.
+
+    Isolated cron agents can exit after prepare/ref review without reaching a
+    terminal status. Provider states still block normally, but pre-provider
+    states expire so a stopped agent does not make the worker uncontrollable.
+    """
+    try:
+        return max(60, int(os.environ.get("PRE_PROVIDER_ACTIVE_TTL_SECONDS", "2700")))
+    except Exception:
+        return 2700
+
+
+def job_age_seconds(job_id: str | None) -> float | None:
+    if not job_id or len(job_id) < 14:
+        return None
+    try:
+        created = dt.datetime.strptime(job_id[:14], "%Y%m%d%H%M%S").replace(tzinfo=dt.timezone.utc)
+    except Exception:
+        return None
+    return (dt.datetime.now(dt.timezone.utc) - created).total_seconds()
+
+
+def active_item(job_id: str | None, status: str | None, created_at: str = "", provider: str = "", worker_id: str = "") -> dict | None:
+    status = status or ""
+    if status not in GENERATION_ACTIVE_STATUSES:
+        return None
+    age = job_age_seconds(job_id)
+    if status in PRE_PROVIDER_ACTIVE_STATUSES and age is not None and age > pre_provider_active_ttl_seconds():
+        return None
+    return {
+        "job_id": job_id or "",
+        "status": status,
+        "created_at": created_at,
+        "provider": provider,
+        "worker_id": worker_id,
+        "age_seconds": int(age) if age is not None else None,
+    }
 
 
 def state_load():
@@ -45,15 +87,16 @@ def active_generations_from_state(state: dict, exclude_job_id: str | None = None
             continue
         row = info.get("row") or {}
         status = row.get("status") or ""
-        if status in GENERATION_ACTIVE_STATUSES:
+        item = active_item(
+            job_id,
+            status,
+            created_at=row.get("created_at", ""),
+            provider=row.get("provider") or row.get("video_provider") or ("magnific" if row.get("magnific_task_id") else ""),
+            worker_id=row.get("worker_id") or info.get("worker_id") or "",
+        )
+        if item:
             seen_job_ids.add(job_id)
-            active.append({
-                "job_id": job_id,
-                "status": status,
-                "created_at": row.get("created_at", ""),
-                "provider": row.get("provider") or row.get("video_provider") or ("magnific" if row.get("magnific_task_id") else ""),
-                "worker_id": row.get("worker_id") or info.get("worker_id") or "",
-            })
+            active.append(item)
 
     # Fallback for older state shapes / interrupted writes.
     for job in state.get("jobs") or []:
@@ -63,14 +106,15 @@ def active_generations_from_state(state: dict, exclude_job_id: str | None = None
         if job_id and job_id in seen_job_ids:
             continue
         status = job.get("status")
-        if status in GENERATION_ACTIVE_STATUSES:
-            active.append({
-                "job_id": job_id or "",
-                "status": status,
-                "created_at": job.get("created_at", ""),
-                "provider": job.get("provider") or job.get("video_provider", ""),
-                "worker_id": job.get("worker_id", ""),
-            })
+        item = active_item(
+            job_id,
+            status,
+            created_at=job.get("created_at", ""),
+            provider=job.get("provider") or job.get("video_provider", ""),
+            worker_id=job.get("worker_id", ""),
+        )
+        if item:
+            active.append(item)
     return active
 
 
@@ -88,19 +132,25 @@ def active_generations_from_csv(exclude_job_id: str | None = None) -> list[dict]
     except Exception:
         return []
     active = []
+    seen_job_ids = set()
     for row in reversed(rows):
         job_id = row.get("job_id")
         if exclude_job_id and job_id == exclude_job_id:
             continue
+        if job_id and job_id in seen_job_ids:
+            continue
+        if job_id:
+            seen_job_ids.add(job_id)
         status = row.get("status") or ""
-        if status in GENERATION_ACTIVE_STATUSES:
-            active.append({
-                "job_id": job_id or "",
-                "status": status,
-                "created_at": row.get("created_at", ""),
-                "provider": row.get("provider") or row.get("video_provider") or ("magnific" if row.get("magnific_task_id") else ""),
-                "worker_id": row.get("worker_id", ""),
-            })
+        item = active_item(
+            job_id,
+            status,
+            created_at=row.get("created_at", ""),
+            provider=row.get("provider") or row.get("video_provider") or ("magnific" if row.get("magnific_task_id") else ""),
+            worker_id=row.get("worker_id", ""),
+        )
+        if item:
+            active.append(item)
     return active
 
 
