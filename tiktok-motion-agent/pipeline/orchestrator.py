@@ -39,6 +39,11 @@ from .providers.dreamface import (
     dreamface_recent_creation, dreamface_work_detail,
     max_dreamface_wait_seconds, dreamface_poll_interval_seconds,
 )
+from .providers.figmawave import (
+    select_figmawave_auth,
+    figmawave_upload_asset, figmawave_execute, figmawave_poll_result,
+    figmawave_recipe_id, figmawave_poll_interval_seconds,
+)
 
 
 def set_status_for_job(job_id: str, status: str, note: str = "") -> dict:
@@ -360,6 +365,12 @@ def complete(job_id: str, generated_reference_path: str, provider: str | None = 
     motion_video_id = info.get("motion_video_id") or info.get("video_id")
     product_video_id = info.get("product_video_id") or info.get("capture_video_id")
     provider_name = selected_video_provider(provider)
+    if provider_name == "figmawave" and provider is None:
+        try:
+            select_figmawave_auth(row.get("provider_auth_label") or None)
+        except Exception as e:
+            provider_name = "dreamface"
+            row["provider_status"] = f"FigmaWave unavailable, falling back to DreamFace: {e}"
     try:
         reference_validation = validate_generated_reference_image(ref_path)
         row["action_needed"] = "Generated reference validated before video submission"
@@ -421,6 +432,65 @@ def complete(job_id: str, generated_reference_path: str, provider: str | None = 
                     break
                 if state_value in {"FAILED", "ERROR", "CANCELED", "CANCELLED"}:
                     raise RuntimeError(f"Magnific ended with {state_value}: {status}")
+        elif provider_name == "figmawave":
+            auth_label = row.get("provider_auth_label")
+            selected_auth, quota = select_figmawave_auth(auth_label or None)
+            row["provider_auth_label"] = selected_auth.get("label", "")
+            recipe_id = figmawave_recipe_id(selected_auth)
+            row["provider_status"] = f"quota {quota.get('credits')} credits (~{quota.get('estimated_generations')} generations), recipe {recipe_id}; uploading assets"
+            prepared[job_id] = {**info, "row": row}
+            state_save(state)
+            log_row(row)
+
+            batch_id = row.get("provider_task_id")
+            if not batch_id:
+                motion_local_path = info.get("motion_local_video_path")
+                if not motion_local_path or not Path(motion_local_path).exists():
+                    motion_local_path = str(job_dir / "motion_source.mp4")
+                    download_url(row["motion_supabase_video_url"], Path(motion_local_path))
+                image_asset = figmawave_upload_asset(selected_auth, ref_path, recipe_id=recipe_id)
+                video_asset = figmawave_upload_asset(selected_auth, motion_local_path, recipe_id=recipe_id)
+                row["input_image_url"] = image_asset.get("url", row.get("input_image_url", ""))
+                row["figmawave_image_asset_url"] = image_asset.get("url", "")
+                row["figmawave_video_asset_url"] = video_asset.get("url", "")
+                row["provider_status"] = "assets uploaded; executing recipe"
+                prepared[job_id] = {**info, "row": row}
+                state_save(state)
+                log_row(row)
+
+                started = figmawave_execute(
+                    selected_auth,
+                    image_asset,
+                    video_asset,
+                    prompt=os.environ.get("FIGMAWAVE_PROMPT", DEFAULT_PROMPT),
+                    recipe_id=recipe_id,
+                )
+                batch_id = started.get("batchId")
+                if not batch_id:
+                    raise RuntimeError(f"No batchId from FigmaWave execute: {started}")
+                runs = started.get("recipeRuns") or []
+                row["provider_task_id"] = batch_id
+                row["provider_work_id"] = runs[0].get("id", "") if runs else ""
+                row["provider_result_url"] = ""
+            row["status"] = "PROCESSING"
+            row["provider_status"] = "PROCESSING"
+            row["error"] = ""
+            prepared[job_id] = {**info, "row": row}
+            state_save(state)
+            log_row(row)
+
+            result_url, provider_status = figmawave_poll_result(
+                selected_auth,
+                batch_id,
+                recipe_id=recipe_id,
+                poll_interval_seconds=figmawave_poll_interval_seconds(),
+            )
+            row["provider_result_url"] = result_url
+            row["provider_status"] = "COMPLETED"
+            result_path = job_dir / f"result_figmawave_{batch_id}.mp4"
+            download_url(result_url, result_path)
+            row["result_supabase_url"] = upload_final_result_video(result_path, job_id, provider_name, fallback_object=f"figmawave/automation/{job_id}/result_{batch_id}.mp4")
+            row["status"] = "COMPLETED"
         else:
             auth_label = row.get("provider_auth_label")
             selected_auth = None

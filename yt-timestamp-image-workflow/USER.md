@@ -10,6 +10,8 @@
 
 Naufal wants script generation saved as part of this workflow. The saved documentary/explainer script prompt lives in `PROMPTS.md` and should be used when Naufal gives a topic and asks for a script.
 
+For every new topic, create a new project folder under `projects/` using a descriptive slug plus timestamp, and keep that topic's files inside that folder.
+
 ---
 
 The more you know, the better you can help. But remember — you're learning about a person, not building a dossier. Respect the difference.

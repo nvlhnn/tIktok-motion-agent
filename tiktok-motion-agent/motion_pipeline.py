@@ -32,7 +32,7 @@ def main():
     comp = sub.add_parser("complete")
     comp.add_argument("job_id")
     comp.add_argument("generated_reference_path")
-    comp.add_argument("--provider", choices=["magnific", "magnefic", "dreamface", "dream_face", "dream-face"], help="Video provider. Defaults to VIDEO_PROVIDER env or magnific.")
+    comp.add_argument("--provider", choices=["magnific", "magnefic", "dreamface", "dream_face", "dream-face", "figmawave", "figma_wave", "figma-wave", "weavy"], help="Video provider. Defaults to VIDEO_PROVIDER env or magnific.")
     valref = sub.add_parser("validate-reference", help="Validate generated try-on input image before video submission.")
     valref.add_argument("generated_reference_path")
     cleanp = sub.add_parser("cleanup")

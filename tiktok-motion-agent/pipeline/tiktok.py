@@ -51,7 +51,24 @@ def yt_dlp_entries(limit=150, profile_url: str | None = None, cache_path: Path |
     return entries
 
 
+def _configured_provider_name() -> str:
+    value = (os.environ.get("VIDEO_PROVIDER") or "").strip().lower()
+    aliases = {
+        "figma_wave": "figmawave",
+        "figma-wave": "figmawave",
+        "weavy": "figmawave",
+        "dream_face": "dreamface",
+        "dream-face": "dreamface",
+        "magnefic": "magnific",
+    }
+    return aliases.get(value, value)
+
+
 def motion_profile_urls() -> list[str]:
+    if _configured_provider_name() == "figmawave":
+        raw = os.environ.get("TIKTOK_FIGMAWAVE_MOTION_PROFILE_URLS", "").strip()
+        if raw:
+            return [u.strip() for u in re.split(r"[,\n]", raw) if u.strip()]
     raw = os.environ.get("TIKTOK_MOTION_PROFILE_URLS", "").strip()
     if not raw:
         return [require_env("TIKTOK_PROFILE_URL")]

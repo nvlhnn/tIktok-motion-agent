@@ -17,7 +17,7 @@ Target audience:
 Adults aged 18 and above. The script should still be easy to understand, but it should not feel childish. Make it suitable for general adult viewers who enjoy learning about countries, history, economics, business, society, technology, and world affairs.
 
 Script requirements:
-- Minimum 8,000 characters. max 10,000.
+- Minimum 8,000 characters. Maximum 10,000 characters. Always verify character count before finalizing; if the draft exceeds 10,000 characters, shorten it before saving or sending.
 - Maximum 150 “Speaker 1:” objects.
 - Do not include titles, headings, scene directions, timestamps, notes, citations, or explanations.
 - Output only the script.
