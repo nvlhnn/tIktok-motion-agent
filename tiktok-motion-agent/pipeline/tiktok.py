@@ -155,6 +155,42 @@ def banned_product_ids(state: dict | None = None) -> set[str]:
     return banned
 
 
+def recent_product_ids_from_runs(limit: int) -> set[str]:
+    if limit <= 0 or not RUNS_CSV.exists():
+        return set()
+    try:
+        with RUNS_CSV.open(newline="") as f:
+            rows = list(csv.DictReader(f))
+    except Exception:
+        return set()
+    ids = []
+    for row in rows:
+        product_id = product_id_from_url(row.get("product_url") or "")
+        if product_id:
+            ids.append(product_id)
+    return set(ids[-limit:])
+
+
+def reserved_product_ids(state: dict | None = None) -> set[str]:
+    """Product IDs already reserved recently or by in-flight prepared jobs.
+
+    TikTok product videos can point at the same TikTok Shop product. The video
+    picker avoids recent video IDs, but concurrent workers need product-level
+    reservation too, otherwise W4/W5/etc can pick different videos for the same
+    product before any one job completes.
+    """
+    state = state or {}
+    avoid_count = int(os.environ.get("PRODUCT_AVOID_COUNT", "120"))
+    reserved = set(state.get("recent_product_ids", [])[-avoid_count:])
+    reserved.update(recent_product_ids_from_runs(avoid_count))
+    for info in (state.get("prepared_jobs") or {}).values():
+        row = (info or {}).get("row") or {}
+        product_id = (info or {}).get("product_id") or product_id_from_url(row.get("product_url") or "")
+        if product_id:
+            reserved.add(product_id)
+    return reserved
+
+
 def recent_motion_video_ids_from_runs(limit: int) -> set[str]:
     if limit <= 0 or not RUNS_CSV.exists():
         return set()
@@ -219,6 +255,7 @@ def pick_different_motion_video(state, excluded_video_id: str):
 def pick_video_with_product(state):
     candidates = product_video_candidates(state)
     banned_products = banned_product_ids(state)
+    reserved_products = reserved_product_ids(state)
     product_cache = state.setdefault("product_cache", {})
     max_checks = int(os.environ.get("PRODUCT_PICK_MAX_CHECKS", "30"))
     checked = 0
@@ -250,6 +287,8 @@ def pick_video_with_product(state):
             dirty = True
         product_id = product_id_from_url(product_url)
         if product_id and product_id in banned_products:
+            continue
+        if product_id and product_id in reserved_products:
             continue
         if product_url or product_title:
             if dirty:

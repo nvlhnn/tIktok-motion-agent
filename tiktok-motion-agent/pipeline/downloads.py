@@ -6,6 +6,7 @@ from pathlib import Path
 import requests
 
 from .tiktok import get_tikwm_data, extract_product_from_html, get_first_product_image, get_product_images
+from .video_processing import assert_video_has_video_stream
 
 
 def download_url(url: str, path: Path):
@@ -105,6 +106,7 @@ def download_tiktok_video_with_ytdlp(video_id: str, tiktok_url: str, job_dir: Pa
         raise RuntimeError(f"yt-dlp fallback failed: {detail}")
     if not out.exists() or out.stat().st_size < 100 * 1024:
         raise RuntimeError("Downloaded TikTok video is suspiciously small after yt-dlp fallback")
+    assert_video_has_video_stream(out, "yt-dlp TikTok download")
     product_url, product_title, _ = extract_product_from_html(tiktok_url)
     return out, {"fallback": "yt-dlp", "tikwm_error": str(reason or "")}, product_url, product_title
 
@@ -126,6 +128,7 @@ def download_tiktok_video(video_id: str, tiktok_url: str, job_dir: Path):
         download_url(video_url, out)
         if out.stat().st_size < 100 * 1024:
             raise RuntimeError("Downloaded TikTok video is suspiciously small")
+        assert_video_has_video_stream(out, "tikwm TikTok download")
         product_url, product_title, _ = extract_product_from_html(tiktok_url)
         return out, data, product_url, product_title
     except Exception as e:

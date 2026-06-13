@@ -19,7 +19,7 @@ ID_MONTHS = [
 
 def indonesia_pretty_datetime(ts: dt.datetime):
     local = ts.astimezone(ZoneInfo("Asia/Jakarta"))
-    return f"{local.day} {ID_MONTHS[local.month - 1]} {local.year} {local:%H:%M} WIB"
+    return local.strftime("%Y-%m-%d %H:%M WIB")
 
 
 def sheet_col(index: int) -> str:

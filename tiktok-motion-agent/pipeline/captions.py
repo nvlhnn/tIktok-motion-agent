@@ -5,6 +5,7 @@ import sys
 
 from .config import RUNS_CSV
 from .state import state_load, state_save
+from .locking import state_lock
 from .storage import upsert_local_csv
 
 
@@ -210,15 +211,16 @@ def set_caption_for_job(job_id: str, caption: str) -> dict:
     caption = (caption or "").strip()
     if not caption:
         raise RuntimeError("Caption cannot be empty")
-    state = state_load()
     row = None
-    if job_id in (state.get("prepared_jobs") or {}):
-        info = state["prepared_jobs"][job_id]
-        row = dict((info or {}).get("row") or {})
-        row["caption"] = caption
-        info["row"] = row
-        state["prepared_jobs"][job_id] = info
-        state_save(state)
+    with state_lock():
+        state = state_load()
+        if job_id in (state.get("prepared_jobs") or {}):
+            info = state["prepared_jobs"][job_id]
+            row = dict((info or {}).get("row") or {})
+            row["caption"] = caption
+            info["row"] = row
+            state["prepared_jobs"][job_id] = info
+            state_save(state)
     if row is None and RUNS_CSV.exists():
         with RUNS_CSV.open("r", newline="") as f:
             for existing in csv.DictReader(f):

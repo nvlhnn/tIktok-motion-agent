@@ -1,5 +1,6 @@
-"""Lightweight video processing helpers for final result uploads."""
+"""Lightweight video processing helpers for final result uploads and input validation."""
 
+import json
 import os
 import subprocess
 from pathlib import Path
@@ -11,6 +12,41 @@ def _run(cmd: list[str]) -> None:
 
 def _target_enabled() -> bool:
     return os.environ.get("HF_UPLOAD_720P_ENABLED", "true").strip().lower() not in {"0", "false", "no", "off"}
+
+
+def ffprobe_metadata(path: Path) -> dict:
+    path = Path(path).expanduser().resolve()
+    if not path.exists():
+        raise RuntimeError(f"Video file not found: {path}")
+    proc = subprocess.run(
+        [
+            "ffprobe",
+            "-v",
+            "error",
+            "-show_streams",
+            "-show_format",
+            "-of",
+            "json",
+            str(path),
+        ],
+        text=True,
+        capture_output=True,
+        timeout=60,
+    )
+    if proc.returncode != 0:
+        detail = (proc.stderr or proc.stdout or "").strip()[-500:]
+        raise RuntimeError(f"ffprobe failed for {path}: {detail}")
+    return json.loads(proc.stdout or "{}")
+
+
+def has_video_stream(path: Path) -> bool:
+    meta = ffprobe_metadata(path)
+    return any((stream or {}).get("codec_type") == "video" for stream in meta.get("streams") or [])
+
+
+def assert_video_has_video_stream(path: Path, label: str = "video") -> None:
+    if not has_video_stream(path):
+        raise RuntimeError(f"{label} is invalid: no video stream found ({Path(path).expanduser().resolve()})")
 
 
 def hf_upload_720p_target() -> tuple[int, int]:

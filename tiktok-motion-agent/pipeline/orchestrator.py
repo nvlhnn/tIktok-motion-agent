@@ -14,13 +14,13 @@ from .config import (
     load_env, require_env,
 )
 from .utils import now_utc, iso, indonesia_pretty_datetime
-from .state import state_load, state_save, assert_no_active_generation, current_worker_id
+from .state import state_load, state_save, assert_no_active_generation, current_worker_id, max_active_generations
 from .locking import state_lock
 from .storage import normalize_provider_fields, log_row
 from .captions import build_tiktok_caption
 from .tiktok import (
     pick_video_with_product, pick_different_motion_video,
-    tiktok_video_url,
+    tiktok_video_url, product_id_from_url,
 )
 from .downloads import download_product_images, download_url, download_tiktok_video
 from .validation import validate_generated_reference_image
@@ -84,6 +84,12 @@ def finish_prepared_job(job_id: str, info: dict, row: dict, product_video_id: st
             if used_id:
                 recent.append(used_id)
         state["recent_video_ids"] = recent[-100:]
+        product_id = info.get("product_id") or product_id_from_url(row.get("product_url") or "")
+        if product_id:
+            recent_products = state.setdefault("recent_product_ids", [])
+            recent_products.append(product_id)
+            product_avoid_count = int(os.environ.get("PRODUCT_AVOID_COUNT", "120"))
+            state["recent_product_ids"] = recent_products[-product_avoid_count:]
         set_result_retention_deadline(state, job_id, row)
         prepared.pop(job_id, None)
         sync_job_record(state, job_id, row)
@@ -96,18 +102,19 @@ def set_status_for_job(job_id: str, status: str, note: str = "") -> dict:
     status = (status or "").strip().upper()
     if status not in STATUS_VALUES:
         raise RuntimeError(f"Invalid status {status!r}; allowed={STATUS_VALUES}")
-    state = state_load()
     row = None
-    if job_id in (state.get("prepared_jobs") or {}):
-        info = state["prepared_jobs"][job_id]
-        row = dict((info or {}).get("row") or {})
-        row["status"] = status
-        if note:
-            row["error"] = note
-        info["row"] = row
-        state["prepared_jobs"][job_id] = info
-        sync_job_record(state, job_id, row)
-        state_save(state)
+    with state_lock():
+        state = state_load()
+        if job_id in (state.get("prepared_jobs") or {}):
+            info = state["prepared_jobs"][job_id]
+            row = dict((info or {}).get("row") or {})
+            row["status"] = status
+            if note:
+                row["error"] = note
+            info["row"] = row
+            state["prepared_jobs"][job_id] = info
+            sync_job_record(state, job_id, row)
+            state_save(state)
     if row is None and RUNS_CSV.exists():
         with RUNS_CSV.open("r", newline="") as f:
             for existing in csv.DictReader(f):
@@ -265,8 +272,12 @@ def upload_final_result_video(result_path: Path, job_id: str, provider_name: str
     raise RuntimeError(f"Unsupported RESULT_STORAGE_PROVIDER={storage_provider!r}; use hf or supabase")
 
 
-def create_job_context(image_path: str | None = None):
-    src_image = Path(image_path or require_env("MASTER_IMAGE_PATH")).expanduser().resolve()
+def create_job_context(image_path: str | None = None, provider_name: str | None = None):
+    provider_key = (provider_name or "").strip().lower()
+    configured_image = image_path
+    if not configured_image and provider_key in {"figmawave", "figma_wave", "figma-wave", "weavy"}:
+        configured_image = os.environ.get("FIGMAWAVE_MASTER_IMAGE_PATH") or os.environ.get("WEAVY_MASTER_IMAGE_PATH")
+    src_image = Path(configured_image or require_env("MASTER_IMAGE_PATH")).expanduser().resolve()
     if not src_image.exists():
         raise RuntimeError(f"Image not found: {src_image}")
 
@@ -292,10 +303,15 @@ def prepare(image_path: str | None = None):
     DATA_DIR.mkdir(exist_ok=True)
     DOWNLOADS_DIR.mkdir(exist_ok=True)
     LOGS_DIR.mkdir(exist_ok=True)
-    cleanup_old()
+    # cleanup_old rewrites state.json for retention bookkeeping. Running it from
+    # every parallel worker can race with job reservation/update writes, so only
+    # do opportunistic cleanup in single-worker mode. Scheduled/manual cleanup is
+    # still available through `motion_pipeline.py cleanup`.
+    if max_active_generations() <= 1:
+        cleanup_old()
     worker_id = current_worker_id()
 
-    src_image, job_id, delete_after, job_dir, row = create_job_context(image_path)
+    src_image, job_id, delete_after, job_dir, row = create_job_context(image_path, provider_name=provider_name)
     row["worker_id"] = worker_id
     row["generation_slot"] = worker_id
     try:
@@ -304,6 +320,7 @@ def prepare(image_path: str | None = None):
             state = state_load()
             product_entry, picked_product_url, picked_product_title, picked_product_image_urls = pick_video_with_product(state)
             product_video_id = product_entry["id"]
+            product_id = product_id_from_url(picked_product_url)
             product_tiktok_url = tiktok_video_url(product_entry, product_entry.get("_profile_url"))
             row["product_video_url"] = product_tiktok_url
             row["product_url"] = picked_product_url
@@ -325,6 +342,7 @@ def prepare(image_path: str | None = None):
                 "worker_id": worker_id,
                 "generation_slot": worker_id,
                 "product_video_id": product_video_id,
+                "product_id": product_id,
                 "motion_video_id": motion_video_id,
                 "supabase_prefix": f"magnific/automation/{job_id}/" if use_supabase_inputs else "",
             })
@@ -334,11 +352,17 @@ def prepare(image_path: str | None = None):
                 "worker_id": worker_id,
                 "generation_slot": worker_id,
                 "product_video_id": product_video_id,
+                "product_id": product_id,
                 "motion_video_id": motion_video_id,
                 "video_id": motion_video_id,
                 "job_dir": str(job_dir),
                 "master_path": str(src_image),
             }
+            if product_id:
+                recent_products = state.setdefault("recent_product_ids", [])
+                recent_products.append(product_id)
+                product_avoid_count = int(os.environ.get("PRODUCT_AVOID_COUNT", "120"))
+                state["recent_product_ids"] = recent_products[-product_avoid_count:]
             state_save(state)
             log_row(row)
 
@@ -350,6 +374,32 @@ def prepare(image_path: str | None = None):
             row["motion_supabase_video_url"] = supabase_upload(motion_local_video, motion_video_obj)
         else:
             row["motion_supabase_video_url"] = ""
+
+        # Persist the motion input immediately. If a later PDP/product-image
+        # step fails or another worker updates its own row, complete/retry won't
+        # see a half-prepared row with missing motion input metadata.
+        with state_lock():
+            state = state_load()
+            prepared = state.setdefault("prepared_jobs", {})
+            info = dict(prepared.get(job_id) or {})
+            info.update({
+                "row": row,
+                "worker_id": worker_id,
+                "generation_slot": worker_id,
+                "product_video_id": product_video_id,
+                "product_id": product_id,
+                "motion_video_id": motion_video_id,
+                "video_id": motion_video_id,
+                "job_dir": str(job_dir),
+                "master_path": str(src_image),
+                "motion_supabase_video_object": motion_video_obj,
+                "motion_supabase_video_url": row.get("motion_supabase_video_url", ""),
+                "motion_local_video_path": str(motion_local_video),
+            })
+            prepared[job_id] = info
+            sync_job_record(state, job_id, row)
+            state_save(state)
+            log_row(row)
 
         product_images = download_product_images(row["product_url"], job_dir, picked_product_image_urls, limit=2)
         product_image_path, product_image_source_url = product_images[0]
@@ -549,8 +599,11 @@ def complete(job_id: str, generated_reference_path: str, provider: str | None = 
             if not batch_id:
                 motion_local_path = info.get("motion_local_video_path")
                 if not motion_local_path or not Path(motion_local_path).exists():
+                    motion_input_url = (row.get("motion_supabase_video_url") or info.get("motion_supabase_video_url") or "").strip()
+                    if not motion_input_url:
+                        raise RuntimeError("missing motion input for FigmaWave: no local motion file or motion_supabase_video_url; rerun prepare for this job")
                     motion_local_path = str(job_dir / "motion_source.mp4")
-                    download_url(row["motion_supabase_video_url"], Path(motion_local_path))
+                    download_url(motion_input_url, Path(motion_local_path))
                 image_asset = figmawave_upload_asset(selected_auth, ref_path, recipe_id=recipe_id)
                 video_asset = figmawave_upload_asset(selected_auth, motion_local_path, recipe_id=recipe_id)
                 row["input_image_url"] = image_asset.get("url", row.get("input_image_url", ""))
@@ -565,6 +618,8 @@ def complete(job_id: str, generated_reference_path: str, provider: str | None = 
                     video_asset,
                     prompt=os.environ.get("FIGMAWAVE_PROMPT", DEFAULT_PROMPT),
                     recipe_id=recipe_id,
+                    mode=os.environ.get("FIGMAWAVE_MODE", "std").strip() or "std",
+                    character_orientation=os.environ.get("FIGMAWAVE_CHARACTER_ORIENTATION", "video").strip() or "video",
                 )
                 batch_id = started.get("batchId")
                 if not batch_id:
@@ -620,7 +675,9 @@ def complete(job_id: str, generated_reference_path: str, provider: str | None = 
                     submit_video_url = dreamface_upload_material(selected_auth, motion_local_path)
                     row["dreamface_motion_video_url"] = submit_video_url
                 if not submit_video_url:
-                    submit_video_url = row["motion_supabase_video_url"]
+                    submit_video_url = (row.get("motion_supabase_video_url") or info.get("motion_supabase_video_url") or "").strip()
+                if not submit_video_url:
+                    raise RuntimeError("missing motion input for DreamFace: no native upload, local file, or motion_supabase_video_url; rerun prepare for this job")
                 animate_id = dreamface_submit(selected_auth, submit_image_url, submit_video_url)
                 row["provider_task_id"] = animate_id
             row["status"] = "PROCESSING"

@@ -60,6 +60,8 @@ def figmawave_auths() -> list[dict]:
     cleaned = []
     for idx, auth in enumerate(auths, start=1):
         auth.setdefault("label", f"figmawave-{idx}")
+        if str(auth.get("disabled", "")).strip().lower() in {"1", "true", "yes"}:
+            continue
         if not auth.get("bearer_token") and not (auth.get("firebase_api_key") and auth.get("refresh_token")):
             raise RuntimeError(f"FigmaWave auth {auth.get('label')!r} missing bearer_token or firebase_api_key+refresh_token")
         cleaned.append(auth)

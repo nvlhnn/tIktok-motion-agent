@@ -58,8 +58,7 @@ def test_parse_hhmm_invalid():
 def test_indonesia_pretty_datetime_format():
     ts = dt.datetime(2026, 5, 15, 10, 30, 0, tzinfo=ZoneInfo("Asia/Jakarta"))
     result = indonesia_pretty_datetime(ts)
-    assert "15 Mei 2026" in result
-    assert "WIB" in result
+    assert result == "2026-05-15 10:30 WIB"
 
 
 def test_parse_indonesia_pretty_datetime_roundtrip():
